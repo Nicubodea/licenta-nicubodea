@@ -1,0 +1,75 @@
+[bits 64]
+global GenericHookHandler
+global EmuBuffer
+global releaseLock
+
+extern HandleFunctionCall
+
+lck dd 0
+
+acquireLock:
+    lock bts dword [rel lck],0        ;Attempt to acquire the lock (in case lock is uncontended)
+    jc .spin_with_pause
+    ret
+ 
+.spin_with_pause:
+    pause                    ; Tell CPU we're spinning
+    test dword [rel lck],1      ; Is the lock free?
+    jnz .spin_with_pause     ; no, wait
+    jmp acquireLock          ; retry
+ 
+releaseLock:
+    mov dword [rel lck], 0
+    ret
+
+
+;; side note: we should acquire a lock at the beggining and release after emulation buffer ended
+GenericHookHandler:
+
+call acquireLock
+
+push rcx
+push rdx
+push rsi
+push rdi
+push rbx
+push r8
+push r9
+push r10
+push r11
+push r12
+push r13
+push r14
+push r15
+
+sub rsp, 0x20
+
+mov rcx, rsp
+call HandleFunctionCall
+
+add rsp, 0x20
+
+pop r15
+pop r14
+pop r13
+pop r12
+pop r11
+pop r10
+pop r9
+pop r8
+pop rbx
+pop rdi
+pop rsi
+pop rdx
+pop rcx
+
+add rsp, 0x8
+jmp EmuBuffer
+
+ret
+
+EmuBuffer:
+
+times 60 db 0x90
+
+ret

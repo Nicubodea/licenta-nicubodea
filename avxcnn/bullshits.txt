@@ -1,0 +1,15 @@
+Input Data
+The input data for the Artificial Neural Network used is a sequence of normalized system calls, as the network should not know about the name of the system calls, but rather be transparent and use some normalized numbers (e.g. for the system call NtCreateFile the number assigned by the neural network is 1). The input data will be kept in a queue by the helper library and be sent to the network every time the queue fills (e.g. the number of system calls needed to detect a malware has been reached). For this purpose, a number of 30-40 system calls should do. The input set contains 388 sequences, and the sequences have variable length, the maximum length of a sequence being 700.
+
+1.	Output Data
+The neural network will classify the given sequence of system calls as “malicious” or “not malicious”. The output will be sent back to the helper library, which then will decide if the process should be killed, or it should continue execution until a new malicious sequence appears.
+2.	Training and Test Data
+The training data and test data is provided by the CSDMC2010_API data set, which consists of 388, respectively 378 sequence of system calls. The training data is already annotated (1 for malware behavior and 0 for benign behavior).
+!!!(note: ten-fold cross-validation)
+
+
+
+3.	Implementation
+The helper library, which intercepts the system calls from ntdll will be written in C++. For intercepting the system calls, a disassembler is needed, in order to re-emulate the overwritten instructions made by the library detours. The library uses the open-source Zydis disassembler, which is a pretty strong library for disassembling and hasn’t got any additional dependencies. For the neural network implementation, python will be used. 
+
+!!! diagrama de interactiune

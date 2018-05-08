@@ -1,0 +1,4016 @@
+Opened log file 'output.txt'
+
+Microsoft (R) Windows Debugger Version 10.0.16299.91 AMD64
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+
+Loading Dump File [C:\Users\nbodea\Documents\Training\Git\axvdll\avx.dmp]
+User Mini Dump File with Full Memory: Only application data is available
+
+Symbol search path is: srv*
+Executable search path is: 
+Windows 10 Version 16299 MP (4 procs) Free x64
+Product: WinNt, suite: SingleUserTS
+16299.15.amd64fre.rs3_release.170928-1534
+Machine Name:
+Debug session time: Mon Apr  9 19:48:13.000 2018 (UTC + 3:00)
+System Uptime: 20 days 4:43:07.011
+Process Uptime: 0 days 0:18:55.000
+......
+This dump file has a breakpoint exception stored in it.
+The stored exception information can be accessed via .ecxr.
+ntdll!LdrpDoDebuggerBreak+0x30:
+00007ffc`10b22efc cc              int     3
+0:000> $<windbg.txt
+0:000> u kernel32!LoadLibraryW
+Couldn't resolve error at 'kernel32!LoadLibraryW'
+0:000> u kernelbase!LoadLibraryW
+KERNELBASE!LoadLibraryW:
+00007ffc`0cff3f60 4533c0          xor     r8d,r8d
+00007ffc`0cff3f63 33d2            xor     edx,edx
+00007ffc`0cff3f65 e916ebfcff      jmp     KERNELBASE!LoadLibraryExW (00007ffc`0cfc2a80)
+00007ffc`0cff3f6a cc              int     3
+00007ffc`0cff3f6b cc              int     3
+00007ffc`0cff3f6c cc              int     3
+00007ffc`0cff3f6d cc              int     3
+00007ffc`0cff3f6e cc              int     3
+0:000> u ntdll!LoadLibraryW
+Couldn't resolve error at 'ntdll!LoadLibraryW'
+0:000> u kernel32!HeapAlloc
+Couldn't resolve error at 'kernel32!HeapAlloc'
+0:000> u kernelbase!HeapAlloc
+Couldn't resolve error at 'kernelbase!HeapAlloc'
+0:000> u ntdll!HeapAlloc
+Couldn't resolve error at 'ntdll!HeapAlloc'
+0:000> u kernel32!HeapFree
+Couldn't resolve error at 'kernel32!HeapFree'
+0:000> u kernelbase!HeapFree
+Couldn't resolve error at 'kernelbase!HeapFree'
+0:000> u ntdll!HeapFree
+Couldn't resolve error at 'ntdll!HeapFree'
+0:000> u kernel32!NtOpenKey
+kernel32!NtOpenKey:
+00007ffc`0e6a220c ff25e63f0500    jmp     qword ptr [kernel32!_imp_NtOpenKey (00007ffc`0e6f61f8)]
+kernel32!NtQueryValueKey:
+00007ffc`0e6a2212 ff25903f0500    jmp     qword ptr [kernel32!_imp_NtQueryValueKey (00007ffc`0e6f61a8)]
+kernel32!RtlAppendUnicodeToString:
+00007ffc`0e6a2218 ff25723f0500    jmp     qword ptr [kernel32!_imp_RtlAppendUnicodeToString (00007ffc`0e6f6190)]
+kernel32!RtlInitUnicodeStringEx:
+00007ffc`0e6a221e ff25343f0500    jmp     qword ptr [kernel32!_imp_RtlInitUnicodeStringEx (00007ffc`0e6f6158)]
+kernel32!wcsnicmp:
+00007ffc`0e6a2224 ff25163e0500    jmp     qword ptr [kernel32!_imp__wcsnicmp (00007ffc`0e6f6040)]
+kernel32!wcsrchr:
+00007ffc`0e6a222a ff25083e0500    jmp     qword ptr [kernel32!_imp_wcsrchr (00007ffc`0e6f6038)]
+kernel32!RtlCreateEnvironmentEx:
+00007ffc`0e6a2230 ff25623d0500    jmp     qword ptr [kernel32!_imp_RtlCreateEnvironmentEx (00007ffc`0e6f5f98)]
+kernel32!RtlDestroyEnvironment:
+00007ffc`0e6a2236 ff25543d0500    jmp     qword ptr [kernel32!_imp_RtlDestroyEnvironment (00007ffc`0e6f5f90)]
+0:000> u kernelbase!NtOpenKey
+Couldn't resolve error at 'kernelbase!NtOpenKey'
+0:000> u ntdll!NtOpenKey
+ntdll!NtOpenKey:
+00007ffc`10af00b0 4c8bd1          mov     r10,rcx
+00007ffc`10af00b3 b812000000      mov     eax,12h
+00007ffc`10af00b8 f604250803fe7f01 test    byte ptr [SharedUserData+0x308 (00000000`7ffe0308)],1
+00007ffc`10af00c0 7503            jne     ntdll!NtOpenKey+0x15 (00007ffc`10af00c5)
+00007ffc`10af00c2 0f05            syscall
+00007ffc`10af00c4 c3              ret
+00007ffc`10af00c5 cd2e            int     2Eh
+00007ffc`10af00c7 c3              ret
+0:000> u kernel32!GetProcAddress
+Couldn't resolve error at 'kernel32!GetProcAddress'
+0:000> u kernelbase!GetProcAddress
+KERNELBASE!GetProcAddress:
+00007ffc`0cfac2c0 48895c2418      mov     qword ptr [rsp+18h],rbx
+00007ffc`0cfac2c5 48896c2420      mov     qword ptr [rsp+20h],rbp
+00007ffc`0cfac2ca 56              push    rsi
+00007ffc`0cfac2cb 4883ec40        sub     rsp,40h
+00007ffc`0cfac2cf 48897c2450      mov     qword ptr [rsp+50h],rdi
+00007ffc`0cfac2d4 488bea          mov     rbp,rdx
+00007ffc`0cfac2d7 488b7c2448      mov     rdi,qword ptr [rsp+48h]
+00007ffc`0cfac2dc 488bd9          mov     rbx,rcx
+0:000> u ntdll!GetProcAddress
+Couldn't resolve error at 'ntdll!GetProcAddress'
+0:000> u kernel32!GetCurrentThreadId
+kernel32!GetCurrentThreadId:
+00007ffc`0e686150 65488b042530000000 mov   rax,qword ptr gs:[30h]
+00007ffc`0e686159 8b4048          mov     eax,dword ptr [rax+48h]
+00007ffc`0e68615c c3              ret
+00007ffc`0e68615d cc              int     3
+00007ffc`0e68615e cc              int     3
+00007ffc`0e68615f cc              int     3
+00007ffc`0e686160 cc              int     3
+00007ffc`0e686161 cc              int     3
+0:000> u kernelbase!GetCurrentThreadId
+KERNELBASE!GetCurrentThreadId:
+00007ffc`0cfd3010 65488b042530000000 mov   rax,qword ptr gs:[30h]
+00007ffc`0cfd3019 8b4048          mov     eax,dword ptr [rax+48h]
+00007ffc`0cfd301c c3              ret
+00007ffc`0cfd301d cc              int     3
+00007ffc`0cfd301e cc              int     3
+00007ffc`0cfd301f cc              int     3
+KERNELBASE!wil::details::RecordLog:
+00007ffc`0cfd3020 890d46081e00    mov     dword ptr [KERNELBASE!`wil::details::RecordLog'::`2'::s_hrErrorLast (00007ffc`0d1b386c)],ecx
+00007ffc`0cfd3026 b801000000      mov     eax,1
+0:000> u ntdll!GetCurrentThreadId
+Couldn't resolve error at 'ntdll!GetCurrentThreadId'
+0:000> u kernel32!NtQueryValueKey
+kernel32!NtQueryValueKey:
+00007ffc`0e6a2212 ff25903f0500    jmp     qword ptr [kernel32!_imp_NtQueryValueKey (00007ffc`0e6f61a8)]
+kernel32!RtlAppendUnicodeToString:
+00007ffc`0e6a2218 ff25723f0500    jmp     qword ptr [kernel32!_imp_RtlAppendUnicodeToString (00007ffc`0e6f6190)]
+kernel32!RtlInitUnicodeStringEx:
+00007ffc`0e6a221e ff25343f0500    jmp     qword ptr [kernel32!_imp_RtlInitUnicodeStringEx (00007ffc`0e6f6158)]
+kernel32!wcsnicmp:
+00007ffc`0e6a2224 ff25163e0500    jmp     qword ptr [kernel32!_imp__wcsnicmp (00007ffc`0e6f6040)]
+kernel32!wcsrchr:
+00007ffc`0e6a222a ff25083e0500    jmp     qword ptr [kernel32!_imp_wcsrchr (00007ffc`0e6f6038)]
+kernel32!RtlCreateEnvironmentEx:
+00007ffc`0e6a2230 ff25623d0500    jmp     qword ptr [kernel32!_imp_RtlCreateEnvironmentEx (00007ffc`0e6f5f98)]
+kernel32!RtlDestroyEnvironment:
+00007ffc`0e6a2236 ff25543d0500    jmp     qword ptr [kernel32!_imp_RtlDestroyEnvironment (00007ffc`0e6f5f90)]
+kernel32!NtUnmapViewOfSection:
+00007ffc`0e6a223c ff25a63c0500    jmp     qword ptr [kernel32!_imp_NtUnmapViewOfSection (00007ffc`0e6f5ee8)]
+0:000> u kernelbase!NtQueryValueKey
+Couldn't resolve error at 'kernelbase!NtQueryValueKey'
+0:000> u ntdll!NtQueryValueKey
+ntdll!NtQueryValueKey:
+00007ffc`10af0150 4c8bd1          mov     r10,rcx
+00007ffc`10af0153 b817000000      mov     eax,17h
+00007ffc`10af0158 f604250803fe7f01 test    byte ptr [SharedUserData+0x308 (00000000`7ffe0308)],1
+00007ffc`10af0160 7503            jne     ntdll!NtQueryValueKey+0x15 (00007ffc`10af0165)
+00007ffc`10af0162 0f05            syscall
+00007ffc`10af0164 c3              ret
+00007ffc`10af0165 cd2e            int     2Eh
+00007ffc`10af0167 c3              ret
+0:000> u kernel32!GetProcessHeap
+Couldn't resolve error at 'kernel32!GetProcessHeap'
+0:000> u kernelbase!GetProcessHeap
+KERNELBASE!GetProcessHeap:
+00007ffc`0cfdb070 65488b042560000000 mov   rax,qword ptr gs:[60h]
+00007ffc`0cfdb079 488b4030        mov     rax,qword ptr [rax+30h]
+00007ffc`0cfdb07d c3              ret
+00007ffc`0cfdb07e cc              int     3
+00007ffc`0cfdb07f cc              int     3
+00007ffc`0cfdb080 cc              int     3
+00007ffc`0cfdb081 cc              int     3
+00007ffc`0cfdb082 cc              int     3
+0:000> u ntdll!GetProcessHeap
+Couldn't resolve error at 'ntdll!GetProcessHeap'
+0:000> u kernel32!RegOpenKeyExW
+Couldn't resolve error at 'kernel32!RegOpenKeyExW'
+0:000> u kernelbase!RegOpenKeyExW
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!RegOpenKeyExW
+Couldn't resolve error at 'ntdll!RegOpenKeyExW'
+0:000> u kernel32!LocalAlloc
+Couldn't resolve error at 'kernel32!LocalAlloc'
+0:000> u kernelbase!LocalAlloc
+KERNELBASE!LocalAlloc:
+00007ffc`0cfc7010 48895c2410      mov     qword ptr [rsp+10h],rbx
+00007ffc`0cfc7015 4889742418      mov     qword ptr [rsp+18h],rsi
+00007ffc`0cfc701a 48897c2420      mov     qword ptr [rsp+20h],rdi
+00007ffc`0cfc701f 894c2408        mov     dword ptr [rsp+8],ecx
+00007ffc`0cfc7023 4154            push    r12
+00007ffc`0cfc7025 4156            push    r14
+00007ffc`0cfc7027 4157            push    r15
+00007ffc`0cfc7029 4883ec40        sub     rsp,40h
+0:000> u ntdll!LocalAlloc
+Couldn't resolve error at 'ntdll!LocalAlloc'
+0:000> u kernel32!GetStartupInfoA
+kernel32!GetStartupInfoA:
+00007ffc`0e68f080 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0e68f085 48896c2410      mov     qword ptr [rsp+10h],rbp
+00007ffc`0e68f08a 4889742418      mov     qword ptr [rsp+18h],rsi
+00007ffc`0e68f08f 57              push    rdi
+00007ffc`0e68f090 4883ec50        sub     rsp,50h
+00007ffc`0e68f094 65488b042560000000 mov   rax,qword ptr gs:[60h]
+00007ffc`0e68f09d 488bf9          mov     rdi,rcx
+00007ffc`0e68f0a0 488b1d41590900  mov     rbx,qword ptr [kernel32!BaseAnsiStartupInfo (00007ffc`0e7249e8)]
+0:000> u kernelbase!GetStartupInfoA
+Couldn't resolve error at 'kernelbase!GetStartupInfoA'
+0:000> u ntdll!GetStartupInfoA
+Couldn't resolve error at 'ntdll!GetStartupInfoA'
+0:000> u kernel32!GetFileType
+kernel32!GetFileType:
+00007ffc`0e6a27d0 ff253a200500    jmp     qword ptr [kernel32!_imp_GetFileType (00007ffc`0e6f4810)]
+00007ffc`0e6a27d6 cc              int     3
+00007ffc`0e6a27d7 cc              int     3
+00007ffc`0e6a27d8 cc              int     3
+00007ffc`0e6a27d9 cc              int     3
+00007ffc`0e6a27da cc              int     3
+00007ffc`0e6a27db cc              int     3
+00007ffc`0e6a27dc cc              int     3
+0:000> u kernelbase!GetFileType
+KERNELBASE!GetFileType:
+00007ffc`0cfdc580 4883ec48        sub     rsp,48h
+00007ffc`0cfdc584 4885c9          test    rcx,rcx
+00007ffc`0cfdc587 747f            je      KERNELBASE!GetFileType+0x88 (00007ffc`0cfdc608)
+00007ffc`0cfdc589 83f9f4          cmp     ecx,0FFFFFFF4h
+00007ffc`0cfdc58c 0f8387000000    jae     KERNELBASE!GetFileType+0x99 (00007ffc`0cfdc619)
+00007ffc`0cfdc592 4885c9          test    rcx,rcx
+00007ffc`0cfdc595 7471            je      KERNELBASE!GetFileType+0x88 (00007ffc`0cfdc608)
+00007ffc`0cfdc597 41b908000000    mov     r9d,8
+0:000> u ntdll!GetFileType
+Couldn't resolve error at 'ntdll!GetFileType'
+0:000> u kernel32!GetEnvironmentStringsW
+Couldn't resolve error at 'kernel32!GetEnvironmentStringsW'
+0:000> u kernelbase!GetEnvironmentStringsW
+KERNELBASE!GetEnvironmentStringsW:
+00007ffc`0cfda7f0 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0cfda7f5 4889742410      mov     qword ptr [rsp+10h],rsi
+00007ffc`0cfda7fa 57              push    rdi
+00007ffc`0cfda7fb 4883ec20        sub     rsp,20h
+00007ffc`0cfda7ff 65488b042560000000 mov   rax,qword ptr gs:[60h]
+00007ffc`0cfda808 488b5820        mov     rbx,qword ptr [rax+20h]
+00007ffc`0cfda80c ff1596ed1100    call    qword ptr [KERNELBASE!_imp_RtlAcquirePebLock (00007ffc`0d0f95a8)]
+00007ffc`0cfda812 488b9b80000000  mov     rbx,qword ptr [rbx+80h]
+0:000> u ntdll!GetEnvironmentStringsW
+Couldn't resolve error at 'ntdll!GetEnvironmentStringsW'
+0:000> u kernel32!FreeEnvironmentStringsW
+Couldn't resolve error at 'kernel32!FreeEnvironmentStringsW'
+0:000> u kernelbase!FreeEnvironmentStringsW
+KERNELBASE!FreeEnvironmentStringsA:
+00007ffc`0cfe82f0 65488b042560000000 mov   rax,qword ptr gs:[60h]
+00007ffc`0cfe82f9 4c8bc1          mov     r8,rcx
+00007ffc`0cfe82fc 33d2            xor     edx,edx
+00007ffc`0cfe82fe 488b4830        mov     rcx,qword ptr [rax+30h]
+00007ffc`0cfe8302 48ff259f081100  jmp     qword ptr [KERNELBASE!_imp_RtlFreeHeap (00007ffc`0d0f8ba8)]
+00007ffc`0cfe8309 cc              int     3
+00007ffc`0cfe830a cc              int     3
+00007ffc`0cfe830b cc              int     3
+0:000> u ntdll!FreeEnvironmentStringsW
+Couldn't resolve error at 'ntdll!FreeEnvironmentStringsW'
+0:000> u kernel32!GetCommandLineA
+Couldn't resolve error at 'kernel32!GetCommandLineA'
+0:000> u kernelbase!GetCommandLineA
+KERNELBASE!GetCommandLineA:
+00007ffc`0cff6900 488b0571b91b00  mov     rax,qword ptr [KERNELBASE!BaseAnsiCommandLine+0x8 (00007ffc`0d1b2278)]
+00007ffc`0cff6907 c3              ret
+00007ffc`0cff6908 cc              int     3
+00007ffc`0cff6909 cc              int     3
+00007ffc`0cff690a cc              int     3
+00007ffc`0cff690b cc              int     3
+00007ffc`0cff690c cc              int     3
+00007ffc`0cff690d cc              int     3
+0:000> u ntdll!GetCommandLineA
+Couldn't resolve error at 'ntdll!GetCommandLineA'
+0:000> u kernel32!GetCommandLineW
+Couldn't resolve error at 'kernel32!GetCommandLineW'
+0:000> u kernelbase!GetCommandLineW
+KERNELBASE!GetCommandLineW:
+00007ffc`0cff4ec0 488b05c1d31b00  mov     rax,qword ptr [KERNELBASE!BaseUnicodeCommandLine+0x8 (00007ffc`0d1b2288)]
+00007ffc`0cff4ec7 c3              ret
+00007ffc`0cff4ec8 cc              int     3
+00007ffc`0cff4ec9 cc              int     3
+00007ffc`0cff4eca cc              int     3
+00007ffc`0cff4ecb cc              int     3
+00007ffc`0cff4ecc cc              int     3
+00007ffc`0cff4ecd cc              int     3
+0:000> u ntdll!GetCommandLineW
+Couldn't resolve error at 'ntdll!GetCommandLineW'
+0:000> u kernel32!VirtualQuery
+Couldn't resolve error at 'kernel32!VirtualQuery'
+0:000> u kernelbase!VirtualQuery
+KERNELBASE!VirtualQuery:
+00007ffc`0cfe4b90 4053            push    rbx
+00007ffc`0cfe4b92 4883ec30        sub     rsp,30h
+00007ffc`0cfe4b96 488d442458      lea     rax,[rsp+58h]
+00007ffc`0cfe4b9b 4c8bca          mov     r9,rdx
+00007ffc`0cfe4b9e 4889442428      mov     qword ptr [rsp+28h],rax
+00007ffc`0cfe4ba3 488bd1          mov     rdx,rcx
+00007ffc`0cfe4ba6 4c89442420      mov     qword ptr [rsp+20h],r8
+00007ffc`0cfe4bab 4883c9ff        or      rcx,0FFFFFFFFFFFFFFFFh
+0:000> u ntdll!VirtualQuery
+Couldn't resolve error at 'ntdll!VirtualQuery'
+0:000> u kernel32!GetModuleFileNameW
+Couldn't resolve error at 'kernel32!GetModuleFileNameW'
+0:000> u kernelbase!GetModuleFileNameW
+KERNELBASE!GetModuleFileNameW:
+00007ffc`0cfdb660 4c8bdc          mov     r11,rsp
+00007ffc`0cfdb663 49895b08        mov     qword ptr [r11+8],rbx
+00007ffc`0cfdb667 49896b10        mov     qword ptr [r11+10h],rbp
+00007ffc`0cfdb66b 49897318        mov     qword ptr [r11+18h],rsi
+00007ffc`0cfdb66f 57              push    rdi
+00007ffc`0cfdb670 4883ec30        sub     rsp,30h
+00007ffc`0cfdb674 33c0            xor     eax,eax
+00007ffc`0cfdb676 418bf8          mov     edi,r8d
+0:000> u ntdll!GetModuleFileNameW
+Couldn't resolve error at 'ntdll!GetModuleFileNameW'
+0:000> u kernel32!GetProcessVersion
+Couldn't resolve error at 'kernel32!GetProcessVersion'
+0:000> u kernelbase!GetProcessVersion
+KERNELBASE!GetProcessVersion:
+00007ffc`0cffbc80 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0cffbc85 57              push    rdi
+00007ffc`0cffbc86 4883ec70        sub     rsp,70h
+00007ffc`0cffbc8a 85c9            test    ecx,ecx
+00007ffc`0cffbc8c 0f859efe0200    jne     KERNELBASE!GetProcessVersion+0x2feb0 (00007ffc`0d02bb30)
+00007ffc`0cffbc92 4883cbff        or      rbx,0FFFFFFFFFFFFFFFFh
+00007ffc`0cffbc96 488364242000    and     qword ptr [rsp+20h],0
+00007ffc`0cffbc9c 4c8d442430      lea     r8,[rsp+30h]
+0:000> u ntdll!GetProcessVersion
+Couldn't resolve error at 'ntdll!GetProcessVersion'
+0:000> u kernel32!RegOpenKeyExA
+Couldn't resolve error at 'kernel32!RegOpenKeyExA'
+0:000> u kernelbase!RegOpenKeyExA
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!RegOpenKeyExA
+Couldn't resolve error at 'ntdll!RegOpenKeyExA'
+0:000> u kernel32!RegQueryValueExA
+Couldn't resolve error at 'kernel32!RegQueryValueExA'
+0:000> u kernelbase!RegQueryValueExA
+Matched: 00007ffc`0cfbd020 KERNELBASE!RegQueryValueExA (void)
+Matched: 00007ffc`0cffcda0 KERNELBASE!RegQueryValueExA (void)
+Ambiguous symbol error at 'kernelbase!RegQueryValueExA'
+0:000> u ntdll!RegQueryValueExA
+Couldn't resolve error at 'ntdll!RegQueryValueExA'
+0:000> u kernel32!RegCloseKey
+Couldn't resolve error at 'kernel32!RegCloseKey'
+0:000> u kernelbase!RegCloseKey
+Matched: 00007ffc`0cfc0430 KERNELBASE!RegCloseKey (void)
+Matched: 00007ffc`0cffcda0 KERNELBASE!RegCloseKey (void)
+Ambiguous symbol error at 'kernelbase!RegCloseKey'
+0:000> u ntdll!RegCloseKey
+Couldn't resolve error at 'ntdll!RegCloseKey'
+0:000> u kernel32!RegNotifyChangeKeyValue
+Couldn't resolve error at 'kernel32!RegNotifyChangeKeyValue'
+0:000> u kernelbase!RegNotifyChangeKeyValue
+Matched: 00007ffc`0cf9e6e0 KERNELBASE!RegNotifyChangeKeyValue (void)
+Matched: 00007ffc`0cffcda0 KERNELBASE!RegNotifyChangeKeyValue (void)
+Ambiguous symbol error at 'kernelbase!RegNotifyChangeKeyValue'
+0:000> u ntdll!RegNotifyChangeKeyValue
+Couldn't resolve error at 'ntdll!RegNotifyChangeKeyValue'
+0:000> u kernel32!LocalFree
+Couldn't resolve error at 'kernel32!LocalFree'
+0:000> u kernelbase!LocalFree
+KERNELBASE!LocalFree:
+00007ffc`0cfc6ee0 48895c2410      mov     qword ptr [rsp+10h],rbx
+00007ffc`0cfc6ee5 4889742418      mov     qword ptr [rsp+18h],rsi
+00007ffc`0cfc6eea 48894c2408      mov     qword ptr [rsp+8],rcx
+00007ffc`0cfc6eef 57              push    rdi
+00007ffc`0cfc6ef0 4883ec30        sub     rsp,30h
+00007ffc`0cfc6ef4 488bd9          mov     rbx,rcx
+00007ffc`0cfc6ef7 f6c308          test    bl,8
+00007ffc`0cfc6efa 7533            jne     KERNELBASE!LocalFree+0x4f (00007ffc`0cfc6f2f)
+0:000> u ntdll!LocalFree
+Couldn't resolve error at 'ntdll!LocalFree'
+0:000> u kernel32!RegQueryValueExW
+Couldn't resolve error at 'kernel32!RegQueryValueExW'
+0:000> u kernelbase!RegQueryValueExW
+Matched: 00007ffc`0cfbf1b0 KERNELBASE!RegQueryValueExW (void)
+Matched: 00007ffc`0d06b680 KERNELBASE!RegQueryValueExW (void)
+Ambiguous symbol error at 'kernelbase!RegQueryValueExW'
+0:000> u ntdll!RegQueryValueExW
+Couldn't resolve error at 'ntdll!RegQueryValueExW'
+0:000> u kernel32!GetCurrentProcessId
+kernel32!GetCurrentProcessId:
+00007ffc`0e6a22c0 ff2552310500    jmp     qword ptr [kernel32!_imp_GetCurrentProcessId (00007ffc`0e6f5418)]
+00007ffc`0e6a22c6 cc              int     3
+00007ffc`0e6a22c7 cc              int     3
+00007ffc`0e6a22c8 cc              int     3
+00007ffc`0e6a22c9 cc              int     3
+00007ffc`0e6a22ca cc              int     3
+00007ffc`0e6a22cb cc              int     3
+00007ffc`0e6a22cc cc              int     3
+0:000> u kernelbase!GetCurrentProcessId
+KERNELBASE!GetCurrentProcessId:
+00007ffc`0cfdbf80 65488b042530000000 mov   rax,qword ptr gs:[30h]
+00007ffc`0cfdbf89 8b4040          mov     eax,dword ptr [rax+40h]
+00007ffc`0cfdbf8c c3              ret
+00007ffc`0cfdbf8d cc              int     3
+00007ffc`0cfdbf8e cc              int     3
+00007ffc`0cfdbf8f cc              int     3
+00007ffc`0cfdbf90 cc              int     3
+00007ffc`0cfdbf91 cc              int     3
+0:000> u ntdll!GetCurrentProcessId
+Couldn't resolve error at 'ntdll!GetCurrentProcessId'
+0:000> u kernel32!VirtualAlloc
+Couldn't resolve error at 'kernel32!VirtualAlloc'
+0:000> u kernelbase!VirtualAlloc
+KERNELBASE!VirtualAlloc:
+00007ffc`0cfde040 4053            push    rbx
+00007ffc`0cfde042 4883ec30        sub     rsp,30h
+00007ffc`0cfde046 33db            xor     ebx,ebx
+00007ffc`0cfde048 4889542448      mov     qword ptr [rsp+48h],rdx
+00007ffc`0cfde04d 48894c2440      mov     qword ptr [rsp+40h],rcx
+00007ffc`0cfde052 4885c9          test    rcx,rcx
+00007ffc`0cfde055 740f            je      KERNELBASE!VirtualAlloc+0x26 (00007ffc`0cfde066)
+00007ffc`0cfde057 8b053b411d00    mov     eax,dword ptr [KERNELBASE!SysInfo+0x18 (00007ffc`0d1b2198)]
+0:000> u ntdll!VirtualAlloc
+Couldn't resolve error at 'ntdll!VirtualAlloc'
+0:000> u kernel32!VirtualFree
+Couldn't resolve error at 'kernel32!VirtualFree'
+0:000> u kernelbase!VirtualFree
+KERNELBASE!VirtualFree:
+00007ffc`0cfdfee0 488bc4          mov     rax,rsp
+00007ffc`0cfdfee3 48895818        mov     qword ptr [rax+18h],rbx
+00007ffc`0cfdfee7 48897020        mov     qword ptr [rax+20h],rsi
+00007ffc`0cfdfeeb 57              push    rdi
+00007ffc`0cfdfeec 4883ec20        sub     rsp,20h
+00007ffc`0cfdfef0 33db            xor     ebx,ebx
+00007ffc`0cfdfef2 48895008        mov     qword ptr [rax+8],rdx
+00007ffc`0cfdfef6 48894810        mov     qword ptr [rax+10h],rcx
+0:000> u ntdll!VirtualFree
+Couldn't resolve error at 'ntdll!VirtualFree'
+0:000> u kernel32!GetModuleFileNameA
+Couldn't resolve error at 'kernel32!GetModuleFileNameA'
+0:000> u kernelbase!GetModuleFileNameA
+KERNELBASE!GetModuleFileNameA:
+00007ffc`0cfdb530 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0cfdb535 4889742410      mov     qword ptr [rsp+10h],rsi
+00007ffc`0cfdb53a 48897c2418      mov     qword ptr [rsp+18h],rdi
+00007ffc`0cfdb53f 4156            push    r14
+00007ffc`0cfdb541 4883ec50        sub     rsp,50h
+00007ffc`0cfdb545 418bd8          mov     ebx,r8d
+00007ffc`0cfdb548 488bfa          mov     rdi,rdx
+00007ffc`0cfdb54b 4c8bf1          mov     r14,rcx
+0:000> u ntdll!GetModuleFileNameA
+Couldn't resolve error at 'ntdll!GetModuleFileNameA'
+0:000> u kernel32!LoadLibraryExA
+Couldn't resolve error at 'kernel32!LoadLibraryExA'
+0:000> u kernelbase!LoadLibraryExA
+KERNELBASE!LoadLibraryExA:
+00007ffc`0cf8dbc0 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0cf8dbc5 57              push    rdi
+00007ffc`0cf8dbc6 4883ec30        sub     rsp,30h
+00007ffc`0cf8dbca 488bfa          mov     rdi,rdx
+00007ffc`0cf8dbcd 418bd8          mov     ebx,r8d
+00007ffc`0cf8dbd0 488bd1          mov     rdx,rcx
+00007ffc`0cf8dbd3 488d4c2420      lea     rcx,[rsp+20h]
+00007ffc`0cf8dbd8 e86f080000      call    KERNELBASE!Basep8BitStringToDynamicUnicodeString (00007ffc`0cf8e44c)
+0:000> u ntdll!LoadLibraryExA
+Couldn't resolve error at 'ntdll!LoadLibraryExA'
+0:000> u kernel32!CreateFileA
+kernel32!CreateFileA:
+00007ffc`0e6a2570 ff257a240500    jmp     qword ptr [kernel32!_imp_CreateFileA (00007ffc`0e6f49f0)]
+00007ffc`0e6a2576 cc              int     3
+00007ffc`0e6a2577 cc              int     3
+00007ffc`0e6a2578 cc              int     3
+00007ffc`0e6a2579 cc              int     3
+00007ffc`0e6a257a cc              int     3
+00007ffc`0e6a257b cc              int     3
+00007ffc`0e6a257c cc              int     3
+0:000> u kernelbase!CreateFileA
+KERNELBASE!CreateFileA:
+00007ffc`0cfc1760 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0cfc1765 4889742410      mov     qword ptr [rsp+10h],rsi
+00007ffc`0cfc176a 48897c2418      mov     qword ptr [rsp+18h],rdi
+00007ffc`0cfc176f 55              push    rbp
+00007ffc`0cfc1770 488bec          mov     rbp,rsp
+00007ffc`0cfc1773 4883ec60        sub     rsp,60h
+00007ffc`0cfc1777 8bf2            mov     esi,edx
+00007ffc`0cfc1779 498bd9          mov     rbx,r9
+0:000> u ntdll!CreateFileA
+Couldn't resolve error at 'ntdll!CreateFileA'
+0:000> u kernel32!GetCurrentProcess
+kernel32!GetCurrentProcess:
+00007ffc`0e6a22b0 ff256a310500    jmp     qword ptr [kernel32!_imp_GetCurrentProcess (00007ffc`0e6f5420)]
+00007ffc`0e6a22b6 cc              int     3
+00007ffc`0e6a22b7 cc              int     3
+00007ffc`0e6a22b8 cc              int     3
+00007ffc`0e6a22b9 cc              int     3
+00007ffc`0e6a22ba cc              int     3
+00007ffc`0e6a22bb cc              int     3
+00007ffc`0e6a22bc cc              int     3
+0:000> u kernelbase!GetCurrentProcess
+KERNELBASE!GetCurrentProcess:
+00007ffc`0cfdf310 4883c8ff        or      rax,0FFFFFFFFFFFFFFFFh
+00007ffc`0cfdf314 c3              ret
+00007ffc`0cfdf315 cc              int     3
+00007ffc`0cfdf316 cc              int     3
+00007ffc`0cfdf317 cc              int     3
+00007ffc`0cfdf318 cc              int     3
+00007ffc`0cfdf319 cc              int     3
+00007ffc`0cfdf31a cc              int     3
+0:000> u ntdll!GetCurrentProcess
+Couldn't resolve error at 'ntdll!GetCurrentProcess'
+0:000> u kernel32!LoadLibraryA
+Couldn't resolve error at 'kernel32!LoadLibraryA'
+0:000> u kernelbase!LoadLibraryA
+KERNELBASE!LoadLibraryA:
+00007ffc`0cf8d220 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0cf8d225 4889742410      mov     qword ptr [rsp+10h],rsi
+00007ffc`0cf8d22a 57              push    rdi
+00007ffc`0cf8d22b 4883ec20        sub     rsp,20h
+00007ffc`0cf8d22f 488bf9          mov     rdi,rcx
+00007ffc`0cf8d232 4885c9          test    rcx,rcx
+00007ffc`0cf8d235 7415            je      KERNELBASE!LoadLibraryA+0x2c (00007ffc`0cf8d24c)
+00007ffc`0cf8d237 488d1522f51600  lea     rdx,[KERNELBASE!`string' (00007ffc`0d0fc760)]
+0:000> u ntdll!LoadLibraryA
+Couldn't resolve error at 'ntdll!LoadLibraryA'
+0:000> u kernel32!FreeLibrary
+Couldn't resolve error at 'kernel32!FreeLibrary'
+0:000> u kernelbase!FreeLibrary
+KERNELBASE!FreeLibrary:
+00007ffc`0cfa66a0 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0cfa66a5 4889742410      mov     qword ptr [rsp+10h],rsi
+00007ffc`0cfa66aa 57              push    rdi
+00007ffc`0cfa66ab 4883ec20        sub     rsp,20h
+00007ffc`0cfa66af 488bf9          mov     rdi,rcx
+00007ffc`0cfa66b2 f6c103          test    cl,3
+00007ffc`0cfa66b5 7523            jne     KERNELBASE!FreeLibrary+0x3a (00007ffc`0cfa66da)
+00007ffc`0cfa66b7 ff15832a1500    call    qword ptr [KERNELBASE!_imp_LdrUnloadDll (00007ffc`0d0f9140)]
+0:000> u ntdll!FreeLibrary
+Couldn't resolve error at 'ntdll!FreeLibrary'
+0:000> u kernel32!GetModuleHandleA
+Couldn't resolve error at 'kernel32!GetModuleHandleA'
+0:000> u kernelbase!GetModuleHandleA
+KERNELBASE!GetModuleHandleA:
+00007ffc`0cf8e330 4053            push    rbx
+00007ffc`0cf8e332 4883ec30        sub     rsp,30h
+00007ffc`0cf8e336 4885c9          test    rcx,rcx
+00007ffc`0cf8e339 7432            je      KERNELBASE!GetModuleHandleA+0x3d (00007ffc`0cf8e36d)
+00007ffc`0cf8e33b 488bd1          mov     rdx,rcx
+00007ffc`0cf8e33e 488d4c2420      lea     rcx,[rsp+20h]
+00007ffc`0cf8e343 e804010000      call    KERNELBASE!Basep8BitStringToDynamicUnicodeString (00007ffc`0cf8e44c)
+00007ffc`0cf8e348 85c0            test    eax,eax
+0:000> u ntdll!GetModuleHandleA
+Couldn't resolve error at 'ntdll!GetModuleHandleA'
+0:000> u kernel32!RegCreateKeyExA
+Couldn't resolve error at 'kernel32!RegCreateKeyExA'
+0:000> u kernelbase!RegCreateKeyExA
+KERNELBASE!RegCreateKeyExA:
+00007ffc`0d06b620 488b442440      mov     rax,qword ptr [rsp+40h]
+00007ffc`0d06b625 4885c0          test    rax,rax
+00007ffc`0d06b628 7404            je      KERNELBASE!RegCreateKeyExA+0xe (00007ffc`0d06b62e)
+00007ffc`0d06b62a 488308ff        or      qword ptr [rax],0FFFFFFFFFFFFFFFFh
+00007ffc`0d06b62e 488b442448      mov     rax,qword ptr [rsp+48h]
+00007ffc`0d06b633 4885c0          test    rax,rax
+00007ffc`0d06b636 7403            je      KERNELBASE!RegCreateKeyExA+0x1b (00007ffc`0d06b63b)
+00007ffc`0d06b638 832000          and     dword ptr [rax],0
+0:000> u ntdll!RegCreateKeyExA
+Couldn't resolve error at 'ntdll!RegCreateKeyExA'
+0:000> u kernel32!RegOpenKeyW
+Couldn't resolve error at 'kernel32!RegOpenKeyW'
+0:000> u kernelbase!RegOpenKeyW
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!RegOpenKeyW
+Couldn't resolve error at 'ntdll!RegOpenKeyW'
+0:000> u kernel32!GetModuleHandleW
+Couldn't resolve error at 'kernel32!GetModuleHandleW'
+0:000> u kernelbase!GetModuleHandleW
+KERNELBASE!GetModuleHandleW:
+00007ffc`0cf8e390 48895c2410      mov     qword ptr [rsp+10h],rbx
+00007ffc`0cf8e395 57              push    rdi
+00007ffc`0cf8e396 4883ec30        sub     rsp,30h
+00007ffc`0cf8e39a 33ff            xor     edi,edi
+00007ffc`0cf8e39c 4885c9          test    rcx,rcx
+00007ffc`0cf8e39f 744c            je      KERNELBASE!GetModuleHandleW+0x5d (00007ffc`0cf8e3ed)
+00007ffc`0cf8e3a1 488bd1          mov     rdx,rcx
+00007ffc`0cf8e3a4 488d4c2420      lea     rcx,[rsp+20h]
+0:000> u ntdll!GetModuleHandleW
+Couldn't resolve error at 'ntdll!GetModuleHandleW'
+0:000> u kernel32!OpenSCManagerA
+Couldn't resolve error at 'kernel32!OpenSCManagerA'
+0:000> u kernelbase!OpenSCManagerA
+Couldn't resolve error at 'kernelbase!OpenSCManagerA'
+0:000> u ntdll!OpenSCManagerA
+Couldn't resolve error at 'ntdll!OpenSCManagerA'
+0:000> u kernel32!OpenServiceA
+Couldn't resolve error at 'kernel32!OpenServiceA'
+0:000> u kernelbase!OpenServiceA
+Couldn't resolve error at 'kernelbase!OpenServiceA'
+0:000> u ntdll!OpenServiceA
+Couldn't resolve error at 'ntdll!OpenServiceA'
+0:000> u kernel32!ControlService
+Couldn't resolve error at 'kernel32!ControlService'
+0:000> u kernelbase!ControlService
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!ControlService
+Couldn't resolve error at 'ntdll!ControlService'
+0:000> u kernel32!ChangeServiceConfigA
+Couldn't resolve error at 'kernel32!ChangeServiceConfigA'
+0:000> u kernelbase!ChangeServiceConfigA
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!ChangeServiceConfigA
+Couldn't resolve error at 'ntdll!ChangeServiceConfigA'
+0:000> u kernel32!CloseServiceHandle
+Couldn't resolve error at 'kernel32!CloseServiceHandle'
+0:000> u kernelbase!CloseServiceHandle
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!CloseServiceHandle
+Couldn't resolve error at 'ntdll!CloseServiceHandle'
+0:000> u kernel32!CreateWindowExW
+Couldn't resolve error at 'kernel32!CreateWindowExW'
+0:000> u kernelbase!CreateWindowExW
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!CreateWindowExW
+Couldn't resolve error at 'ntdll!CreateWindowExW'
+0:000> u kernel32!CreateWindowExA
+Couldn't resolve error at 'kernel32!CreateWindowExA'
+0:000> u kernelbase!CreateWindowExA
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!CreateWindowExA
+Couldn't resolve error at 'ntdll!CreateWindowExA'
+0:000> u kernel32!RegQueryInfoKeyW
+Couldn't resolve error at 'kernel32!RegQueryInfoKeyW'
+0:000> u kernelbase!RegQueryInfoKeyW
+Matched: 00007ffc`0cfbdc80 KERNELBASE!RegQueryInfoKeyW (void)
+Matched: 00007ffc`0cffcda0 KERNELBASE!RegQueryInfoKeyW (void)
+Ambiguous symbol error at 'kernelbase!RegQueryInfoKeyW'
+0:000> u ntdll!RegQueryInfoKeyW
+Couldn't resolve error at 'ntdll!RegQueryInfoKeyW'
+0:000> u kernel32!RegEnumValueW
+Couldn't resolve error at 'kernel32!RegEnumValueW'
+0:000> u kernelbase!RegEnumValueW
+Matched: 00007ffc`0cfbd5f0 KERNELBASE!RegEnumValueW (void)
+Matched: 00007ffc`0cffcda0 KERNELBASE!RegEnumValueW (void)
+Ambiguous symbol error at 'kernelbase!RegEnumValueW'
+0:000> u ntdll!RegEnumValueW
+Couldn't resolve error at 'ntdll!RegEnumValueW'
+0:000> u kernel32!ReadFile
+kernel32!ReadFile:
+00007ffc`0e6a2900 ff25a21f0500    jmp     qword ptr [kernel32!_imp_ReadFile (00007ffc`0e6f48a8)]
+00007ffc`0e6a2906 cc              int     3
+00007ffc`0e6a2907 cc              int     3
+00007ffc`0e6a2908 cc              int     3
+00007ffc`0e6a2909 cc              int     3
+00007ffc`0e6a290a cc              int     3
+00007ffc`0e6a290b cc              int     3
+00007ffc`0e6a290c cc              int     3
+0:000> u kernelbase!ReadFile
+KERNELBASE!ReadFile:
+00007ffc`0cfc2c50 48895c2410      mov     qword ptr [rsp+10h],rbx
+00007ffc`0cfc2c55 4c894c2420      mov     qword ptr [rsp+20h],r9
+00007ffc`0cfc2c5a 56              push    rsi
+00007ffc`0cfc2c5b 57              push    rdi
+00007ffc`0cfc2c5c 4156            push    r14
+00007ffc`0cfc2c5e 4883ec60        sub     rsp,60h
+00007ffc`0cfc2c62 498bd9          mov     rbx,r9
+00007ffc`0cfc2c65 4c8bd2          mov     r10,rdx
+0:000> u ntdll!ReadFile
+Couldn't resolve error at 'ntdll!ReadFile'
+0:000> u kernel32!WriteFile
+kernel32!WriteFile:
+00007ffc`0e6a29f0 ff25321f0500    jmp     qword ptr [kernel32!_imp_WriteFile (00007ffc`0e6f4928)]
+00007ffc`0e6a29f6 cc              int     3
+00007ffc`0e6a29f7 cc              int     3
+00007ffc`0e6a29f8 cc              int     3
+00007ffc`0e6a29f9 cc              int     3
+00007ffc`0e6a29fa cc              int     3
+00007ffc`0e6a29fb cc              int     3
+00007ffc`0e6a29fc cc              int     3
+0:000> u kernelbase!WriteFile
+KERNELBASE!WriteFile:
+00007ffc`0cfc26b0 48895c2410      mov     qword ptr [rsp+10h],rbx
+00007ffc`0cfc26b5 4889742418      mov     qword ptr [rsp+18h],rsi
+00007ffc`0cfc26ba 4c894c2420      mov     qword ptr [rsp+20h],r9
+00007ffc`0cfc26bf 57              push    rdi
+00007ffc`0cfc26c0 4883ec60        sub     rsp,60h
+00007ffc`0cfc26c4 498bd9          mov     rbx,r9
+00007ffc`0cfc26c7 4c8bd2          mov     r10,rdx
+00007ffc`0cfc26ca 488bf1          mov     rsi,rcx
+0:000> u ntdll!WriteFile
+Couldn't resolve error at 'ntdll!WriteFile'
+0:000> u kernel32!CreateServiceA
+Couldn't resolve error at 'kernel32!CreateServiceA'
+0:000> u kernelbase!CreateServiceA
+Couldn't resolve error at 'kernelbase!CreateServiceA'
+0:000> u ntdll!CreateServiceA
+Couldn't resolve error at 'ntdll!CreateServiceA'
+0:000> u kernel32!StartServiceA
+Couldn't resolve error at 'kernel32!StartServiceA'
+0:000> u kernelbase!StartServiceA
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!StartServiceA
+Couldn't resolve error at 'ntdll!StartServiceA'
+0:000> u kernel32!RegCreateKeyA
+Couldn't resolve error at 'kernel32!RegCreateKeyA'
+0:000> u kernelbase!RegCreateKeyA
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!RegCreateKeyA
+Couldn't resolve error at 'ntdll!RegCreateKeyA'
+0:000> u kernel32!RegSetValueExA
+Couldn't resolve error at 'kernel32!RegSetValueExA'
+0:000> u kernelbase!RegSetValueExA
+Matched: 00007ffc`0cf9ca30 KERNELBASE!RegSetValueExA (void)
+Matched: 00007ffc`0cffcda0 KERNELBASE!RegSetValueExA (void)
+Ambiguous symbol error at 'kernelbase!RegSetValueExA'
+0:000> u ntdll!RegSetValueExA
+Couldn't resolve error at 'ntdll!RegSetValueExA'
+0:000> u kernel32!ShellExecuteA
+Couldn't resolve error at 'kernel32!ShellExecuteA'
+0:000> u kernelbase!ShellExecuteA
+KERNELBASE!BeginPanningFeedback:
+00007ffc`0cffb240 33c0            xor     eax,eax
+00007ffc`0cffb242 c3              ret
+00007ffc`0cffb243 cc              int     3
+00007ffc`0cffb244 cc              int     3
+00007ffc`0cffb245 cc              int     3
+00007ffc`0cffb246 cc              int     3
+00007ffc`0cffb247 cc              int     3
+00007ffc`0cffb248 cc              int     3
+0:000> u ntdll!ShellExecuteA
+Couldn't resolve error at 'ntdll!ShellExecuteA'
+0:000> u kernel32!WSAStartup
+Couldn't resolve error at 'kernel32!WSAStartup'
+0:000> u kernelbase!WSAStartup
+KERNELBASE!WSAStartup:
+00007ffc`0d06d750 4883ec28        sub     rsp,28h
+00007ffc`0d06d754 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d759 ff1549ae0800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d75f b81e270000      mov     eax,271Eh
+00007ffc`0d06d764 4883c428        add     rsp,28h
+00007ffc`0d06d768 c3              ret
+00007ffc`0d06d769 cc              int     3
+00007ffc`0d06d76a cc              int     3
+0:000> u ntdll!WSAStartup
+Couldn't resolve error at 'ntdll!WSAStartup'
+0:000> u kernel32!WSASocketW
+Couldn't resolve error at 'kernel32!WSASocketW'
+0:000> u kernelbase!WSASocketW
+KERNELBASE!AvCreateTaskIndex:
+00007ffc`0d06b780 4883ec28        sub     rsp,28h
+00007ffc`0d06b784 b97f000000      mov     ecx,7Fh
+00007ffc`0d06b789 ff1519ce0800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06b78f 4883c8ff        or      rax,0FFFFFFFFFFFFFFFFh
+00007ffc`0d06b793 4883c428        add     rsp,28h
+00007ffc`0d06b797 c3              ret
+00007ffc`0d06b798 cc              int     3
+00007ffc`0d06b799 cc              int     3
+0:000> u ntdll!WSASocketW
+Couldn't resolve error at 'ntdll!WSASocketW'
+0:000> u kernel32!socket
+Couldn't resolve error at 'kernel32!socket'
+0:000> u kernelbase!socket
+KERNELBASE!GetCurrentProcess:
+00007ffc`0cfdf310 4883c8ff        or      rax,0FFFFFFFFFFFFFFFFh
+00007ffc`0cfdf314 c3              ret
+00007ffc`0cfdf315 cc              int     3
+00007ffc`0cfdf316 cc              int     3
+00007ffc`0cfdf317 cc              int     3
+00007ffc`0cfdf318 cc              int     3
+00007ffc`0cfdf319 cc              int     3
+00007ffc`0cfdf31a cc              int     3
+0:000> u ntdll!socket
+Couldn't resolve error at 'ntdll!socket'
+0:000> u kernel32!inet_addr
+Couldn't resolve error at 'kernel32!inet_addr'
+0:000> u kernelbase!inet_addr
+KERNELBASE!IERegGetBufferSizeSz:
+00007ffc`0cffcab0 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0cffcab3 c3              ret
+00007ffc`0cffcab4 cc              int     3
+00007ffc`0cffcab5 cc              int     3
+00007ffc`0cffcab6 cc              int     3
+00007ffc`0cffcab7 cc              int     3
+00007ffc`0cffcab8 cc              int     3
+00007ffc`0cffcab9 cc              int     3
+0:000> u ntdll!inet_addr
+Couldn't resolve error at 'ntdll!inet_addr'
+0:000> u kernel32!RegCreateKeyExW
+Couldn't resolve error at 'kernel32!RegCreateKeyExW'
+0:000> u kernelbase!RegCreateKeyExW
+KERNELBASE!RegCreateKeyExW:
+00007ffc`0d06b650 488b442448      mov     rax,qword ptr [rsp+48h]
+00007ffc`0d06b655 4885c0          test    rax,rax
+00007ffc`0d06b658 7403            je      KERNELBASE!RegCreateKeyExW+0xd (00007ffc`0d06b65d)
+00007ffc`0d06b65a 832000          and     dword ptr [rax],0
+00007ffc`0d06b65d b87f000000      mov     eax,7Fh
+00007ffc`0d06b662 c3              ret
+00007ffc`0d06b663 cc              int     3
+00007ffc`0d06b664 cc              int     3
+0:000> u ntdll!RegCreateKeyExW
+Couldn't resolve error at 'ntdll!RegCreateKeyExW'
+0:000> u kernel32!WSALookupServiceBeginW
+Couldn't resolve error at 'kernel32!WSALookupServiceBeginW'
+0:000> u kernelbase!WSALookupServiceBeginW
+KERNELBASE!IERegGetBufferSizeSz:
+00007ffc`0cffcab0 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0cffcab3 c3              ret
+00007ffc`0cffcab4 cc              int     3
+00007ffc`0cffcab5 cc              int     3
+00007ffc`0cffcab6 cc              int     3
+00007ffc`0cffcab7 cc              int     3
+00007ffc`0cffcab8 cc              int     3
+00007ffc`0cffcab9 cc              int     3
+0:000> u ntdll!WSALookupServiceBeginW
+Couldn't resolve error at 'ntdll!WSALookupServiceBeginW'
+0:000> u kernel32!WSALookupServiceBeginA
+Couldn't resolve error at 'kernel32!WSALookupServiceBeginA'
+0:000> u kernelbase!WSALookupServiceBeginA
+Couldn't resolve error at 'kernelbase!WSALookupServiceBeginA'
+0:000> u ntdll!WSALookupServiceBeginA
+Couldn't resolve error at 'ntdll!WSALookupServiceBeginA'
+0:000> u kernel32!WSALookupServiceNextW
+Couldn't resolve error at 'kernel32!WSALookupServiceNextW'
+0:000> u kernelbase!WSALookupServiceNextW
+KERNELBASE!IERegGetBufferSizeSz:
+00007ffc`0cffcab0 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0cffcab3 c3              ret
+00007ffc`0cffcab4 cc              int     3
+00007ffc`0cffcab5 cc              int     3
+00007ffc`0cffcab6 cc              int     3
+00007ffc`0cffcab7 cc              int     3
+00007ffc`0cffcab8 cc              int     3
+00007ffc`0cffcab9 cc              int     3
+0:000> u ntdll!WSALookupServiceNextW
+Couldn't resolve error at 'ntdll!WSALookupServiceNextW'
+0:000> u kernel32!WSALookupServiceNextA
+Couldn't resolve error at 'kernel32!WSALookupServiceNextA'
+0:000> u kernelbase!WSALookupServiceNextA
+Couldn't resolve error at 'kernelbase!WSALookupServiceNextA'
+0:000> u ntdll!WSALookupServiceNextA
+Couldn't resolve error at 'ntdll!WSALookupServiceNextA'
+0:000> u kernel32!WSALookupServiceEnd
+Couldn't resolve error at 'kernel32!WSALookupServiceEnd'
+0:000> u kernelbase!WSALookupServiceEnd
+KERNELBASE!IERegGetBufferSizeSz:
+00007ffc`0cffcab0 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0cffcab3 c3              ret
+00007ffc`0cffcab4 cc              int     3
+00007ffc`0cffcab5 cc              int     3
+00007ffc`0cffcab6 cc              int     3
+00007ffc`0cffcab7 cc              int     3
+00007ffc`0cffcab8 cc              int     3
+00007ffc`0cffcab9 cc              int     3
+0:000> u ntdll!WSALookupServiceEnd
+Couldn't resolve error at 'ntdll!WSALookupServiceEnd'
+0:000> u kernel32!gethostbyname
+Couldn't resolve error at 'kernel32!gethostbyname'
+0:000> u kernelbase!gethostbyname
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!gethostbyname
+Couldn't resolve error at 'ntdll!gethostbyname'
+0:000> u kernel32!connect
+Couldn't resolve error at 'kernel32!connect'
+0:000> u kernelbase!connect
+KERNELBASE!GetAwarenessFromDpiAwarenessContext:
+00007ffc`0d06d0f0 4883ec28        sub     rsp,28h
+00007ffc`0d06d0f4 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d0f9 ff15a9b40800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d0ff 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0d06d102 4883c428        add     rsp,28h
+00007ffc`0d06d106 c3              ret
+00007ffc`0d06d107 cc              int     3
+00007ffc`0d06d108 cc              int     3
+0:000> u ntdll!connect
+Couldn't resolve error at 'ntdll!connect'
+0:000> u kernel32!closesocket
+Couldn't resolve error at 'kernel32!closesocket'
+0:000> u kernelbase!closesocket
+KERNELBASE!GetAwarenessFromDpiAwarenessContext:
+00007ffc`0d06d0f0 4883ec28        sub     rsp,28h
+00007ffc`0d06d0f4 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d0f9 ff15a9b40800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d0ff 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0d06d102 4883c428        add     rsp,28h
+00007ffc`0d06d106 c3              ret
+00007ffc`0d06d107 cc              int     3
+00007ffc`0d06d108 cc              int     3
+0:000> u ntdll!closesocket
+Couldn't resolve error at 'ntdll!closesocket'
+0:000> u kernel32!IsBadReadPtr
+kernel32!IsBadReadPtr:
+00007ffc`0e686410 4883ec18        sub     rsp,18h
+00007ffc`0e686414 4c8bc1          mov     r8,rcx
+00007ffc`0e686417 448b0deae50900  mov     r9d,dword ptr [kernel32!SysInfo+0x8 (00007ffc`0e724a08)]
+00007ffc`0e68641e 4885d2          test    rdx,rdx
+00007ffc`0e686421 7462            je      kernel32!IsBadReadPtr+0x75 (00007ffc`0e686485)
+00007ffc`0e686423 4885c9          test    rcx,rcx
+00007ffc`0e686426 0f846c420200    je      kernel32!IsBadReadPtr+0x24288 (00007ffc`0e6aa698)
+00007ffc`0e68642c 488d42ff        lea     rax,[rdx-1]
+0:000> u kernelbase!IsBadReadPtr
+Couldn't resolve error at 'kernelbase!IsBadReadPtr'
+0:000> u ntdll!IsBadReadPtr
+Couldn't resolve error at 'ntdll!IsBadReadPtr'
+0:000> u kernel32!IsBadWritePtr
+kernel32!IsBadWritePtr:
+00007ffc`0e6a1190 4883ec18        sub     rsp,18h
+00007ffc`0e6a1194 4c8bc1          mov     r8,rcx
+00007ffc`0e6a1197 448b0d6a380800  mov     r9d,dword ptr [kernel32!SysInfo+0x8 (00007ffc`0e724a08)]
+00007ffc`0e6a119e 4885d2          test    rdx,rdx
+00007ffc`0e6a11a1 7466            je      kernel32!IsBadWritePtr+0x79 (00007ffc`0e6a1209)
+00007ffc`0e6a11a3 4885c9          test    rcx,rcx
+00007ffc`0e6a11a6 0f842a280100    je      kernel32!IsBadWritePtr+0x12846 (00007ffc`0e6b39d6)
+00007ffc`0e6a11ac 488d42ff        lea     rax,[rdx-1]
+0:000> u kernelbase!IsBadWritePtr
+Couldn't resolve error at 'kernelbase!IsBadWritePtr'
+0:000> u ntdll!IsBadWritePtr
+Couldn't resolve error at 'ntdll!IsBadWritePtr'
+0:000> u kernel32!IsBadStringPtrW
+kernel32!IsBadStringPtrW:
+00007ffc`0e6b64c0 4883ec18        sub     rsp,18h
+00007ffc`0e6b64c4 4885d2          test    rdx,rdx
+00007ffc`0e6b64c7 743d            je      kernel32!IsBadStringPtrW+0x46 (00007ffc`0e6b6506)
+00007ffc`0e6b64c9 4885c9          test    rcx,rcx
+00007ffc`0e6b64cc 7505            jne     kernel32!IsBadStringPtrW+0x13 (00007ffc`0e6b64d3)
+00007ffc`0e6b64ce 8d4101          lea     eax,[rcx+1]
+00007ffc`0e6b64d1 eb35            jmp     kernel32!IsBadStringPtrW+0x48 (00007ffc`0e6b6508)
+00007ffc`0e6b64d3 48890c24        mov     qword ptr [rsp],rcx
+0:000> u kernelbase!IsBadStringPtrW
+Couldn't resolve error at 'kernelbase!IsBadStringPtrW'
+0:000> u ntdll!IsBadStringPtrW
+Couldn't resolve error at 'ntdll!IsBadStringPtrW'
+0:000> u kernel32!RegSetValueExW
+Couldn't resolve error at 'kernel32!RegSetValueExW'
+0:000> u kernelbase!RegSetValueExW
+Matched: 00007ffc`0cf9ea50 KERNELBASE!RegSetValueExW (void)
+Matched: 00007ffc`0cffcda0 KERNELBASE!RegSetValueExW (void)
+Ambiguous symbol error at 'kernelbase!RegSetValueExW'
+0:000> u ntdll!RegSetValueExW
+Couldn't resolve error at 'ntdll!RegSetValueExW'
+0:000> u kernel32!GetCurrentThread
+kernel32!GetCurrentThread:
+00007ffc`0e6864c0 48c7c0feffffff  mov     rax,0FFFFFFFFFFFFFFFEh
+00007ffc`0e6864c7 c3              ret
+00007ffc`0e6864c8 cc              int     3
+00007ffc`0e6864c9 cc              int     3
+00007ffc`0e6864ca cc              int     3
+00007ffc`0e6864cb cc              int     3
+00007ffc`0e6864cc cc              int     3
+00007ffc`0e6864cd cc              int     3
+0:000> u kernelbase!GetCurrentThread
+KERNELBASE!GetCurrentThread:
+00007ffc`0d001fd0 48c7c0feffffff  mov     rax,0FFFFFFFFFFFFFFFEh
+00007ffc`0d001fd7 c3              ret
+00007ffc`0d001fd8 cc              int     3
+00007ffc`0d001fd9 cc              int     3
+00007ffc`0d001fda cc              int     3
+00007ffc`0d001fdb cc              int     3
+00007ffc`0d001fdc cc              int     3
+00007ffc`0d001fdd cc              int     3
+0:000> u ntdll!GetCurrentThread
+Couldn't resolve error at 'ntdll!GetCurrentThread'
+0:000> u kernel32!GlobalAlloc
+Couldn't resolve error at 'kernel32!GlobalAlloc'
+0:000> u kernelbase!GlobalAlloc
+KERNELBASE!GlobalAlloc:
+00007ffc`0cfdcb50 48895c2410      mov     qword ptr [rsp+10h],rbx
+00007ffc`0cfdcb55 4889742418      mov     qword ptr [rsp+18h],rsi
+00007ffc`0cfdcb5a 48897c2420      mov     qword ptr [rsp+20h],rdi
+00007ffc`0cfdcb5f 894c2408        mov     dword ptr [rsp+8],ecx
+00007ffc`0cfdcb63 4154            push    r12
+00007ffc`0cfdcb65 4156            push    r14
+00007ffc`0cfdcb67 4157            push    r15
+00007ffc`0cfdcb69 4883ec40        sub     rsp,40h
+0:000> u ntdll!GlobalAlloc
+Couldn't resolve error at 'ntdll!GlobalAlloc'
+0:000> u kernel32!RegEnumKeyW
+Couldn't resolve error at 'kernel32!RegEnumKeyW'
+0:000> u kernelbase!RegEnumKeyW
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!RegEnumKeyW
+Couldn't resolve error at 'ntdll!RegEnumKeyW'
+0:000> u kernel32!RegQueryValueW
+Couldn't resolve error at 'kernel32!RegQueryValueW'
+0:000> u kernelbase!RegQueryValueW
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!RegQueryValueW
+Couldn't resolve error at 'ntdll!RegQueryValueW'
+0:000> u kernel32!GlobalLock
+kernel32!GlobalLock:
+00007ffc`0e686320 48895c2410      mov     qword ptr [rsp+10h],rbx
+00007ffc`0e686325 57              push    rdi
+00007ffc`0e686326 4883ec30        sub     rsp,30h
+00007ffc`0e68632a 488bd9          mov     rbx,rcx
+00007ffc`0e68632d f6c108          test    cl,8
+00007ffc`0e686330 0f849c000000    je      kernel32!GlobalLock+0xb2 (00007ffc`0e6863d2)
+00007ffc`0e686336 488b0d13e70900  mov     rcx,qword ptr [kernel32!BaseHeap (00007ffc`0e724a50)]
+00007ffc`0e68633d ff1535ff0600    call    qword ptr [kernel32!_imp_RtlLockHeap (00007ffc`0e6f6278)]
+0:000> u kernelbase!GlobalLock
+Couldn't resolve error at 'kernelbase!GlobalLock'
+0:000> u ntdll!GlobalLock
+Couldn't resolve error at 'ntdll!GlobalLock'
+0:000> u kernel32!GlobalReAlloc
+kernel32!GlobalReAlloc:
+00007ffc`0e6881d0 48895c2410      mov     qword ptr [rsp+10h],rbx
+00007ffc`0e6881d5 4889742418      mov     qword ptr [rsp+18h],rsi
+00007ffc`0e6881da 57              push    rdi
+00007ffc`0e6881db 4154            push    r12
+00007ffc`0e6881dd 4155            push    r13
+00007ffc`0e6881df 4156            push    r14
+00007ffc`0e6881e1 4157            push    r15
+00007ffc`0e6881e3 4883ec50        sub     rsp,50h
+0:000> u kernelbase!GlobalReAlloc
+Couldn't resolve error at 'kernelbase!GlobalReAlloc'
+0:000> u ntdll!GlobalReAlloc
+Couldn't resolve error at 'ntdll!GlobalReAlloc'
+0:000> u kernel32!GlobalUnlock
+kernel32!GlobalUnlock:
+00007ffc`0e686270 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0e686275 57              push    rdi
+00007ffc`0e686276 4883ec30        sub     rsp,30h
+00007ffc`0e68627a 488bf9          mov     rdi,rcx
+00007ffc`0e68627d bb01000000      mov     ebx,1
+00007ffc`0e686282 895c2420        mov     dword ptr [rsp+20h],ebx
+00007ffc`0e686286 f6c108          test    cl,8
+00007ffc`0e686289 7478            je      kernel32!GlobalUnlock+0x93 (00007ffc`0e686303)
+0:000> u kernelbase!GlobalUnlock
+Couldn't resolve error at 'kernelbase!GlobalUnlock'
+0:000> u ntdll!GlobalUnlock
+Couldn't resolve error at 'ntdll!GlobalUnlock'
+0:000> u kernel32!GlobalSize
+kernel32!GlobalSize:
+00007ffc`0e68ab20 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0e68ab25 57              push    rdi
+00007ffc`0e68ab26 4883ec40        sub     rsp,40h
+00007ffc`0e68ab2a 488bf9          mov     rdi,rcx
+00007ffc`0e68ab2d 4883cbff        or      rbx,0FFFFFFFFFFFFFFFFh
+00007ffc`0e68ab31 48895c2430      mov     qword ptr [rsp+30h],rbx
+00007ffc`0e68ab36 488b0d139f0900  mov     rcx,qword ptr [kernel32!BaseHeap (00007ffc`0e724a50)]
+00007ffc`0e68ab3d ff1535b70600    call    qword ptr [kernel32!_imp_RtlLockHeap (00007ffc`0e6f6278)]
+0:000> u kernelbase!GlobalSize
+Couldn't resolve error at 'kernelbase!GlobalSize'
+0:000> u ntdll!GlobalSize
+Couldn't resolve error at 'ntdll!GlobalSize'
+0:000> u kernel32!GlobalFree
+Couldn't resolve error at 'kernel32!GlobalFree'
+0:000> u kernelbase!GlobalFree
+KERNELBASE!GlobalFree:
+00007ffc`0cfdca20 48895c2410      mov     qword ptr [rsp+10h],rbx
+00007ffc`0cfdca25 4889742418      mov     qword ptr [rsp+18h],rsi
+00007ffc`0cfdca2a 48894c2408      mov     qword ptr [rsp+8],rcx
+00007ffc`0cfdca2f 57              push    rdi
+00007ffc`0cfdca30 4883ec30        sub     rsp,30h
+00007ffc`0cfdca34 488bd9          mov     rbx,rcx
+00007ffc`0cfdca37 f6c308          test    bl,8
+00007ffc`0cfdca3a 7533            jne     KERNELBASE!GlobalFree+0x4f (00007ffc`0cfdca6f)
+0:000> u ntdll!GlobalFree
+Couldn't resolve error at 'ntdll!GlobalFree'
+0:000> u kernel32!GetFileAttributesW
+kernel32!GetFileAttributesW:
+00007ffc`0e6a2780 ff25fa200500    jmp     qword ptr [kernel32!_imp_GetFileAttributesW (00007ffc`0e6f4880)]
+00007ffc`0e6a2786 cc              int     3
+00007ffc`0e6a2787 cc              int     3
+00007ffc`0e6a2788 cc              int     3
+00007ffc`0e6a2789 cc              int     3
+00007ffc`0e6a278a cc              int     3
+00007ffc`0e6a278b cc              int     3
+00007ffc`0e6a278c cc              int     3
+0:000> u kernelbase!GetFileAttributesW
+KERNELBASE!GetFileAttributesW:
+00007ffc`0cfbd3a0 488bc4          mov     rax,rsp
+00007ffc`0cfbd3a3 48895810        mov     qword ptr [rax+10h],rbx
+00007ffc`0cfbd3a7 48897018        mov     qword ptr [rax+18h],rsi
+00007ffc`0cfbd3ab 48897820        mov     qword ptr [rax+20h],rdi
+00007ffc`0cfbd3af 55              push    rbp
+00007ffc`0cfbd3b0 488d68a1        lea     rbp,[rax-5Fh]
+00007ffc`0cfbd3b4 4881ecb0000000  sub     rsp,0B0h
+00007ffc`0cfbd3bb 488b05be3e1f00  mov     rax,qword ptr [KERNELBASE!_security_cookie (00007ffc`0d1b1280)]
+0:000> u ntdll!GetFileAttributesW
+Couldn't resolve error at 'ntdll!GetFileAttributesW'
+0:000> u kernel32!GetEnvironmentVariableW
+Couldn't resolve error at 'kernel32!GetEnvironmentVariableW'
+0:000> u kernelbase!GetEnvironmentVariableW
+KERNELBASE!GetEnvironmentVariableW:
+00007ffc`0cfc2620 48895c2410      mov     qword ptr [rsp+10h],rbx
+00007ffc`0cfc2625 57              push    rdi
+00007ffc`0cfc2626 4883ec30        sub     rsp,30h
+00007ffc`0cfc262a 33ff            xor     edi,edi
+00007ffc`0cfc262c 418bd8          mov     ebx,r8d
+00007ffc`0cfc262f 4885c9          test    rcx,rcx
+00007ffc`0cfc2632 7467            je      KERNELBASE!GetEnvironmentVariableW+0x7b (00007ffc`0cfc269b)
+00007ffc`0cfc2634 4983c8ff        or      r8,0FFFFFFFFFFFFFFFFh
+0:000> u ntdll!GetEnvironmentVariableW
+Couldn't resolve error at 'ntdll!GetEnvironmentVariableW'
+0:000> u kernel32!GetFullPathNameW
+kernel32!GetFullPathNameW:
+00007ffc`0e6a2810 ff252a200500    jmp     qword ptr [kernel32!_imp_GetFullPathNameW (00007ffc`0e6f4840)]
+00007ffc`0e6a2816 cc              int     3
+00007ffc`0e6a2817 cc              int     3
+00007ffc`0e6a2818 cc              int     3
+00007ffc`0e6a2819 cc              int     3
+00007ffc`0e6a281a cc              int     3
+00007ffc`0e6a281b cc              int     3
+00007ffc`0e6a281c cc              int     3
+0:000> u kernelbase!GetFullPathNameW
+KERNELBASE!GetFullPathNameW:
+00007ffc`0cf8e580 4883ec38        sub     rsp,38h
+00007ffc`0cf8e584 488d442448      lea     rax,[rsp+48h]
+00007ffc`0cf8e589 03d2            add     edx,edx
+00007ffc`0cf8e58b 4889442420      mov     qword ptr [rsp+20h],rax
+00007ffc`0cf8e590 ff1522b21600    call    qword ptr [KERNELBASE!_imp_RtlGetFullPathName_UEx (00007ffc`0d0f97b8)]
+00007ffc`0cf8e596 85c0            test    eax,eax
+00007ffc`0cf8e598 780b            js      KERNELBASE!GetFullPathNameW+0x25 (00007ffc`0cf8e5a5)
+00007ffc`0cf8e59a 8b442448        mov     eax,dword ptr [rsp+48h]
+0:000> u ntdll!GetFullPathNameW
+Couldn't resolve error at 'ntdll!GetFullPathNameW'
+0:000> u kernel32!LoadLibraryExW
+Couldn't resolve error at 'kernel32!LoadLibraryExW'
+0:000> u kernelbase!LoadLibraryExW
+KERNELBASE!LoadLibraryExW:
+00007ffc`0cfc2a80 4055            push    rbp
+00007ffc`0cfc2a82 53              push    rbx
+00007ffc`0cfc2a83 488bec          mov     rbp,rsp
+00007ffc`0cfc2a86 4883ec58        sub     rsp,58h
+00007ffc`0cfc2a8a 418bd8          mov     ebx,r8d
+00007ffc`0cfc2a8d 4885c9          test    rcx,rcx
+00007ffc`0cfc2a90 0f84988a0500    je      KERNELBASE!LoadLibraryExW+0x58aae (00007ffc`0d01b52e)
+00007ffc`0cfc2a96 4885d2          test    rdx,rdx
+0:000> u ntdll!LoadLibraryExW
+Couldn't resolve error at 'ntdll!LoadLibraryExW'
+0:000> u kernel32!CreateProcessW
+Couldn't resolve error at 'kernel32!CreateProcessW'
+0:000> u kernelbase!CreateProcessW
+KERNELBASE!CreateProcessW:
+00007ffc`0cf8d790 4c8bdc          mov     r11,rsp
+00007ffc`0cf8d793 4883ec68        sub     rsp,68h
+00007ffc`0cf8d797 498363f000      and     qword ptr [r11-10h],0
+00007ffc`0cf8d79c 488b8424b8000000 mov     rax,qword ptr [rsp+0B8h]
+00007ffc`0cf8d7a4 498943e8        mov     qword ptr [r11-18h],rax
+00007ffc`0cf8d7a8 488b8424b0000000 mov     rax,qword ptr [rsp+0B0h]
+00007ffc`0cf8d7b0 498943e0        mov     qword ptr [r11-20h],rax
+00007ffc`0cf8d7b4 488b8424a8000000 mov     rax,qword ptr [rsp+0A8h]
+0:000> u ntdll!CreateProcessW
+Couldn't resolve error at 'ntdll!CreateProcessW'
+0:000> u kernel32!GetLongPathNameW
+kernel32!GetLongPathNameW:
+00007ffc`0e686b20 4053            push    rbx
+00007ffc`0e686b22 56              push    rsi
+00007ffc`0e686b23 57              push    rdi
+00007ffc`0e686b24 4154            push    r12
+00007ffc`0e686b26 4155            push    r13
+00007ffc`0e686b28 4156            push    r14
+00007ffc`0e686b2a 4157            push    r15
+00007ffc`0e686b2c 4881ecc0020000  sub     rsp,2C0h
+0:000> u kernelbase!GetLongPathNameW
+KERNELBASE!GetLongPathNameW:
+00007ffc`0cfa4380 4053            push    rbx
+00007ffc`0cfa4382 56              push    rsi
+00007ffc`0cfa4383 57              push    rdi
+00007ffc`0cfa4384 4154            push    r12
+00007ffc`0cfa4386 4155            push    r13
+00007ffc`0cfa4388 4156            push    r14
+00007ffc`0cfa438a 4157            push    r15
+00007ffc`0cfa438c 4881ecd0020000  sub     rsp,2D0h
+0:000> u ntdll!GetLongPathNameW
+Couldn't resolve error at 'ntdll!GetLongPathNameW'
+0:000> u kernel32!Sleep
+Couldn't resolve error at 'kernel32!Sleep'
+0:000> u kernelbase!Sleep
+KERNELBASE!Sleep:
+00007ffc`0cfd8d70 33d2            xor     edx,edx
+00007ffc`0cfd8d72 e909000000      jmp     KERNELBASE!SleepEx (00007ffc`0cfd8d80)
+00007ffc`0cfd8d77 cc              int     3
+00007ffc`0cfd8d78 cc              int     3
+00007ffc`0cfd8d79 cc              int     3
+00007ffc`0cfd8d7a cc              int     3
+00007ffc`0cfd8d7b cc              int     3
+00007ffc`0cfd8d7c cc              int     3
+0:000> u ntdll!Sleep
+Couldn't resolve error at 'ntdll!Sleep'
+0:000> u kernel32!MulDiv
+kernel32!MulDiv:
+00007ffc`0e6a2a20 ff2542220500    jmp     qword ptr [kernel32!_imp_MulDiv (00007ffc`0e6f4c68)]
+00007ffc`0e6a2a26 cc              int     3
+00007ffc`0e6a2a27 cc              int     3
+00007ffc`0e6a2a28 cc              int     3
+00007ffc`0e6a2a29 cc              int     3
+00007ffc`0e6a2a2a cc              int     3
+00007ffc`0e6a2a2b cc              int     3
+00007ffc`0e6a2a2c cc              int     3
+0:000> u kernelbase!MulDiv
+KERNELBASE!MulDiv:
+00007ffc`0cfdd450 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0cfdd455 448bca          mov     r9d,edx
+00007ffc`0cfdd458 448bd1          mov     r10d,ecx
+00007ffc`0cfdd45b 4433d2          xor     r10d,edx
+00007ffc`0cfdd45e 8bc1            mov     eax,ecx
+00007ffc`0cfdd460 99              cdq
+00007ffc`0cfdd461 4533d0          xor     r10d,r8d
+00007ffc`0cfdd464 8bd8            mov     ebx,eax
+0:000> u ntdll!MulDiv
+Couldn't resolve error at 'ntdll!MulDiv'
+0:000> u kernel32!IsBadCodePtr
+kernel32!IsBadCodePtr:
+00007ffc`0e6b6440 ba01000000      mov     edx,1
+00007ffc`0e6b6445 e9c6fffcff      jmp     kernel32!IsBadReadPtr (00007ffc`0e686410)
+00007ffc`0e6b644a cc              int     3
+00007ffc`0e6b644b cc              int     3
+00007ffc`0e6b644c cc              int     3
+00007ffc`0e6b644d cc              int     3
+00007ffc`0e6b644e cc              int     3
+00007ffc`0e6b644f cc              int     3
+0:000> u kernelbase!IsBadCodePtr
+Couldn't resolve error at 'kernelbase!IsBadCodePtr'
+0:000> u ntdll!IsBadCodePtr
+Couldn't resolve error at 'ntdll!IsBadCodePtr'
+0:000> u kernel32!RegOpenKeyA
+Couldn't resolve error at 'kernel32!RegOpenKeyA'
+0:000> u kernelbase!RegOpenKeyA
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!RegOpenKeyA
+Couldn't resolve error at 'ntdll!RegOpenKeyA'
+0:000> u kernel32!RegDeleteValueA
+Couldn't resolve error at 'kernel32!RegDeleteValueA'
+0:000> u kernelbase!RegDeleteValueA
+Matched: 00007ffc`0cf886d0 KERNELBASE!RegDeleteValueA (void)
+Matched: 00007ffc`0cffcda0 KERNELBASE!RegDeleteValueA (void)
+Ambiguous symbol error at 'kernelbase!RegDeleteValueA'
+0:000> u ntdll!RegDeleteValueA
+Couldn't resolve error at 'ntdll!RegDeleteValueA'
+0:000> u kernel32!RegDeleteKeyA
+Couldn't resolve error at 'kernel32!RegDeleteKeyA'
+0:000> u kernelbase!RegDeleteKeyA
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!RegDeleteKeyA
+Couldn't resolve error at 'ntdll!RegDeleteKeyA'
+0:000> u kernel32!RegEnumKeyExA
+Couldn't resolve error at 'kernel32!RegEnumKeyExA'
+0:000> u kernelbase!RegEnumKeyExA
+Matched: 00007ffc`0cf9e7f0 KERNELBASE!RegEnumKeyExA (void)
+Matched: 00007ffc`0d06b670 KERNELBASE!RegEnumKeyExA (void)
+Ambiguous symbol error at 'kernelbase!RegEnumKeyExA'
+0:000> u ntdll!RegEnumKeyExA
+Couldn't resolve error at 'ntdll!RegEnumKeyExA'
+0:000> u kernel32!GetUrlCacheHeaderData
+Couldn't resolve error at 'kernel32!GetUrlCacheHeaderData'
+0:000> u kernelbase!GetUrlCacheHeaderData
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!GetUrlCacheHeaderData
+Couldn't resolve error at 'ntdll!GetUrlCacheHeaderData'
+0:000> u kernel32!CreateToolhelp32Snapshot
+kernel32!CreateToolhelp32Snapshot:
+00007ffc`0e6a39a0 89542410        mov     dword ptr [rsp+10h],edx
+00007ffc`0e6a39a4 894c2408        mov     dword ptr [rsp+8],ecx
+00007ffc`0e6a39a8 4881ec18010000  sub     rsp,118h
+00007ffc`0e6a39af 48c78424a8000000ffffffff mov qword ptr [rsp+0A8h],0FFFFFFFFFFFFFFFFh
+00007ffc`0e6a39bb 48c78424f0000000ffffffff mov qword ptr [rsp+0F0h],0FFFFFFFFFFFFFFFFh
+00007ffc`0e6a39c7 48c784249800000000000000 mov qword ptr [rsp+98h],0
+00007ffc`0e6a39d3 48c78424b800000000000000 mov qword ptr [rsp+0B8h],0
+00007ffc`0e6a39df 48c78424a000000000000000 mov qword ptr [rsp+0A0h],0
+0:000> u kernelbase!CreateToolhelp32Snapshot
+Couldn't resolve error at 'kernelbase!CreateToolhelp32Snapshot'
+0:000> u ntdll!CreateToolhelp32Snapshot
+Couldn't resolve error at 'ntdll!CreateToolhelp32Snapshot'
+0:000> u kernel32!Thread32First
+kernel32!Thread32First:
+00007ffc`0e681cc0 4c8bdc          mov     r11,rsp
+00007ffc`0e681cc3 49895b08        mov     qword ptr [r11+8],rbx
+00007ffc`0e681cc7 57              push    rdi
+00007ffc`0e681cc8 4883ec50        sub     rsp,50h
+00007ffc`0e681ccc 33db            xor     ebx,ebx
+00007ffc`0e681cce 488bfa          mov     rdi,rdx
+00007ffc`0e681cd1 4885d2          test    rdx,rdx
+00007ffc`0e681cd4 0f84e52c0200    je      kernel32!Thread32First+0x22cff (00007ffc`0e6a49bf)
+0:000> u kernelbase!Thread32First
+Couldn't resolve error at 'kernelbase!Thread32First'
+0:000> u ntdll!Thread32First
+Couldn't resolve error at 'ntdll!Thread32First'
+0:000> u kernel32!Thread32Next
+kernel32!Thread32Next:
+00007ffc`0e681010 4c8bdc          mov     r11,rsp
+00007ffc`0e681013 49895b08        mov     qword ptr [r11+8],rbx
+00007ffc`0e681017 57              push    rdi
+00007ffc`0e681018 4883ec50        sub     rsp,50h
+00007ffc`0e68101c 33db            xor     ebx,ebx
+00007ffc`0e68101e 488bfa          mov     rdi,rdx
+00007ffc`0e681021 4885d2          test    rdx,rdx
+00007ffc`0e681024 0f8422380200    je      kernel32!Thread32Next+0x2383c (00007ffc`0e6a484c)
+0:000> u kernelbase!Thread32Next
+Couldn't resolve error at 'kernelbase!Thread32Next'
+0:000> u ntdll!Thread32Next
+Couldn't resolve error at 'ntdll!Thread32Next'
+0:000> u kernel32!OpenSCManagerW
+Couldn't resolve error at 'kernel32!OpenSCManagerW'
+0:000> u kernelbase!OpenSCManagerW
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!OpenSCManagerW
+Couldn't resolve error at 'ntdll!OpenSCManagerW'
+0:000> u kernel32!OpenServiceW
+Couldn't resolve error at 'kernel32!OpenServiceW'
+0:000> u kernelbase!OpenServiceW
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!OpenServiceW
+Couldn't resolve error at 'ntdll!OpenServiceW'
+0:000> u kernel32!QueryServiceStatus
+Couldn't resolve error at 'kernel32!QueryServiceStatus'
+0:000> u kernelbase!QueryServiceStatus
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!QueryServiceStatus
+Couldn't resolve error at 'ntdll!QueryServiceStatus'
+0:000> u kernel32!Module32FirstW
+kernel32!Module32FirstW:
+00007ffc`0e68e750 4c8bdc          mov     r11,rsp
+00007ffc`0e68e753 49895b08        mov     qword ptr [r11+8],rbx
+00007ffc`0e68e757 57              push    rdi
+00007ffc`0e68e758 4883ec50        sub     rsp,50h
+00007ffc`0e68e75c 33ff            xor     edi,edi
+00007ffc`0e68e75e 488bda          mov     rbx,rdx
+00007ffc`0e68e761 4885d2          test    rdx,rdx
+00007ffc`0e68e764 0f84b5dd0100    je      kernel32!Module32FirstW+0x1ddcf (00007ffc`0e6ac51f)
+0:000> u kernelbase!Module32FirstW
+Couldn't resolve error at 'kernelbase!Module32FirstW'
+0:000> u ntdll!Module32FirstW
+Couldn't resolve error at 'ntdll!Module32FirstW'
+0:000> u kernel32!Module32NextW
+kernel32!Module32NextW:
+00007ffc`0e6885d0 4c8bdc          mov     r11,rsp
+00007ffc`0e6885d3 49895b08        mov     qword ptr [r11+8],rbx
+00007ffc`0e6885d7 57              push    rdi
+00007ffc`0e6885d8 4883ec50        sub     rsp,50h
+00007ffc`0e6885dc 33ff            xor     edi,edi
+00007ffc`0e6885de 488bda          mov     rbx,rdx
+00007ffc`0e6885e1 4885d2          test    rdx,rdx
+00007ffc`0e6885e4 0f847c230200    je      kernel32!Module32NextW+0x22396 (00007ffc`0e6aa966)
+0:000> u kernelbase!Module32NextW
+Couldn't resolve error at 'kernelbase!Module32NextW'
+0:000> u ntdll!Module32NextW
+Couldn't resolve error at 'ntdll!Module32NextW'
+0:000> u kernel32!EnumServicesStatusA
+Couldn't resolve error at 'kernel32!EnumServicesStatusA'
+0:000> u kernelbase!EnumServicesStatusA
+Couldn't resolve error at 'kernelbase!EnumServicesStatusA'
+0:000> u ntdll!EnumServicesStatusA
+Couldn't resolve error at 'ntdll!EnumServicesStatusA'
+0:000> u kernel32!InternetQueryOptionA
+Couldn't resolve error at 'kernel32!InternetQueryOptionA'
+0:000> u kernelbase!InternetQueryOptionA
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!InternetQueryOptionA
+Couldn't resolve error at 'ntdll!InternetQueryOptionA'
+0:000> u kernel32!InternetGetConnectedStateExW
+Couldn't resolve error at 'kernel32!InternetGetConnectedStateExW'
+0:000> u kernelbase!InternetGetConnectedStateExW
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!InternetGetConnectedStateExW
+Couldn't resolve error at 'ntdll!InternetGetConnectedStateExW'
+0:000> u kernel32!InternetGetConnectedState
+Couldn't resolve error at 'kernel32!InternetGetConnectedState'
+0:000> u kernelbase!InternetGetConnectedState
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!InternetGetConnectedState
+Couldn't resolve error at 'ntdll!InternetGetConnectedState'
+0:000> u kernel32!htons
+Couldn't resolve error at 'kernel32!htons'
+0:000> u kernelbase!htons
+KERNELBASE!ntohs:
+00007ffc`0cffd4c0 0fb7d1          movzx   edx,cx
+00007ffc`0cffd4c3 8bc2            mov     eax,edx
+00007ffc`0cffd4c5 66c1e208        shl     dx,8
+00007ffc`0cffd4c9 c1e808          shr     eax,8
+00007ffc`0cffd4cc 660bc2          or      ax,dx
+00007ffc`0cffd4cf c3              ret
+KERNELBASE!GetApplicationURL:
+00007ffc`0cffd4d0 48832200        and     qword ptr [rdx],0
+00007ffc`0cffd4d4 b805400080      mov     eax,80004005h
+0:000> u ntdll!htons
+Couldn't resolve error at 'ntdll!htons'
+0:000> u kernel32!setsockopt
+Couldn't resolve error at 'kernel32!setsockopt'
+0:000> u kernelbase!setsockopt
+KERNELBASE!GetAwarenessFromDpiAwarenessContext:
+00007ffc`0d06d0f0 4883ec28        sub     rsp,28h
+00007ffc`0d06d0f4 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d0f9 ff15a9b40800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d0ff 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0d06d102 4883c428        add     rsp,28h
+00007ffc`0d06d106 c3              ret
+00007ffc`0d06d107 cc              int     3
+00007ffc`0d06d108 cc              int     3
+0:000> u ntdll!setsockopt
+Couldn't resolve error at 'ntdll!setsockopt'
+0:000> u kernel32!htonl
+Couldn't resolve error at 'kernel32!htonl'
+0:000> u kernelbase!htonl
+KERNELBASE!ntohl:
+00007ffc`0cffd4b0 0fc9            bswap   ecx
+00007ffc`0cffd4b2 8bc1            mov     eax,ecx
+00007ffc`0cffd4b4 c3              ret
+00007ffc`0cffd4b5 cc              int     3
+00007ffc`0cffd4b6 cc              int     3
+00007ffc`0cffd4b7 cc              int     3
+00007ffc`0cffd4b8 cc              int     3
+00007ffc`0cffd4b9 cc              int     3
+0:000> u ntdll!htonl
+Couldn't resolve error at 'ntdll!htonl'
+0:000> u kernel32!getsockname
+Couldn't resolve error at 'kernel32!getsockname'
+0:000> u kernelbase!getsockname
+KERNELBASE!GetAwarenessFromDpiAwarenessContext:
+00007ffc`0d06d0f0 4883ec28        sub     rsp,28h
+00007ffc`0d06d0f4 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d0f9 ff15a9b40800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d0ff 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0d06d102 4883c428        add     rsp,28h
+00007ffc`0d06d106 c3              ret
+00007ffc`0d06d107 cc              int     3
+00007ffc`0d06d108 cc              int     3
+0:000> u ntdll!getsockname
+Couldn't resolve error at 'ntdll!getsockname'
+0:000> u kernel32!sendto
+Couldn't resolve error at 'kernel32!sendto'
+0:000> u kernelbase!sendto
+KERNELBASE!GetAwarenessFromDpiAwarenessContext:
+00007ffc`0d06d0f0 4883ec28        sub     rsp,28h
+00007ffc`0d06d0f4 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d0f9 ff15a9b40800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d0ff 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0d06d102 4883c428        add     rsp,28h
+00007ffc`0d06d106 c3              ret
+00007ffc`0d06d107 cc              int     3
+00007ffc`0d06d108 cc              int     3
+0:000> u ntdll!sendto
+Couldn't resolve error at 'ntdll!sendto'
+0:000> u kernel32!SetThreadPriority
+Couldn't resolve error at 'kernel32!SetThreadPriority'
+0:000> u kernelbase!SetThreadPriority
+KERNELBASE!SetThreadPriority:
+00007ffc`0cfe9780 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0cfe9785 56              push    rsi
+00007ffc`0cfe9786 4883ec60        sub     rsp,60h
+00007ffc`0cfe978a f7c200000300    test    edx,30000h
+00007ffc`0cfe9790 89542478        mov     dword ptr [rsp+78h],edx
+00007ffc`0cfe9794 410f95c0        setne   r8b
+00007ffc`0cfe9798 f7c2fffffcff    test    edx,0FFFCFFFFh
+00007ffc`0cfe979e 0f94c0          sete    al
+0:000> u ntdll!SetThreadPriority
+Couldn't resolve error at 'ntdll!SetThreadPriority'
+0:000> u kernel32!HeapCreate
+Couldn't resolve error at 'kernel32!HeapCreate'
+0:000> u kernelbase!HeapCreate
+KERNELBASE!HeapCreate:
+00007ffc`0cfedfb0 4053            push    rbx
+00007ffc`0cfedfb2 4883ec30        sub     rsp,30h
+00007ffc`0cfedfb6 448b15cb411c00  mov     r10d,dword ptr [KERNELBASE!SysInfo+0x8 (00007ffc`0d1b2188)]
+00007ffc`0cfedfbd 81e105000400    and     ecx,40005h
+00007ffc`0cfedfc3 0fbae90c        bts     ecx,0Ch
+00007ffc`0cfedfc7 33c0            xor     eax,eax
+00007ffc`0cfedfc9 4d3bc2          cmp     r8,r10
+00007ffc`0cfedfcc 733e            jae     KERNELBASE!HeapCreate+0x5c (00007ffc`0cfee00c)
+0:000> u ntdll!HeapCreate
+Couldn't resolve error at 'ntdll!HeapCreate'
+0:000> u kernel32!CreateThread
+Couldn't resolve error at 'kernel32!CreateThread'
+0:000> u kernelbase!CreateThread
+KERNELBASE!CreateThread:
+00007ffc`0cffff60 4c8bdc          mov     r11,rsp
+00007ffc`0cffff63 4883ec48        sub     rsp,48h
+00007ffc`0cffff67 448b542470      mov     r10d,dword ptr [rsp+70h]
+00007ffc`0cffff6c 488b442478      mov     rax,qword ptr [rsp+78h]
+00007ffc`0cffff71 4181e204000100  and     r10d,10004h
+00007ffc`0cffff78 498943f0        mov     qword ptr [r11-10h],rax
+00007ffc`0cffff7c 498363e800      and     qword ptr [r11-18h],0
+00007ffc`0cffff81 458953e0        mov     dword ptr [r11-20h],r10d
+0:000> u ntdll!CreateThread
+Couldn't resolve error at 'ntdll!CreateThread'
+0:000> u kernel32!SetEnvironmentVariableA
+Couldn't resolve error at 'kernel32!SetEnvironmentVariableA'
+0:000> u kernelbase!SetEnvironmentVariableA
+KERNELBASE!SetEnvironmentVariableA:
+00007ffc`0cfe69a0 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0cfe69a5 55              push    rbp
+00007ffc`0cfe69a6 488bec          mov     rbp,rsp
+00007ffc`0cfe69a9 4883ec60        sub     rsp,60h
+00007ffc`0cfe69ad 488bda          mov     rbx,rdx
+00007ffc`0cfe69b0 488bd1          mov     rdx,rcx
+00007ffc`0cfe69b3 488d4de0        lea     rcx,[rbp-20h]
+00007ffc`0cfe69b7 ff1543201100    call    qword ptr [KERNELBASE!_imp_RtlInitAnsiStringEx (00007ffc`0d0f8a00)]
+0:000> u ntdll!SetEnvironmentVariableA
+Couldn't resolve error at 'ntdll!SetEnvironmentVariableA'
+0:000> u kernel32!SetCurrentDirectoryA
+Couldn't resolve error at 'kernel32!SetCurrentDirectoryA'
+0:000> u kernelbase!SetCurrentDirectoryA
+KERNELBASE!SetCurrentDirectoryA:
+00007ffc`0d0020c0 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0d0020c5 57              push    rdi
+00007ffc`0d0020c6 4883ec30        sub     rsp,30h
+00007ffc`0d0020ca 33db            xor     ebx,ebx
+00007ffc`0d0020cc 488bf9          mov     rdi,rcx
+00007ffc`0d0020cf 4885c9          test    rcx,rcx
+00007ffc`0d0020d2 0f8484ab0200    je      KERNELBASE!SetCurrentDirectoryA+0x2ab9c (00007ffc`0d02cc5c)
+00007ffc`0d0020d8 488bd1          mov     rdx,rcx
+0:000> u ntdll!SetCurrentDirectoryA
+Couldn't resolve error at 'ntdll!SetCurrentDirectoryA'
+0:000> u kernel32!GetFileAttributesA
+kernel32!GetFileAttributesA:
+00007ffc`0e6a2750 ff2542210500    jmp     qword ptr [kernel32!_imp_GetFileAttributesA (00007ffc`0e6f4898)]
+00007ffc`0e6a2756 cc              int     3
+00007ffc`0e6a2757 cc              int     3
+00007ffc`0e6a2758 cc              int     3
+00007ffc`0e6a2759 cc              int     3
+00007ffc`0e6a275a cc              int     3
+00007ffc`0e6a275b cc              int     3
+00007ffc`0e6a275c cc              int     3
+0:000> u kernelbase!GetFileAttributesA
+KERNELBASE!GetFileAttributesA:
+00007ffc`0cf8e410 4053            push    rbx
+00007ffc`0cf8e412 4883ec30        sub     rsp,30h
+00007ffc`0cf8e416 488bd1          mov     rdx,rcx
+00007ffc`0cf8e419 488d4c2420      lea     rcx,[rsp+20h]
+00007ffc`0cf8e41e e829000000      call    KERNELBASE!Basep8BitStringToDynamicUnicodeString (00007ffc`0cf8e44c)
+00007ffc`0cf8e423 85c0            test    eax,eax
+00007ffc`0cf8e425 741f            je      KERNELBASE!GetFileAttributesA+0x36 (00007ffc`0cf8e446)
+00007ffc`0cf8e427 488b4c2428      mov     rcx,qword ptr [rsp+28h]
+0:000> u ntdll!GetFileAttributesA
+Couldn't resolve error at 'ntdll!GetFileAttributesA'
+0:000> u kernel32!_llseek
+kernel32!_llseek:
+00007ffc`0e688e20 4533c9          xor     r9d,r9d
+00007ffc`0e688e23 4585c0          test    r8d,r8d
+00007ffc`0e688e26 750d            jne     kernel32!_llseek+0x15 (00007ffc`0e688e35)
+00007ffc`0e688e28 4863c9          movsxd  rcx,ecx
+00007ffc`0e688e2b 4533c0          xor     r8d,r8d
+00007ffc`0e688e2e 48ff25bbba0600  jmp     qword ptr [kernel32!_imp_SetFilePointer (00007ffc`0e6f48f0)]
+00007ffc`0e688e35 4183e801        sub     r8d,1
+00007ffc`0e688e39 0f85ed1c0200    jne     kernel32!_llseek+0x21d0c (00007ffc`0e6aab2c)
+0:000> u kernelbase!_llseek
+Couldn't resolve error at 'kernelbase!_llseek'
+0:000> u ntdll!_llseek
+Couldn't resolve error at 'ntdll!_llseek'
+0:000> u kernel32!_lread
+Couldn't resolve error at 'kernel32!_lread'
+0:000> u kernelbase!_lread
+Couldn't resolve error at 'kernelbase!_lread'
+0:000> u ntdll!_lread
+Couldn't resolve error at 'ntdll!_lread'
+0:000> u kernel32!_lclose
+Couldn't resolve error at 'kernel32!_lclose'
+0:000> u kernelbase!_lclose
+Couldn't resolve error at 'kernelbase!_lclose'
+0:000> u ntdll!_lclose
+Couldn't resolve error at 'ntdll!_lclose'
+0:000> u kernel32!ResumeThread
+Couldn't resolve error at 'kernel32!ResumeThread'
+0:000> u kernelbase!ResumeThread
+KERNELBASE!ResumeThread:
+00007ffc`0cff4e90 4883ec28        sub     rsp,28h
+00007ffc`0cff4e94 488d542438      lea     rdx,[rsp+38h]
+00007ffc`0cff4e99 ff15a9461000    call    qword ptr [KERNELBASE!_imp_NtResumeThread (00007ffc`0d0f9548)]
+00007ffc`0cff4e9f 85c0            test    eax,eax
+00007ffc`0cff4ea1 0f88bd3e0300    js      KERNELBASE!ResumeThread+0x33ed4 (00007ffc`0d028d64)
+00007ffc`0cff4ea7 8b442438        mov     eax,dword ptr [rsp+38h]
+00007ffc`0cff4eab 4883c428        add     rsp,28h
+00007ffc`0cff4eaf c3              ret
+0:000> u ntdll!ResumeThread
+Couldn't resolve error at 'ntdll!ResumeThread'
+0:000> u kernel32!RegQueryInfoKeyA
+Couldn't resolve error at 'kernel32!RegQueryInfoKeyA'
+0:000> u kernelbase!RegQueryInfoKeyA
+Matched: 00007ffc`0cf9d910 KERNELBASE!RegQueryInfoKeyA (void)
+Matched: 00007ffc`0cffcda0 KERNELBASE!RegQueryInfoKeyA (void)
+Ambiguous symbol error at 'kernelbase!RegQueryInfoKeyA'
+0:000> u ntdll!RegQueryInfoKeyA
+Couldn't resolve error at 'ntdll!RegQueryInfoKeyA'
+0:000> u kernel32!GetFileSize
+kernel32!GetFileSize:
+00007ffc`0e6a27a0 ff2582200500    jmp     qword ptr [kernel32!_imp_GetFileSize (00007ffc`0e6f4828)]
+00007ffc`0e6a27a6 cc              int     3
+00007ffc`0e6a27a7 cc              int     3
+00007ffc`0e6a27a8 cc              int     3
+00007ffc`0e6a27a9 cc              int     3
+00007ffc`0e6a27aa cc              int     3
+00007ffc`0e6a27ab cc              int     3
+00007ffc`0e6a27ac cc              int     3
+0:000> u kernelbase!GetFileSize
+KERNELBASE!GetFileSize:
+00007ffc`0cfe06d0 4053            push    rbx
+00007ffc`0cfe06d2 4883ec60        sub     rsp,60h
+00007ffc`0cfe06d6 488b05a30b1d00  mov     rax,qword ptr [KERNELBASE!_security_cookie (00007ffc`0d1b1280)]
+00007ffc`0cfe06dd 4833c4          xor     rax,rsp
+00007ffc`0cfe06e0 4889442458      mov     qword ptr [rsp+58h],rax
+00007ffc`0cfe06e5 488bda          mov     rbx,rdx
+00007ffc`0cfe06e8 c744242005000000 mov     dword ptr [rsp+20h],5
+00007ffc`0cfe06f0 488d542430      lea     rdx,[rsp+30h]
+0:000> u ntdll!GetFileSize
+Couldn't resolve error at 'ntdll!GetFileSize'
+0:000> u kernel32!CreateFileW
+kernel32!CreateFileW:
+00007ffc`0e6a2580 ff2572240500    jmp     qword ptr [kernel32!_imp_CreateFileW (00007ffc`0e6f49f8)]
+00007ffc`0e6a2586 cc              int     3
+00007ffc`0e6a2587 cc              int     3
+00007ffc`0e6a2588 cc              int     3
+00007ffc`0e6a2589 cc              int     3
+00007ffc`0e6a258a cc              int     3
+00007ffc`0e6a258b cc              int     3
+00007ffc`0e6a258c cc              int     3
+0:000> u kernelbase!CreateFileW
+KERNELBASE!CreateFileW:
+00007ffc`0cfc1840 4883ec58        sub     rsp,58h
+00007ffc`0cfc1844 448b942488000000 mov     r10d,dword ptr [rsp+88h]
+00007ffc`0cfc184c 418bc2          mov     eax,r10d
+00007ffc`0cfc184f 25b77f0000      and     eax,7FB7h
+00007ffc`0cfc1854 c744243020000000 mov     dword ptr [rsp+30h],20h
+00007ffc`0cfc185c 89442434        mov     dword ptr [rsp+34h],eax
+00007ffc`0cfc1860 418bc2          mov     eax,r10d
+00007ffc`0cfc1863 250000f0ff      and     eax,0FFF00000h
+0:000> u ntdll!CreateFileW
+Couldn't resolve error at 'ntdll!CreateFileW'
+0:000> u kernel32!GetDriveTypeA
+kernel32!GetDriveTypeA:
+00007ffc`0e6a2730 ff2502220500    jmp     qword ptr [kernel32!_imp_GetDriveTypeA (00007ffc`0e6f4938)]
+00007ffc`0e6a2736 cc              int     3
+00007ffc`0e6a2737 cc              int     3
+00007ffc`0e6a2738 cc              int     3
+00007ffc`0e6a2739 cc              int     3
+00007ffc`0e6a273a cc              int     3
+00007ffc`0e6a273b cc              int     3
+00007ffc`0e6a273c cc              int     3
+0:000> u kernelbase!GetDriveTypeA
+KERNELBASE!GetDriveTypeA:
+00007ffc`0cf8cca0 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0cf8cca5 57              push    rdi
+00007ffc`0cf8cca6 4883ec30        sub     rsp,30h
+00007ffc`0cf8ccaa 488bd9          mov     rbx,rcx
+00007ffc`0cf8ccad 4885c9          test    rcx,rcx
+00007ffc`0cf8ccb0 7441            je      KERNELBASE!GetDriveTypeA+0x53 (00007ffc`0cf8ccf3)
+00007ffc`0cf8ccb2 488bd1          mov     rdx,rcx
+00007ffc`0cf8ccb5 488d4c2420      lea     rcx,[rsp+20h]
+0:000> u ntdll!GetDriveTypeA
+Couldn't resolve error at 'ntdll!GetDriveTypeA'
+0:000> u kernel32!GetShortPathNameA
+kernel32!GetShortPathNameA:
+00007ffc`0e6d9750 48895c2418      mov     qword ptr [rsp+18h],rbx
+00007ffc`0e6d9755 56              push    rsi
+00007ffc`0e6d9756 57              push    rdi
+00007ffc`0e6d9757 4154            push    r12
+00007ffc`0e6d9759 4156            push    r14
+00007ffc`0e6d975b 4157            push    r15
+00007ffc`0e6d975d 4881ec90020000  sub     rsp,290h
+00007ffc`0e6d9764 488b0585aa0400  mov     rax,qword ptr [kernel32!_security_cookie (00007ffc`0e7241f0)]
+0:000> u kernelbase!GetShortPathNameA
+Couldn't resolve error at 'kernelbase!GetShortPathNameA'
+0:000> u ntdll!GetShortPathNameA
+Couldn't resolve error at 'ntdll!GetShortPathNameA'
+0:000> u kernel32!GetShortPathNameW
+kernel32!GetShortPathNameW:
+00007ffc`0e686690 4053            push    rbx
+00007ffc`0e686692 56              push    rsi
+00007ffc`0e686693 57              push    rdi
+00007ffc`0e686694 4154            push    r12
+00007ffc`0e686696 4155            push    r13
+00007ffc`0e686698 4156            push    r14
+00007ffc`0e68669a 4157            push    r15
+00007ffc`0e68669c 4881ecd0020000  sub     rsp,2D0h
+0:000> u kernelbase!GetShortPathNameW
+KERNELBASE!GetShortPathNameW:
+00007ffc`0cfa4cc0 4053            push    rbx
+00007ffc`0cfa4cc2 56              push    rsi
+00007ffc`0cfa4cc3 57              push    rdi
+00007ffc`0cfa4cc4 4154            push    r12
+00007ffc`0cfa4cc6 4155            push    r13
+00007ffc`0cfa4cc8 4156            push    r14
+00007ffc`0cfa4cca 4157            push    r15
+00007ffc`0cfa4ccc 4881ece0020000  sub     rsp,2E0h
+0:000> u ntdll!GetShortPathNameW
+Couldn't resolve error at 'ntdll!GetShortPathNameW'
+0:000> u kernel32!GetTempFileNameA
+kernel32!GetTempFileNameA:
+00007ffc`0e6a2830 ff2552220500    jmp     qword ptr [kernel32!_imp_GetTempFileNameA (00007ffc`0e6f4a88)]
+00007ffc`0e6a2836 cc              int     3
+00007ffc`0e6a2837 cc              int     3
+00007ffc`0e6a2838 cc              int     3
+00007ffc`0e6a2839 cc              int     3
+00007ffc`0e6a283a cc              int     3
+00007ffc`0e6a283b cc              int     3
+00007ffc`0e6a283c cc              int     3
+0:000> u kernelbase!GetTempFileNameA
+KERNELBASE!GetTempFileNameA:
+00007ffc`0d068600 488bc4          mov     rax,rsp
+00007ffc`0d068603 48895808        mov     qword ptr [rax+8],rbx
+00007ffc`0d068607 48897010        mov     qword ptr [rax+10h],rsi
+00007ffc`0d06860b 48897818        mov     qword ptr [rax+18h],rdi
+00007ffc`0d06860f 4c897020        mov     qword ptr [rax+20h],r14
+00007ffc`0d068613 55              push    rbp
+00007ffc`0d068614 488bec          mov     rbp,rsp
+00007ffc`0d068617 4883ec60        sub     rsp,60h
+0:000> u ntdll!GetTempFileNameA
+Couldn't resolve error at 'ntdll!GetTempFileNameA'
+0:000> u kernel32!SetEndOfFile
+kernel32!SetEndOfFile:
+00007ffc`0e6a2950 ff257a1f0500    jmp     qword ptr [kernel32!_imp_SetEndOfFile (00007ffc`0e6f48d0)]
+00007ffc`0e6a2956 cc              int     3
+00007ffc`0e6a2957 cc              int     3
+00007ffc`0e6a2958 cc              int     3
+00007ffc`0e6a2959 cc              int     3
+00007ffc`0e6a295a cc              int     3
+00007ffc`0e6a295b cc              int     3
+00007ffc`0e6a295c cc              int     3
+0:000> u kernelbase!SetEndOfFile
+KERNELBASE!SetEndOfFile:
+00007ffc`0cfe4be0 4053            push    rbx
+00007ffc`0cfe4be2 4883ec40        sub     rsp,40h
+00007ffc`0cfe4be6 41b908000000    mov     r9d,8
+00007ffc`0cfe4bec c74424200e000000 mov     dword ptr [rsp+20h],0Eh
+00007ffc`0cfe4bf4 4c8d442458      lea     r8,[rsp+58h]
+00007ffc`0cfe4bf9 488bd9          mov     rbx,rcx
+00007ffc`0cfe4bfc 488d542430      lea     rdx,[rsp+30h]
+00007ffc`0cfe4c01 ff15c9381100    call    qword ptr [KERNELBASE!_imp_NtQueryInformationFile (00007ffc`0d0f84d0)]
+0:000> u ntdll!SetEndOfFile
+Couldn't resolve error at 'ntdll!SetEndOfFile'
+0:000> u kernel32!SetFilePointer
+kernel32!SetFilePointer:
+00007ffc`0e6a2990 ff255a1f0500    jmp     qword ptr [kernel32!_imp_SetFilePointer (00007ffc`0e6f48f0)]
+00007ffc`0e6a2996 cc              int     3
+00007ffc`0e6a2997 cc              int     3
+00007ffc`0e6a2998 cc              int     3
+00007ffc`0e6a2999 cc              int     3
+00007ffc`0e6a299a cc              int     3
+00007ffc`0e6a299b cc              int     3
+00007ffc`0e6a299c cc              int     3
+0:000> u kernelbase!SetFilePointer
+KERNELBASE!SetFilePointer:
+00007ffc`0cfd8c00 4053            push    rbx
+00007ffc`0cfd8c02 56              push    rsi
+00007ffc`0cfd8c03 57              push    rdi
+00007ffc`0cfd8c04 4883ec70        sub     rsp,70h
+00007ffc`0cfd8c08 488b0571861d00  mov     rax,qword ptr [KERNELBASE!_security_cookie (00007ffc`0d1b1280)]
+00007ffc`0cfd8c0f 4833c4          xor     rax,rsp
+00007ffc`0cfd8c12 4889442460      mov     qword ptr [rsp+60h],rax
+00007ffc`0cfd8c17 498bf8          mov     rdi,r8
+0:000> u ntdll!SetFilePointer
+Couldn't resolve error at 'ntdll!SetFilePointer'
+0:000> u kernel32!HeapReAlloc
+Couldn't resolve error at 'kernel32!HeapReAlloc'
+0:000> u kernelbase!HeapReAlloc
+Couldn't resolve error at 'kernelbase!HeapReAlloc'
+0:000> u ntdll!HeapReAlloc
+Couldn't resolve error at 'ntdll!HeapReAlloc'
+0:000> u kernel32!GetEnvironmentVariableA
+Couldn't resolve error at 'kernel32!GetEnvironmentVariableA'
+0:000> u kernelbase!GetEnvironmentVariableA
+KERNELBASE!GetEnvironmentVariableA:
+00007ffc`0cfe5c70 488bc4          mov     rax,rsp
+00007ffc`0cfe5c73 48895808        mov     qword ptr [rax+8],rbx
+00007ffc`0cfe5c77 48897010        mov     qword ptr [rax+10h],rsi
+00007ffc`0cfe5c7b 48897818        mov     qword ptr [rax+18h],rdi
+00007ffc`0cfe5c7f 4c896020        mov     qword ptr [rax+20h],r12
+00007ffc`0cfe5c83 55              push    rbp
+00007ffc`0cfe5c84 4156            push    r14
+00007ffc`0cfe5c86 4157            push    r15
+0:000> u ntdll!GetEnvironmentVariableA
+Couldn't resolve error at 'ntdll!GetEnvironmentVariableA'
+0:000> u kernel32!DeleteFileA
+kernel32!DeleteFileA:
+00007ffc`0e6a25a0 ff2562240500    jmp     qword ptr [kernel32!_imp_DeleteFileA (00007ffc`0e6f4a08)]
+00007ffc`0e6a25a6 cc              int     3
+00007ffc`0e6a25a7 cc              int     3
+00007ffc`0e6a25a8 cc              int     3
+00007ffc`0e6a25a9 cc              int     3
+00007ffc`0e6a25aa cc              int     3
+00007ffc`0e6a25ab cc              int     3
+00007ffc`0e6a25ac cc              int     3
+0:000> u kernelbase!DeleteFileA
+KERNELBASE!DeleteFileA:
+00007ffc`0cf8e100 4053            push    rbx
+00007ffc`0cf8e102 4883ec30        sub     rsp,30h
+00007ffc`0cf8e106 488bd1          mov     rdx,rcx
+00007ffc`0cf8e109 488d4c2420      lea     rcx,[rsp+20h]
+00007ffc`0cf8e10e e839030000      call    KERNELBASE!Basep8BitStringToDynamicUnicodeString (00007ffc`0cf8e44c)
+00007ffc`0cf8e113 85c0            test    eax,eax
+00007ffc`0cf8e115 741f            je      KERNELBASE!DeleteFileA+0x36 (00007ffc`0cf8e136)
+00007ffc`0cf8e117 488b4c2428      mov     rcx,qword ptr [rsp+28h]
+0:000> u ntdll!DeleteFileA
+Couldn't resolve error at 'ntdll!DeleteFileA'
+0:000> u kernel32!GetDriveTypeW
+kernel32!GetDriveTypeW:
+00007ffc`0e6a2740 ff25ea210500    jmp     qword ptr [kernel32!_imp_GetDriveTypeW (00007ffc`0e6f4930)]
+00007ffc`0e6a2746 cc              int     3
+00007ffc`0e6a2747 cc              int     3
+00007ffc`0e6a2748 cc              int     3
+00007ffc`0e6a2749 cc              int     3
+00007ffc`0e6a274a cc              int     3
+00007ffc`0e6a274b cc              int     3
+00007ffc`0e6a274c cc              int     3
+0:000> u kernelbase!GetDriveTypeW
+KERNELBASE!GetDriveTypeW:
+00007ffc`0cfc3070 48895c2410      mov     qword ptr [rsp+10h],rbx
+00007ffc`0cfc3075 4889742418      mov     qword ptr [rsp+18h],rsi
+00007ffc`0cfc307a 55              push    rbp
+00007ffc`0cfc307b 57              push    rdi
+00007ffc`0cfc307c 4154            push    r12
+00007ffc`0cfc307e 4156            push    r14
+00007ffc`0cfc3080 4157            push    r15
+00007ffc`0cfc3082 488dac2400fcffff lea     rbp,[rsp-400h]
+0:000> u ntdll!GetDriveTypeW
+Couldn't resolve error at 'ntdll!GetDriveTypeW'
+0:000> u kernel32!GetThreadPriority
+Couldn't resolve error at 'kernel32!GetThreadPriority'
+0:000> u kernelbase!GetThreadPriority
+KERNELBASE!GetThreadPriority:
+00007ffc`0cfe6e40 4883ec68        sub     rsp,68h
+00007ffc`0cfe6e44 488364242000    and     qword ptr [rsp+20h],0
+00007ffc`0cfe6e4a 4c8d442430      lea     r8,[rsp+30h]
+00007ffc`0cfe6e4f 41b930000000    mov     r9d,30h
+00007ffc`0cfe6e55 33d2            xor     edx,edx
+00007ffc`0cfe6e57 ff150b271100    call    qword ptr [KERNELBASE!_imp_NtQueryInformationThread (00007ffc`0d0f9568)]
+00007ffc`0cfe6e5d 85c0            test    eax,eax
+00007ffc`0cfe6e5f 0f88afe50300    js      KERNELBASE!GetThreadPriority+0x3e5d4 (00007ffc`0d025414)
+0:000> u ntdll!GetThreadPriority
+Couldn't resolve error at 'ntdll!GetThreadPriority'
+0:000> u kernel32!OpenProcess
+Couldn't resolve error at 'kernel32!OpenProcess'
+0:000> u kernelbase!OpenProcess
+KERNELBASE!OpenProcess:
+00007ffc`0cfbdc10 4c8bdc          mov     r11,rsp
+00007ffc`0cfbdc13 4883ec68        sub     rsp,68h
+00007ffc`0cfbdc17 498363c000      and     qword ptr [r11-40h],0
+00007ffc`0cfbdc1c 4d8d4bb8        lea     r9,[r11-48h]
+00007ffc`0cfbdc20 4963c0          movsxd  rax,r8d
+00007ffc`0cfbdc23 0f57c0          xorps   xmm0,xmm0
+00007ffc`0cfbdc26 c744243030000000 mov     dword ptr [rsp+30h],30h
+00007ffc`0cfbdc2e 4d8d43c8        lea     r8,[r11-38h]
+0:000> u ntdll!OpenProcess
+Couldn't resolve error at 'ntdll!OpenProcess'
+0:000> u kernel32!SearchPathW
+Couldn't resolve error at 'kernel32!SearchPathW'
+0:000> u kernelbase!SearchPathW
+KERNELBASE!SearchPathW:
+00007ffc`0cf8ce40 488bc4          mov     rax,rsp
+00007ffc`0cf8ce43 48895810        mov     qword ptr [rax+10h],rbx
+00007ffc`0cf8ce47 48897018        mov     qword ptr [rax+18h],rsi
+00007ffc`0cf8ce4b 48897820        mov     qword ptr [rax+20h],rdi
+00007ffc`0cf8ce4f 55              push    rbp
+00007ffc`0cf8ce50 4154            push    r12
+00007ffc`0cf8ce52 4155            push    r13
+00007ffc`0cf8ce54 4156            push    r14
+0:000> u ntdll!SearchPathW
+Couldn't resolve error at 'ntdll!SearchPathW'
+0:000> u kernel32!GetFullPathNameA
+kernel32!GetFullPathNameA:
+00007ffc`0e6a2800 ff2532200500    jmp     qword ptr [kernel32!_imp_GetFullPathNameA (00007ffc`0e6f4838)]
+00007ffc`0e6a2806 cc              int     3
+00007ffc`0e6a2807 cc              int     3
+00007ffc`0e6a2808 cc              int     3
+00007ffc`0e6a2809 cc              int     3
+00007ffc`0e6a280a cc              int     3
+00007ffc`0e6a280b cc              int     3
+00007ffc`0e6a280c cc              int     3
+0:000> u kernelbase!GetFullPathNameA
+KERNELBASE!GetFullPathNameA:
+00007ffc`0cf8da00 488bc4          mov     rax,rsp
+00007ffc`0cf8da03 48895808        mov     qword ptr [rax+8],rbx
+00007ffc`0cf8da07 48897010        mov     qword ptr [rax+10h],rsi
+00007ffc`0cf8da0b 48897818        mov     qword ptr [rax+18h],rdi
+00007ffc`0cf8da0f 4c897020        mov     qword ptr [rax+20h],r14
+00007ffc`0cf8da13 55              push    rbp
+00007ffc`0cf8da14 488bec          mov     rbp,rsp
+00007ffc`0cf8da17 4883ec70        sub     rsp,70h
+0:000> u ntdll!GetFullPathNameA
+Couldn't resolve error at 'ntdll!GetFullPathNameA'
+0:000> u kernel32!FindNextFileA
+kernel32!FindNextFileA:
+00007ffc`0e6a2690 ff25ea220500    jmp     qword ptr [kernel32!_imp_FindNextFileA (00007ffc`0e6f4980)]
+00007ffc`0e6a2696 cc              int     3
+00007ffc`0e6a2697 cc              int     3
+00007ffc`0e6a2698 cc              int     3
+00007ffc`0e6a2699 cc              int     3
+00007ffc`0e6a269a cc              int     3
+00007ffc`0e6a269b cc              int     3
+00007ffc`0e6a269c cc              int     3
+0:000> u kernelbase!FindNextFileA
+KERNELBASE!FindNextFileA:
+00007ffc`0cfd8810 48895c2418      mov     qword ptr [rsp+18h],rbx
+00007ffc`0cfd8815 48897c2420      mov     qword ptr [rsp+20h],rdi
+00007ffc`0cfd881a 55              push    rbp
+00007ffc`0cfd881b 488dac2460feffff lea     rbp,[rsp-1A0h]
+00007ffc`0cfd8823 4881eca0020000  sub     rsp,2A0h
+00007ffc`0cfd882a 488b054f8a1d00  mov     rax,qword ptr [KERNELBASE!_security_cookie (00007ffc`0d1b1280)]
+00007ffc`0cfd8831 4833c4          xor     rax,rsp
+00007ffc`0cfd8834 48898590010000  mov     qword ptr [rbp+190h],rax
+0:000> u ntdll!FindNextFileA
+Couldn't resolve error at 'ntdll!FindNextFileA'
+0:000> u kernel32!FindClose
+kernel32!FindClose:
+00007ffc`0e6a25e0 ff2542240500    jmp     qword ptr [kernel32!_imp_FindClose (00007ffc`0e6f4a28)]
+00007ffc`0e6a25e6 cc              int     3
+00007ffc`0e6a25e7 cc              int     3
+00007ffc`0e6a25e8 cc              int     3
+00007ffc`0e6a25e9 cc              int     3
+00007ffc`0e6a25ea cc              int     3
+00007ffc`0e6a25eb cc              int     3
+00007ffc`0e6a25ec cc              int     3
+0:000> u kernelbase!FindClose
+KERNELBASE!FindClose:
+00007ffc`0cfa69d0 48895c2410      mov     qword ptr [rsp+10h],rbx
+00007ffc`0cfa69d5 4889742418      mov     qword ptr [rsp+18h],rsi
+00007ffc`0cfa69da 48897c2420      mov     qword ptr [rsp+20h],rdi
+00007ffc`0cfa69df 4156            push    r14
+00007ffc`0cfa69e1 4883ec20        sub     rsp,20h
+00007ffc`0cfa69e5 488bf9          mov     rdi,rcx
+00007ffc`0cfa69e8 4883f901        cmp     rcx,1
+00007ffc`0cfa69ec 0f84bea00600    je      KERNELBASE!FindClose+0x6a0e0 (00007ffc`0d010ab0)
+0:000> u ntdll!FindClose
+Couldn't resolve error at 'ntdll!FindClose'
+0:000> u kernel32!ExitProcess
+Couldn't resolve error at 'kernel32!ExitProcess'
+0:000> u kernelbase!ExitProcess
+Couldn't resolve error at 'kernelbase!ExitProcess'
+0:000> u ntdll!ExitProcess
+Couldn't resolve error at 'ntdll!ExitProcess'
+0:000> u kernel32!GlobalMemoryStatusEx
+Couldn't resolve error at 'kernel32!GlobalMemoryStatusEx'
+0:000> u kernelbase!GlobalMemoryStatusEx
+KERNELBASE!GlobalMemoryStatusEx:
+00007ffc`0cfdb090 4053            push    rbx
+00007ffc`0cfdb092 4881ec10010000  sub     rsp,110h
+00007ffc`0cfdb099 488b05e0611d00  mov     rax,qword ptr [KERNELBASE!_security_cookie (00007ffc`0d1b1280)]
+00007ffc`0cfdb0a0 4833c4          xor     rax,rsp
+00007ffc`0cfdb0a3 4889842400010000 mov     qword ptr [rsp+100h],rax
+00007ffc`0cfdb0ab 833940          cmp     dword ptr [rcx],40h
+00007ffc`0cfdb0ae 488bd9          mov     rbx,rcx
+00007ffc`0cfdb0b1 0f8515010000    jne     KERNELBASE!GlobalMemoryStatusEx+0x13c (00007ffc`0cfdb1cc)
+0:000> u ntdll!GlobalMemoryStatusEx
+Couldn't resolve error at 'ntdll!GlobalMemoryStatusEx'
+0:000> u kernel32!ioctlsocket
+Couldn't resolve error at 'kernel32!ioctlsocket'
+0:000> u kernelbase!ioctlsocket
+KERNELBASE!GetAwarenessFromDpiAwarenessContext:
+00007ffc`0d06d0f0 4883ec28        sub     rsp,28h
+00007ffc`0d06d0f4 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d0f9 ff15a9b40800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d0ff 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0d06d102 4883c428        add     rsp,28h
+00007ffc`0d06d106 c3              ret
+00007ffc`0d06d107 cc              int     3
+00007ffc`0d06d108 cc              int     3
+0:000> u ntdll!ioctlsocket
+Couldn't resolve error at 'ntdll!ioctlsocket'
+0:000> u kernel32!select
+Couldn't resolve error at 'kernel32!select'
+0:000> u kernelbase!select
+KERNELBASE!IERegGetBufferSizeSz:
+00007ffc`0cffcab0 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0cffcab3 c3              ret
+00007ffc`0cffcab4 cc              int     3
+00007ffc`0cffcab5 cc              int     3
+00007ffc`0cffcab6 cc              int     3
+00007ffc`0cffcab7 cc              int     3
+00007ffc`0cffcab8 cc              int     3
+00007ffc`0cffcab9 cc              int     3
+0:000> u ntdll!select
+Couldn't resolve error at 'ntdll!select'
+0:000> u kernel32!HeapSize
+Couldn't resolve error at 'kernel32!HeapSize'
+0:000> u kernelbase!HeapSize
+Couldn't resolve error at 'kernelbase!HeapSize'
+0:000> u ntdll!HeapSize
+Couldn't resolve error at 'ntdll!HeapSize'
+0:000> u kernel32!LocalLock
+Couldn't resolve error at 'kernel32!LocalLock'
+0:000> u kernelbase!LocalLock
+KERNELBASE!LocalLock:
+00007ffc`0cfe7910 48895c2410      mov     qword ptr [rsp+10h],rbx
+00007ffc`0cfe7915 57              push    rdi
+00007ffc`0cfe7916 4883ec30        sub     rsp,30h
+00007ffc`0cfe791a 488bf9          mov     rdi,rcx
+00007ffc`0cfe791d 33db            xor     ebx,ebx
+00007ffc`0cfe791f 448d4308        lea     r8d,[rbx+8]
+00007ffc`0cfe7923 4184c8          test    r8b,cl
+00007ffc`0cfe7926 0f8462e30300    je      KERNELBASE!LocalLock+0x3e37e (00007ffc`0d025c8e)
+0:000> u ntdll!LocalLock
+Couldn't resolve error at 'ntdll!LocalLock'
+0:000> u kernel32!LocalUnlock
+Couldn't resolve error at 'kernel32!LocalUnlock'
+0:000> u kernelbase!LocalUnlock
+KERNELBASE!LocalUnlock:
+00007ffc`0cfe7860 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0cfe7865 57              push    rdi
+00007ffc`0cfe7866 4883ec30        sub     rsp,30h
+00007ffc`0cfe786a 488bf9          mov     rdi,rcx
+00007ffc`0cfe786d 33db            xor     ebx,ebx
+00007ffc`0cfe786f 895c2420        mov     dword ptr [rsp+20h],ebx
+00007ffc`0cfe7873 f6c108          test    cl,8
+00007ffc`0cfe7876 0f8400e40300    je      KERNELBASE!LocalUnlock+0x3e41c (00007ffc`0d025c7c)
+0:000> u ntdll!LocalUnlock
+Couldn't resolve error at 'ntdll!LocalUnlock'
+0:000> u kernel32!GetPrivateProfileStringA
+kernel32!GetPrivateProfileStringA:
+00007ffc`0e6a00d0 4c8bdc          mov     r11,rsp
+00007ffc`0e6a00d3 49895b08        mov     qword ptr [r11+8],rbx
+00007ffc`0e6a00d7 49896b10        mov     qword ptr [r11+10h],rbp
+00007ffc`0e6a00db 49897318        mov     qword ptr [r11+18h],rsi
+00007ffc`0e6a00df 57              push    rdi
+00007ffc`0e6a00e0 4156            push    r14
+00007ffc`0e6a00e2 4157            push    r15
+00007ffc`0e6a00e4 4883ec40        sub     rsp,40h
+0:000> u kernelbase!GetPrivateProfileStringA
+Couldn't resolve error at 'kernelbase!GetPrivateProfileStringA'
+0:000> u ntdll!GetPrivateProfileStringA
+Couldn't resolve error at 'ntdll!GetPrivateProfileStringA'
+0:000> u kernel32!HeapDestroy
+Couldn't resolve error at 'kernel32!HeapDestroy'
+0:000> u kernelbase!HeapDestroy
+KERNELBASE!HeapDestroy:
+00007ffc`0cff7e10 4883ec28        sub     rsp,28h
+00007ffc`0cff7e14 ff15ee191000    call    qword ptr [KERNELBASE!_imp_RtlDestroyHeap (00007ffc`0d0f9808)]
+00007ffc`0cff7e1a 4885c0          test    rax,rax
+00007ffc`0cff7e1d 0f859f260300    jne     KERNELBASE!HeapDestroy+0x326b2 (00007ffc`0d02a4c2)
+00007ffc`0cff7e23 b801000000      mov     eax,1
+00007ffc`0cff7e28 4883c428        add     rsp,28h
+00007ffc`0cff7e2c c3              ret
+00007ffc`0cff7e2d cc              int     3
+0:000> u ntdll!HeapDestroy
+Couldn't resolve error at 'ntdll!HeapDestroy'
+0:000> u kernel32!GetCurrentDirectoryW
+Couldn't resolve error at 'kernel32!GetCurrentDirectoryW'
+0:000> u kernelbase!GetCurrentDirectoryW
+KERNELBASE!GetCurrentDirectoryW:
+00007ffc`0cff2bf0 4883ec28        sub     rsp,28h
+00007ffc`0cff2bf4 03c9            add     ecx,ecx
+00007ffc`0cff2bf6 ff15c46b1000    call    qword ptr [KERNELBASE!_imp_RtlGetCurrentDirectory_U (00007ffc`0d0f97c0)]
+00007ffc`0cff2bfc d1e8            shr     eax,1
+00007ffc`0cff2bfe 4883c428        add     rsp,28h
+00007ffc`0cff2c02 c3              ret
+00007ffc`0cff2c03 cc              int     3
+00007ffc`0cff2c04 cc              int     3
+0:000> u ntdll!GetCurrentDirectoryW
+Couldn't resolve error at 'ntdll!GetCurrentDirectoryW'
+0:000> u kernel32!SetCurrentDirectoryW
+Couldn't resolve error at 'kernel32!SetCurrentDirectoryW'
+0:000> u kernelbase!SetCurrentDirectoryW
+KERNELBASE!SetCurrentDirectoryW:
+00007ffc`0cff1e50 4053            push    rbx
+00007ffc`0cff1e52 4883ec30        sub     rsp,30h
+00007ffc`0cff1e56 33db            xor     ebx,ebx
+00007ffc`0cff1e58 4885c9          test    rcx,rcx
+00007ffc`0cff1e5b 0f84955e0300    je      KERNELBASE!SetCurrentDirectoryW+0x35ea6 (00007ffc`0d027cf6)
+00007ffc`0cff1e61 488bd1          mov     rdx,rcx
+00007ffc`0cff1e64 488d4c2420      lea     rcx,[rsp+20h]
+00007ffc`0cff1e69 ff15d96c1000    call    qword ptr [KERNELBASE!_imp_RtlInitUnicodeStringEx (00007ffc`0d0f8b48)]
+0:000> u ntdll!SetCurrentDirectoryW
+Couldn't resolve error at 'ntdll!SetCurrentDirectoryW'
+0:000> u kernel32!RegEnumKeyExW
+Couldn't resolve error at 'kernel32!RegEnumKeyExW'
+0:000> u kernelbase!RegEnumKeyExW
+Matched: 00007ffc`0cfbe560 KERNELBASE!RegEnumKeyExW (void)
+Matched: 00007ffc`0d06b670 KERNELBASE!RegEnumKeyExW (void)
+Ambiguous symbol error at 'kernelbase!RegEnumKeyExW'
+0:000> u ntdll!RegEnumKeyExW
+Couldn't resolve error at 'ntdll!RegEnumKeyExW'
+0:000> u kernel32!GlobalHandle
+kernel32!GlobalHandle:
+00007ffc`0e690bd0 4053            push    rbx
+00007ffc`0e690bd2 4883ec30        sub     rsp,30h
+00007ffc`0e690bd6 488bd9          mov     rbx,rcx
+00007ffc`0e690bd9 488364245000    and     qword ptr [rsp+50h],0
+00007ffc`0e690bdf 488b0d6a3e0900  mov     rcx,qword ptr [kernel32!BaseHeap (00007ffc`0e724a50)]
+00007ffc`0e690be6 ff158c560600    call    qword ptr [kernel32!_imp_RtlLockHeap (00007ffc`0e6f6278)]
+00007ffc`0e690bec 90              nop
+00007ffc`0e690bed 488364245000    and     qword ptr [rsp+50h],0
+0:000> u kernelbase!GlobalHandle
+Couldn't resolve error at 'kernelbase!GlobalHandle'
+0:000> u ntdll!GlobalHandle
+Couldn't resolve error at 'ntdll!GlobalHandle'
+0:000> u kernel32!GetFileAttributesExA
+kernel32!GetFileAttributesExA:
+00007ffc`0e6a2760 ff252a210500    jmp     qword ptr [kernel32!_imp_GetFileAttributesExA (00007ffc`0e6f4890)]
+00007ffc`0e6a2766 cc              int     3
+00007ffc`0e6a2767 cc              int     3
+00007ffc`0e6a2768 cc              int     3
+00007ffc`0e6a2769 cc              int     3
+00007ffc`0e6a276a cc              int     3
+00007ffc`0e6a276b cc              int     3
+00007ffc`0e6a276c cc              int     3
+0:000> u kernelbase!GetFileAttributesExA
+KERNELBASE!GetFileAttributesExA:
+00007ffc`0cfff1a0 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0cfff1a5 57              push    rdi
+00007ffc`0cfff1a6 4883ec30        sub     rsp,30h
+00007ffc`0cfff1aa 8bfa            mov     edi,edx
+00007ffc`0cfff1ac 498bd8          mov     rbx,r8
+00007ffc`0cfff1af 488bd1          mov     rdx,rcx
+00007ffc`0cfff1b2 488d4c2420      lea     rcx,[rsp+20h]
+00007ffc`0cfff1b7 e890f2f8ff      call    KERNELBASE!Basep8BitStringToDynamicUnicodeString (00007ffc`0cf8e44c)
+0:000> u ntdll!GetFileAttributesExA
+Couldn't resolve error at 'ntdll!GetFileAttributesExA'
+0:000> u kernel32!GetPrivateProfileStringW
+kernel32!GetPrivateProfileStringW:
+00007ffc`0e69e2a0 4c8bdc          mov     r11,rsp
+00007ffc`0e69e2a3 49895b08        mov     qword ptr [r11+8],rbx
+00007ffc`0e69e2a7 49896b10        mov     qword ptr [r11+10h],rbp
+00007ffc`0e69e2ab 49897318        mov     qword ptr [r11+18h],rsi
+00007ffc`0e69e2af 49897b20        mov     qword ptr [r11+20h],rdi
+00007ffc`0e69e2b3 4154            push    r12
+00007ffc`0e69e2b5 4156            push    r14
+00007ffc`0e69e2b7 4157            push    r15
+0:000> u kernelbase!GetPrivateProfileStringW
+Couldn't resolve error at 'kernelbase!GetPrivateProfileStringW'
+0:000> u ntdll!GetPrivateProfileStringW
+Couldn't resolve error at 'ntdll!GetPrivateProfileStringW'
+0:000> u kernel32!GetProfileStringW
+kernel32!GetProfileStringW:
+00007ffc`0e6d8f30 4883ec38        sub     rsp,38h
+00007ffc`0e6d8f34 488364242800    and     qword ptr [rsp+28h],0
+00007ffc`0e6d8f3a 8b442460        mov     eax,dword ptr [rsp+60h]
+00007ffc`0e6d8f3e 89442420        mov     dword ptr [rsp+20h],eax
+00007ffc`0e6d8f42 e85953fcff      call    kernel32!GetPrivateProfileStringW (00007ffc`0e69e2a0)
+00007ffc`0e6d8f47 4883c438        add     rsp,38h
+00007ffc`0e6d8f4b c3              ret
+00007ffc`0e6d8f4c cc              int     3
+0:000> u kernelbase!GetProfileStringW
+Couldn't resolve error at 'kernelbase!GetProfileStringW'
+0:000> u ntdll!GetProfileStringW
+Couldn't resolve error at 'ntdll!GetProfileStringW'
+0:000> u kernel32!ShowWindow
+Couldn't resolve error at 'kernel32!ShowWindow'
+0:000> u kernelbase!ShowWindow
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!ShowWindow
+Couldn't resolve error at 'ntdll!ShowWindow'
+0:000> u kernel32!IMessenger3::MyContacts
+Couldn't resolve error at 'kernel32!IMessenger3::MyContacts'
+0:000> u kernelbase!IMessenger3::MyContacts
+Couldn't resolve error at 'kernelbase!IMessenger3::MyContacts'
+0:000> u ntdll!IMessenger3::MyContacts
+Couldn't resolve error at 'ntdll!IMessenger3::MyContacts'
+0:000> u kernel32!FindFirstChangeNotificationW
+kernel32!FindFirstChangeNotificationW:
+00007ffc`0e6a2610 ff25b2230500    jmp     qword ptr [kernel32!_imp_FindFirstChangeNotificationW (00007ffc`0e6f49c8)]
+00007ffc`0e6a2616 cc              int     3
+00007ffc`0e6a2617 cc              int     3
+00007ffc`0e6a2618 cc              int     3
+00007ffc`0e6a2619 cc              int     3
+00007ffc`0e6a261a cc              int     3
+00007ffc`0e6a261b cc              int     3
+00007ffc`0e6a261c cc              int     3
+0:000> u kernelbase!FindFirstChangeNotificationW
+KERNELBASE!FindFirstChangeNotificationW:
+00007ffc`0cff96e0 488bc4          mov     rax,rsp
+00007ffc`0cff96e3 48895808        mov     qword ptr [rax+8],rbx
+00007ffc`0cff96e7 48897010        mov     qword ptr [rax+10h],rsi
+00007ffc`0cff96eb 48897818        mov     qword ptr [rax+18h],rdi
+00007ffc`0cff96ef 55              push    rbp
+00007ffc`0cff96f0 4156            push    r14
+00007ffc`0cff96f2 4157            push    r15
+00007ffc`0cff96f4 488d68a1        lea     rbp,[rax-5Fh]
+0:000> u ntdll!FindFirstChangeNotificationW
+Couldn't resolve error at 'ntdll!FindFirstChangeNotificationW'
+0:000> u kernel32!FindCloseChangeNotification
+kernel32!FindCloseChangeNotification:
+00007ffc`0e6a25f0 ff252a230500    jmp     qword ptr [kernel32!_imp_FindCloseChangeNotification (00007ffc`0e6f4920)]
+00007ffc`0e6a25f6 cc              int     3
+00007ffc`0e6a25f7 cc              int     3
+00007ffc`0e6a25f8 cc              int     3
+00007ffc`0e6a25f9 cc              int     3
+00007ffc`0e6a25fa cc              int     3
+00007ffc`0e6a25fb cc              int     3
+00007ffc`0e6a25fc cc              int     3
+0:000> u kernelbase!FindCloseChangeNotification
+KERNELBASE!FindCloseChangeNotification:
+00007ffc`0cffbde0 e99b61fcff      jmp     KERNELBASE!CloseHandle (00007ffc`0cfc1f80)
+00007ffc`0cffbde5 cc              int     3
+00007ffc`0cffbde6 cc              int     3
+00007ffc`0cffbde7 cc              int     3
+00007ffc`0cffbde8 cc              int     3
+00007ffc`0cffbde9 cc              int     3
+00007ffc`0cffbdea cc              int     3
+00007ffc`0cffbdeb cc              int     3
+0:000> u ntdll!FindCloseChangeNotification
+Couldn't resolve error at 'ntdll!FindCloseChangeNotification'
+0:000> u kernel32!GlobalMemoryStatus
+kernel32!GlobalMemoryStatus:
+00007ffc`0e68ea50 4053            push    rbx
+00007ffc`0e68ea52 4883ec70        sub     rsp,70h
+00007ffc`0e68ea56 488b0593570900  mov     rax,qword ptr [kernel32!_security_cookie (00007ffc`0e7241f0)]
+00007ffc`0e68ea5d 4833c4          xor     rax,rsp
+00007ffc`0e68ea60 4889442460      mov     qword ptr [rsp+60h],rax
+00007ffc`0e68ea65 33d2            xor     edx,edx
+00007ffc`0e68ea67 488bd9          mov     rbx,rcx
+00007ffc`0e68ea6a 488d4c2420      lea     rcx,[rsp+20h]
+0:000> u kernelbase!GlobalMemoryStatus
+Couldn't resolve error at 'kernelbase!GlobalMemoryStatus'
+0:000> u ntdll!GlobalMemoryStatus
+Couldn't resolve error at 'ntdll!GlobalMemoryStatus'
+0:000> u kernel32!LocalReAlloc
+Couldn't resolve error at 'kernel32!LocalReAlloc'
+0:000> u kernelbase!LocalReAlloc
+KERNELBASE!LocalReAlloc:
+00007ffc`0cfe1060 48895c2410      mov     qword ptr [rsp+10h],rbx
+00007ffc`0cfe1065 4889742418      mov     qword ptr [rsp+18h],rsi
+00007ffc`0cfe106a 57              push    rdi
+00007ffc`0cfe106b 4154            push    r12
+00007ffc`0cfe106d 4155            push    r13
+00007ffc`0cfe106f 4156            push    r14
+00007ffc`0cfe1071 4157            push    r15
+00007ffc`0cfe1073 4883ec30        sub     rsp,30h
+0:000> u ntdll!LocalReAlloc
+Couldn't resolve error at 'ntdll!LocalReAlloc'
+0:000> u kernel32!LocalSize
+kernel32!LocalSize:
+00007ffc`0e68c130 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0e68c135 57              push    rdi
+00007ffc`0e68c136 4883ec40        sub     rsp,40h
+00007ffc`0e68c13a 488bf9          mov     rdi,rcx
+00007ffc`0e68c13d 4883cbff        or      rbx,0FFFFFFFFFFFFFFFFh
+00007ffc`0e68c141 48895c2430      mov     qword ptr [rsp+30h],rbx
+00007ffc`0e68c146 8364245800      and     dword ptr [rsp+58h],0
+00007ffc`0e68c14b 488b0dfe880900  mov     rcx,qword ptr [kernel32!BaseHeap (00007ffc`0e724a50)]
+0:000> u kernelbase!LocalSize
+Couldn't resolve error at 'kernelbase!LocalSize'
+0:000> u ntdll!LocalSize
+Couldn't resolve error at 'ntdll!LocalSize'
+0:000> u kernel32!GetPrivateProfileSectionW
+kernel32!GetPrivateProfileSectionW:
+00007ffc`0e694020 4c8bdc          mov     r11,rsp
+00007ffc`0e694023 49895b08        mov     qword ptr [r11+8],rbx
+00007ffc`0e694027 49897310        mov     qword ptr [r11+10h],rsi
+00007ffc`0e69402b 57              push    rdi
+00007ffc`0e69402c 4883ec40        sub     rsp,40h
+00007ffc`0e694030 418bd8          mov     ebx,r8d
+00007ffc`0e694033 498d4318        lea     rax,[r11+18h]
+00007ffc`0e694037 498943f0        mov     qword ptr [r11-10h],rax
+0:000> u kernelbase!GetPrivateProfileSectionW
+Couldn't resolve error at 'kernelbase!GetPrivateProfileSectionW'
+0:000> u ntdll!GetPrivateProfileSectionW
+Couldn't resolve error at 'ntdll!GetPrivateProfileSectionW'
+0:000> u kernel32!GetPrivateProfileIntW
+kernel32!GetPrivateProfileIntW:
+00007ffc`0e69f350 4055            push    rbp
+00007ffc`0e69f352 53              push    rbx
+00007ffc`0e69f353 488dac2488feffff lea     rbp,[rsp-178h]
+00007ffc`0e69f35b 4881ec78020000  sub     rsp,278h
+00007ffc`0e69f362 488b05874e0800  mov     rax,qword ptr [kernel32!_security_cookie (00007ffc`0e7241f0)]
+00007ffc`0e69f369 4833c4          xor     rax,rsp
+00007ffc`0e69f36c 48898560010000  mov     qword ptr [rbp+160h],rax
+00007ffc`0e69f373 8364243000      and     dword ptr [rsp+30h],0
+0:000> u kernelbase!GetPrivateProfileIntW
+Couldn't resolve error at 'kernelbase!GetPrivateProfileIntW'
+0:000> u ntdll!GetPrivateProfileIntW
+Couldn't resolve error at 'ntdll!GetPrivateProfileIntW'
+0:000> u kernel32!ExitThread
+Couldn't resolve error at 'kernel32!ExitThread'
+0:000> u kernelbase!ExitThread
+Couldn't resolve error at 'kernelbase!ExitThread'
+0:000> u ntdll!ExitThread
+Couldn't resolve error at 'ntdll!ExitThread'
+0:000> u kernel32!RegQueryValueA
+Couldn't resolve error at 'kernel32!RegQueryValueA'
+0:000> u kernelbase!RegQueryValueA
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!RegQueryValueA
+Couldn't resolve error at 'ntdll!RegQueryValueA'
+0:000> u kernel32!RegEnumKeyA
+Couldn't resolve error at 'kernel32!RegEnumKeyA'
+0:000> u kernelbase!RegEnumKeyA
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!RegEnumKeyA
+Couldn't resolve error at 'ntdll!RegEnumKeyA'
+0:000> u kernel32!RegGetKeySecurity
+Couldn't resolve error at 'kernel32!RegGetKeySecurity'
+0:000> u kernelbase!RegGetKeySecurity
+Matched: 00007ffc`0cf9e470 KERNELBASE!RegGetKeySecurity (void)
+Matched: 00007ffc`0cffcda0 KERNELBASE!RegGetKeySecurity (void)
+Ambiguous symbol error at 'kernelbase!RegGetKeySecurity'
+0:000> u ntdll!RegGetKeySecurity
+Couldn't resolve error at 'ntdll!RegGetKeySecurity'
+0:000> u kernel32!GetFileAttributesExW
+kernel32!GetFileAttributesExW:
+00007ffc`0e6a2770 ff2512210500    jmp     qword ptr [kernel32!_imp_GetFileAttributesExW (00007ffc`0e6f4888)]
+00007ffc`0e6a2776 cc              int     3
+00007ffc`0e6a2777 cc              int     3
+00007ffc`0e6a2778 cc              int     3
+00007ffc`0e6a2779 cc              int     3
+00007ffc`0e6a277a cc              int     3
+00007ffc`0e6a277b cc              int     3
+00007ffc`0e6a277c cc              int     3
+0:000> u kernelbase!GetFileAttributesExW
+KERNELBASE!GetFileAttributesExW:
+00007ffc`0cfc1330 4053            push    rbx
+00007ffc`0cfc1332 4883ec30        sub     rsp,30h
+00007ffc`0cfc1336 e82d000000      call    KERNELBASE!GetFileAttributesExInternal (00007ffc`0cfc1368)
+00007ffc`0cfc133b 4533c9          xor     r9d,r9d
+00007ffc`0cfc133e c744242003000000 mov     dword ptr [rsp+20h],3
+00007ffc`0cfc1346 4c8d054bca1300  lea     r8,[KERNELBASE!Feature_BrokeredCreateFile2_logged_traits (00007ffc`0d0fdd98)]
+00007ffc`0cfc134d badedaad00      mov     edx,0ADDADEh
+00007ffc`0cfc1352 488d0dff251f00  lea     rcx,[KERNELBASE!Feature_P1FileDirectoryBrokering__private_propertyCache (00007ffc`0d1b3958)]
+0:000> u ntdll!GetFileAttributesExW
+Couldn't resolve error at 'ntdll!GetFileAttributesExW'
+0:000> u kernel32!IsBadStringPtrA
+kernel32!IsBadStringPtrA:
+00007ffc`0e6b6470 4883ec18        sub     rsp,18h
+00007ffc`0e6b6474 4885d2          test    rdx,rdx
+00007ffc`0e6b6477 7438            je      kernel32!IsBadStringPtrA+0x41 (00007ffc`0e6b64b1)
+00007ffc`0e6b6479 4885c9          test    rcx,rcx
+00007ffc`0e6b647c 7505            jne     kernel32!IsBadStringPtrA+0x13 (00007ffc`0e6b6483)
+00007ffc`0e6b647e 8d4101          lea     eax,[rcx+1]
+00007ffc`0e6b6481 eb30            jmp     kernel32!IsBadStringPtrA+0x43 (00007ffc`0e6b64b3)
+00007ffc`0e6b6483 48890c24        mov     qword ptr [rsp],rcx
+0:000> u kernelbase!IsBadStringPtrA
+Couldn't resolve error at 'kernelbase!IsBadStringPtrA'
+0:000> u ntdll!IsBadStringPtrA
+Couldn't resolve error at 'ntdll!IsBadStringPtrA'
+0:000> u kernel32!RegEnumValueA
+Couldn't resolve error at 'kernel32!RegEnumValueA'
+0:000> u kernelbase!RegEnumValueA
+KERNELBASE!RegEnumValueA:
+00007ffc`0cf9e020 4c8bdc          mov     r11,rsp
+00007ffc`0cf9e023 4d894b20        mov     qword ptr [r11+20h],r9
+00007ffc`0cf9e027 4d894318        mov     qword ptr [r11+18h],r8
+00007ffc`0cf9e02b 89542410        mov     dword ptr [rsp+10h],edx
+00007ffc`0cf9e02f 49894b08        mov     qword ptr [r11+8],rcx
+00007ffc`0cf9e033 53              push    rbx
+00007ffc`0cf9e034 56              push    rsi
+00007ffc`0cf9e035 57              push    rdi
+0:000> u ntdll!RegEnumValueA
+Couldn't resolve error at 'ntdll!RegEnumValueA'
+0:000> u kernel32!ntohs
+Couldn't resolve error at 'kernel32!ntohs'
+0:000> u kernelbase!ntohs
+KERNELBASE!ntohs:
+00007ffc`0cffd4c0 0fb7d1          movzx   edx,cx
+00007ffc`0cffd4c3 8bc2            mov     eax,edx
+00007ffc`0cffd4c5 66c1e208        shl     dx,8
+00007ffc`0cffd4c9 c1e808          shr     eax,8
+00007ffc`0cffd4cc 660bc2          or      ax,dx
+00007ffc`0cffd4cf c3              ret
+KERNELBASE!GetApplicationURL:
+00007ffc`0cffd4d0 48832200        and     qword ptr [rdx],0
+00007ffc`0cffd4d4 b805400080      mov     eax,80004005h
+0:000> u ntdll!ntohs
+Couldn't resolve error at 'ntdll!ntohs'
+0:000> u kernel32!FindFirstFileW
+kernel32!FindFirstFileW:
+00007ffc`0e6a2660 ff2532230500    jmp     qword ptr [kernel32!_imp_FindFirstFileW (00007ffc`0e6f4998)]
+00007ffc`0e6a2666 cc              int     3
+00007ffc`0e6a2667 cc              int     3
+00007ffc`0e6a2668 cc              int     3
+00007ffc`0e6a2669 cc              int     3
+00007ffc`0e6a266a cc              int     3
+00007ffc`0e6a266b cc              int     3
+00007ffc`0e6a266c cc              int     3
+0:000> u kernelbase!FindFirstFileW
+KERNELBASE!FindFirstFileW:
+00007ffc`0cfba860 4883ec38        sub     rsp,38h
+00007ffc`0cfba864 8364242800      and     dword ptr [rsp+28h],0
+00007ffc`0cfba869 4c8bc2          mov     r8,rdx
+00007ffc`0cfba86c 488364242000    and     qword ptr [rsp+20h],0
+00007ffc`0cfba872 33d2            xor     edx,edx
+00007ffc`0cfba874 4533c9          xor     r9d,r9d
+00007ffc`0cfba877 e8d41d0000      call    KERNELBASE!FindFirstFileExW (00007ffc`0cfbc650)
+00007ffc`0cfba87c 4883c438        add     rsp,38h
+0:000> u ntdll!FindFirstFileW
+Couldn't resolve error at 'ntdll!FindFirstFileW'
+0:000> u kernel32!VirtualProtect
+Couldn't resolve error at 'kernel32!VirtualProtect'
+0:000> u kernelbase!VirtualProtect
+KERNELBASE!VirtualProtect:
+00007ffc`0cfe4090 488bc4          mov     rax,rsp
+00007ffc`0cfe4093 48895818        mov     qword ptr [rax+18h],rbx
+00007ffc`0cfe4097 55              push    rbp
+00007ffc`0cfe4098 56              push    rsi
+00007ffc`0cfe4099 57              push    rdi
+00007ffc`0cfe409a 4883ec30        sub     rsp,30h
+00007ffc`0cfe409e 498bf1          mov     rsi,r9
+00007ffc`0cfe40a1 4c8948d8        mov     qword ptr [rax-28h],r9
+0:000> u ntdll!VirtualProtect
+Couldn't resolve error at 'ntdll!VirtualProtect'
+0:000> u kernel32!GetCurrentDirectoryA
+Couldn't resolve error at 'kernel32!GetCurrentDirectoryA'
+0:000> u kernelbase!GetCurrentDirectoryA
+KERNELBASE!GetCurrentDirectoryA:
+00007ffc`0cff88d0 48895c2418      mov     qword ptr [rsp+18h],rbx
+00007ffc`0cff88d5 55              push    rbp
+00007ffc`0cff88d6 56              push    rsi
+00007ffc`0cff88d7 57              push    rdi
+00007ffc`0cff88d8 4156            push    r14
+00007ffc`0cff88da 4157            push    r15
+00007ffc`0cff88dc 488d6c24a0      lea     rbp,[rsp-60h]
+00007ffc`0cff88e1 4881ec60010000  sub     rsp,160h
+0:000> u ntdll!GetCurrentDirectoryA
+Couldn't resolve error at 'ntdll!GetCurrentDirectoryA'
+0:000> u kernel32!Process32First
+kernel32!Process32First:
+00007ffc`0e6dc5d0 48895c2418      mov     qword ptr [rsp+18h],rbx
+00007ffc`0e6dc5d5 57              push    rdi
+00007ffc`0e6dc5d6 4881ec90020000  sub     rsp,290h
+00007ffc`0e6dc5dd 488b050c7c0400  mov     rax,qword ptr [kernel32!_security_cookie (00007ffc`0e7241f0)]
+00007ffc`0e6dc5e4 4833c4          xor     rax,rsp
+00007ffc`0e6dc5e7 4889842480020000 mov     qword ptr [rsp+280h],rax
+00007ffc`0e6dc5ef 488bfa          mov     rdi,rdx
+00007ffc`0e6dc5f2 4885d2          test    rdx,rdx
+0:000> u kernelbase!Process32First
+Couldn't resolve error at 'kernelbase!Process32First'
+0:000> u ntdll!Process32First
+Couldn't resolve error at 'ntdll!Process32First'
+0:000> u kernel32!Process32Next
+kernel32!Process32Next:
+00007ffc`0e6dc6c0 48895c2418      mov     qword ptr [rsp+18h],rbx
+00007ffc`0e6dc6c5 57              push    rdi
+00007ffc`0e6dc6c6 4881ec90020000  sub     rsp,290h
+00007ffc`0e6dc6cd 488b051c7b0400  mov     rax,qword ptr [kernel32!_security_cookie (00007ffc`0e7241f0)]
+00007ffc`0e6dc6d4 4833c4          xor     rax,rsp
+00007ffc`0e6dc6d7 4889842480020000 mov     qword ptr [rsp+280h],rax
+00007ffc`0e6dc6df 488bfa          mov     rdi,rdx
+00007ffc`0e6dc6e2 4885d2          test    rdx,rdx
+0:000> u kernelbase!Process32Next
+Couldn't resolve error at 'kernelbase!Process32Next'
+0:000> u ntdll!Process32Next
+Couldn't resolve error at 'ntdll!Process32Next'
+0:000> u kernel32!GetProfileStringA
+kernel32!GetProfileStringA:
+00007ffc`0e6d8f00 4883ec38        sub     rsp,38h
+00007ffc`0e6d8f04 488364242800    and     qword ptr [rsp+28h],0
+00007ffc`0e6d8f0a 8b442460        mov     eax,dword ptr [rsp+60h]
+00007ffc`0e6d8f0e 89442420        mov     dword ptr [rsp+20h],eax
+00007ffc`0e6d8f12 e8b971fcff      call    kernel32!GetPrivateProfileStringA (00007ffc`0e6a00d0)
+00007ffc`0e6d8f17 4883c438        add     rsp,38h
+00007ffc`0e6d8f1b c3              ret
+00007ffc`0e6d8f1c cc              int     3
+0:000> u kernelbase!GetProfileStringA
+Couldn't resolve error at 'kernelbase!GetProfileStringA'
+0:000> u ntdll!GetProfileStringA
+Couldn't resolve error at 'ntdll!GetProfileStringA'
+0:000> u kernel32!GetStartupInfoW
+Couldn't resolve error at 'kernel32!GetStartupInfoW'
+0:000> u kernelbase!GetStartupInfoW
+KERNELBASE!GetStartupInfoW:
+00007ffc`0cfe9360 65488b042560000000 mov   rax,qword ptr gs:[60h]
+00007ffc`0cfe9369 488bd1          mov     rdx,rcx
+00007ffc`0cfe936c 4c8b4020        mov     r8,qword ptr [rax+20h]
+00007ffc`0cfe9370 c70168000000    mov     dword ptr [rcx],68h
+00007ffc`0cfe9376 498b80d8000000  mov     rax,qword ptr [r8+0D8h]
+00007ffc`0cfe937d 48894108        mov     qword ptr [rcx+8],rax
+00007ffc`0cfe9381 498b80c8000000  mov     rax,qword ptr [r8+0C8h]
+00007ffc`0cfe9388 48894110        mov     qword ptr [rcx+10h],rax
+0:000> u ntdll!GetStartupInfoW
+Couldn't resolve error at 'ntdll!GetStartupInfoW'
+0:000> u kernel32!RegDeleteKeyW
+Couldn't resolve error at 'kernel32!RegDeleteKeyW'
+0:000> u kernelbase!RegDeleteKeyW
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!RegDeleteKeyW
+Couldn't resolve error at 'ntdll!RegDeleteKeyW'
+0:000> u kernel32!GetModuleHandleExW
+Couldn't resolve error at 'kernel32!GetModuleHandleExW'
+0:000> u kernelbase!GetModuleHandleExW
+KERNELBASE!GetModuleHandleExW:
+00007ffc`0cfdd8e0 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0cfdd8e5 4889742410      mov     qword ptr [rsp+10h],rsi
+00007ffc`0cfdd8ea 57              push    rdi
+00007ffc`0cfdd8eb 4883ec30        sub     rsp,30h
+00007ffc`0cfdd8ef 498bf8          mov     rdi,r8
+00007ffc`0cfdd8f2 488bda          mov     rbx,rdx
+00007ffc`0cfdd8f5 8bf1            mov     esi,ecx
+00007ffc`0cfdd8f7 4d85c0          test    r8,r8
+0:000> u ntdll!GetModuleHandleExW
+Couldn't resolve error at 'ntdll!GetModuleHandleExW'
+0:000> u kernel32!WaitForInputIdle
+Couldn't resolve error at 'kernel32!WaitForInputIdle'
+0:000> u kernelbase!WaitForInputIdle
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!WaitForInputIdle
+Couldn't resolve error at 'ntdll!WaitForInputIdle'
+0:000> u kernel32!GetExitCodeThread
+Couldn't resolve error at 'kernel32!GetExitCodeThread'
+0:000> u kernelbase!GetExitCodeThread
+KERNELBASE!GetExitCodeThread:
+00007ffc`0cff4340 4053            push    rbx
+00007ffc`0cff4342 4883ec60        sub     rsp,60h
+00007ffc`0cff4346 488364242000    and     qword ptr [rsp+20h],0
+00007ffc`0cff434c 4c8d442430      lea     r8,[rsp+30h]
+00007ffc`0cff4351 488bda          mov     rbx,rdx
+00007ffc`0cff4354 41b930000000    mov     r9d,30h
+00007ffc`0cff435a 33d2            xor     edx,edx
+00007ffc`0cff435c ff1506521000    call    qword ptr [KERNELBASE!_imp_NtQueryInformationThread (00007ffc`0d0f9568)]
+0:000> u ntdll!GetExitCodeThread
+Couldn't resolve error at 'ntdll!GetExitCodeThread'
+0:000> u kernel32!GetTempPathA
+kernel32!GetTempPathA:
+00007ffc`0e6a2850 ff252a220500    jmp     qword ptr [kernel32!_imp_GetTempPathA (00007ffc`0e6f4a80)]
+00007ffc`0e6a2856 cc              int     3
+00007ffc`0e6a2857 cc              int     3
+00007ffc`0e6a2858 cc              int     3
+00007ffc`0e6a2859 cc              int     3
+00007ffc`0e6a285a cc              int     3
+00007ffc`0e6a285b cc              int     3
+00007ffc`0e6a285c cc              int     3
+0:000> u kernelbase!GetTempPathA
+KERNELBASE!GetTempPathA:
+00007ffc`0cffefc0 48895c2410      mov     qword ptr [rsp+10h],rbx
+00007ffc`0cffefc5 4889742418      mov     qword ptr [rsp+18h],rsi
+00007ffc`0cffefca 48897c2420      mov     qword ptr [rsp+20h],rdi
+00007ffc`0cffefcf 55              push    rbp
+00007ffc`0cffefd0 488bec          mov     rbp,rsp
+00007ffc`0cffefd3 4883ec40        sub     rsp,40h
+00007ffc`0cffefd7 8d4101          lea     eax,[rcx+1]
+00007ffc`0cffefda 8bd9            mov     ebx,ecx
+0:000> u ntdll!GetTempPathA
+Couldn't resolve error at 'ntdll!GetTempPathA'
+0:000> u kernel32!GlobalFlags
+kernel32!GlobalFlags:
+00007ffc`0e690ca0 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0e690ca5 4889742420      mov     qword ptr [rsp+20h],rsi
+00007ffc`0e690caa 57              push    rdi
+00007ffc`0e690cab 4883ec40        sub     rsp,40h
+00007ffc`0e690caf 488bf1          mov     rsi,rcx
+00007ffc`0e690cb2 bb00800000      mov     ebx,8000h
+00007ffc`0e690cb7 895c2430        mov     dword ptr [rsp+30h],ebx
+00007ffc`0e690cbb 488b0d8e3d0900  mov     rcx,qword ptr [kernel32!BaseHeap (00007ffc`0e724a50)]
+0:000> u kernelbase!GlobalFlags
+Couldn't resolve error at 'kernelbase!GlobalFlags'
+0:000> u ntdll!GlobalFlags
+Couldn't resolve error at 'ntdll!GlobalFlags'
+0:000> u kernel32!IClassFactory::CreateInstance
+Couldn't resolve error at 'kernel32!IClassFactory::CreateInstance'
+0:000> u kernelbase!IClassFactory::CreateInstance
+Couldn't resolve error at 'kernelbase!IClassFactory::CreateInstance'
+0:000> u ntdll!IClassFactory::CreateInstance
+Couldn't resolve error at 'ntdll!IClassFactory::CreateInstance'
+0:000> u kernel32!IOleObject::GetMiscStatus
+Couldn't resolve error at 'kernel32!IOleObject::GetMiscStatus'
+0:000> u kernelbase!IOleObject::GetMiscStatus
+Couldn't resolve error at 'kernelbase!IOleObject::GetMiscStatus'
+0:000> u ntdll!IOleObject::GetMiscStatus
+Couldn't resolve error at 'ntdll!IOleObject::GetMiscStatus'
+0:000> u kernel32!IOleObject::SetClientSite
+Couldn't resolve error at 'kernel32!IOleObject::SetClientSite'
+0:000> u kernelbase!IOleObject::SetClientSite
+Couldn't resolve error at 'kernelbase!IOleObject::SetClientSite'
+0:000> u ntdll!IOleObject::SetClientSite
+Couldn't resolve error at 'ntdll!IOleObject::SetClientSite'
+0:000> u kernel32!IPersistStreamInit::InitNew
+Couldn't resolve error at 'kernel32!IPersistStreamInit::InitNew'
+0:000> u kernelbase!IPersistStreamInit::InitNew
+Couldn't resolve error at 'kernelbase!IPersistStreamInit::InitNew'
+0:000> u ntdll!IPersistStreamInit::InitNew
+Couldn't resolve error at 'ntdll!IPersistStreamInit::InitNew'
+0:000> u kernel32!IConnectionPointContainer::FindConnectionPoint
+Couldn't resolve error at 'kernel32!IConnectionPointContainer::FindConnectionPoint'
+0:000> u kernelbase!IConnectionPointContainer::FindConnectionPoint
+Couldn't resolve error at 'kernelbase!IConnectionPointContainer::FindConnectionPoint'
+0:000> u ntdll!IConnectionPointContainer::FindConnectionPoint
+Couldn't resolve error at 'ntdll!IConnectionPointContainer::FindConnectionPoint'
+0:000> u kernel32!IOleObject::SetExtent
+Couldn't resolve error at 'kernel32!IOleObject::SetExtent'
+0:000> u kernelbase!IOleObject::SetExtent
+Couldn't resolve error at 'kernelbase!IOleObject::SetExtent'
+0:000> u ntdll!IOleObject::SetExtent
+Couldn't resolve error at 'ntdll!IOleObject::SetExtent'
+0:000> u kernel32!IOleObject::GetExtent
+Couldn't resolve error at 'kernel32!IOleObject::GetExtent'
+0:000> u kernelbase!IOleObject::GetExtent
+Couldn't resolve error at 'kernelbase!IOleObject::GetExtent'
+0:000> u ntdll!IOleObject::GetExtent
+Couldn't resolve error at 'ntdll!IOleObject::GetExtent'
+0:000> u kernel32!IOleWindow::GetWindow
+Couldn't resolve error at 'kernel32!IOleWindow::GetWindow'
+0:000> u kernelbase!IOleWindow::GetWindow
+Couldn't resolve error at 'kernelbase!IOleWindow::GetWindow'
+0:000> u ntdll!IOleWindow::GetWindow
+Couldn't resolve error at 'ntdll!IOleWindow::GetWindow'
+0:000> u kernel32!IOleObject::DoVerb
+Couldn't resolve error at 'kernel32!IOleObject::DoVerb'
+0:000> u kernelbase!IOleObject::DoVerb
+Couldn't resolve error at 'kernelbase!IOleObject::DoVerb'
+0:000> u ntdll!IOleObject::DoVerb
+Couldn't resolve error at 'ntdll!IOleObject::DoVerb'
+0:000> u kernel32!IOleControl::GetControlInfo
+Couldn't resolve error at 'kernel32!IOleControl::GetControlInfo'
+0:000> u kernelbase!IOleControl::GetControlInfo
+Couldn't resolve error at 'kernelbase!IOleControl::GetControlInfo'
+0:000> u ntdll!IOleControl::GetControlInfo
+Couldn't resolve error at 'ntdll!IOleControl::GetControlInfo'
+0:000> u kernel32!IDispatch::Invoke
+Couldn't resolve error at 'kernel32!IDispatch::Invoke'
+0:000> u kernelbase!IDispatch::Invoke
+Couldn't resolve error at 'kernelbase!IDispatch::Invoke'
+0:000> u ntdll!IDispatch::Invoke
+Couldn't resolve error at 'ntdll!IDispatch::Invoke'
+0:000> u kernel32!IWebBrowser::Navigate
+Couldn't resolve error at 'kernel32!IWebBrowser::Navigate'
+0:000> u kernelbase!IWebBrowser::Navigate
+Couldn't resolve error at 'kernelbase!IWebBrowser::Navigate'
+0:000> u ntdll!IWebBrowser::Navigate
+Couldn't resolve error at 'ntdll!IWebBrowser::Navigate'
+0:000> u kernel32!IWebBrowser::get_Document
+Couldn't resolve error at 'kernel32!IWebBrowser::get_Document'
+0:000> u kernelbase!IWebBrowser::get_Document
+Couldn't resolve error at 'kernelbase!IWebBrowser::get_Document'
+0:000> u ntdll!IWebBrowser::get_Document
+Couldn't resolve error at 'ntdll!IWebBrowser::get_Document'
+0:000> u kernel32!GetWindowTextA
+Couldn't resolve error at 'kernel32!GetWindowTextA'
+0:000> u kernelbase!GetWindowTextA
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!GetWindowTextA
+Couldn't resolve error at 'ntdll!GetWindowTextA'
+0:000> u kernel32!recv
+Couldn't resolve error at 'kernel32!recv'
+0:000> u kernelbase!recv
+KERNELBASE!GetAwarenessFromDpiAwarenessContext:
+00007ffc`0d06d0f0 4883ec28        sub     rsp,28h
+00007ffc`0d06d0f4 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d0f9 ff15a9b40800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d0ff 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0d06d102 4883c428        add     rsp,28h
+00007ffc`0d06d106 c3              ret
+00007ffc`0d06d107 cc              int     3
+00007ffc`0d06d108 cc              int     3
+0:000> u ntdll!recv
+Couldn't resolve error at 'ntdll!recv'
+0:000> u kernel32!WSAGetLastError
+Couldn't resolve error at 'kernel32!WSAGetLastError'
+0:000> u kernelbase!WSAGetLastError
+KERNELBASE!WSAGetLastError:
+00007ffc`0cffd440 b87e000000      mov     eax,7Eh
+00007ffc`0cffd445 c3              ret
+00007ffc`0cffd446 cc              int     3
+00007ffc`0cffd447 cc              int     3
+00007ffc`0cffd448 cc              int     3
+00007ffc`0cffd449 cc              int     3
+00007ffc`0cffd44a cc              int     3
+00007ffc`0cffd44b cc              int     3
+0:000> u ntdll!WSAGetLastError
+Couldn't resolve error at 'ntdll!WSAGetLastError'
+0:000> u kernel32!DestroyWindow
+Couldn't resolve error at 'kernel32!DestroyWindow'
+0:000> u kernelbase!DestroyWindow
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!DestroyWindow
+Couldn't resolve error at 'ntdll!DestroyWindow'
+0:000> u kernel32!GetProfileIntA
+kernel32!GetProfileIntA:
+00007ffc`0e6a0050 4533c9          xor     r9d,r9d
+00007ffc`0e6a0053 e908000000      jmp     kernel32!GetPrivateProfileIntA (00007ffc`0e6a0060)
+00007ffc`0e6a0058 cc              int     3
+00007ffc`0e6a0059 cc              int     3
+00007ffc`0e6a005a cc              int     3
+00007ffc`0e6a005b cc              int     3
+00007ffc`0e6a005c cc              int     3
+00007ffc`0e6a005d cc              int     3
+0:000> u kernelbase!GetProfileIntA
+Couldn't resolve error at 'kernelbase!GetProfileIntA'
+0:000> u ntdll!GetProfileIntA
+Couldn't resolve error at 'ntdll!GetProfileIntA'
+0:000> u kernel32!GetProfileSectionW
+kernel32!GetProfileSectionW:
+00007ffc`0e691d40 4533c9          xor     r9d,r9d
+00007ffc`0e691d43 e9d8220000      jmp     kernel32!GetPrivateProfileSectionW (00007ffc`0e694020)
+kernel32!BaseDllReadApplicationVariables:
+00007ffc`0e691d48 48895c2418      mov     qword ptr [rsp+18h],rbx
+00007ffc`0e691d4d 55              push    rbp
+00007ffc`0e691d4e 56              push    rsi
+00007ffc`0e691d4f 57              push    rdi
+00007ffc`0e691d50 4156            push    r14
+00007ffc`0e691d52 4157            push    r15
+0:000> u kernelbase!GetProfileSectionW
+Couldn't resolve error at 'kernelbase!GetProfileSectionW'
+0:000> u ntdll!GetProfileSectionW
+Couldn't resolve error at 'ntdll!GetProfileSectionW'
+0:000> u kernel32!MessageBoxW
+Couldn't resolve error at 'kernel32!MessageBoxW'
+0:000> u kernelbase!MessageBoxW
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!MessageBoxW
+Couldn't resolve error at 'ntdll!MessageBoxW'
+0:000> u kernel32!SetFileAttributesA
+kernel32!SetFileAttributesA:
+00007ffc`0e6a2960 ff25721f0500    jmp     qword ptr [kernel32!_imp_SetFileAttributesA (00007ffc`0e6f48d8)]
+00007ffc`0e6a2966 cc              int     3
+00007ffc`0e6a2967 cc              int     3
+00007ffc`0e6a2968 cc              int     3
+00007ffc`0e6a2969 cc              int     3
+00007ffc`0e6a296a cc              int     3
+00007ffc`0e6a296b cc              int     3
+00007ffc`0e6a296c cc              int     3
+0:000> u kernelbase!SetFileAttributesA
+KERNELBASE!SetFileAttributesA:
+00007ffc`0d066f20 4053            push    rbx
+00007ffc`0d066f22 4883ec30        sub     rsp,30h
+00007ffc`0d066f26 8bda            mov     ebx,edx
+00007ffc`0d066f28 488bd1          mov     rdx,rcx
+00007ffc`0d066f2b 488d4c2420      lea     rcx,[rsp+20h]
+00007ffc`0d066f30 e81775f2ff      call    KERNELBASE!Basep8BitStringToDynamicUnicodeString (00007ffc`0cf8e44c)
+00007ffc`0d066f35 85c0            test    eax,eax
+00007ffc`0d066f37 741b            je      KERNELBASE!SetFileAttributesA+0x34 (00007ffc`0d066f54)
+0:000> u ntdll!SetFileAttributesA
+Couldn't resolve error at 'ntdll!SetFileAttributesA'
+0:000> u kernel32!GetDiskFreeSpaceA
+kernel32!GetDiskFreeSpaceA:
+00007ffc`0e6a26f0 ff2562220500    jmp     qword ptr [kernel32!_imp_GetDiskFreeSpaceA (00007ffc`0e6f4958)]
+00007ffc`0e6a26f6 cc              int     3
+00007ffc`0e6a26f7 cc              int     3
+00007ffc`0e6a26f8 cc              int     3
+00007ffc`0e6a26f9 cc              int     3
+00007ffc`0e6a26fa cc              int     3
+00007ffc`0e6a26fb cc              int     3
+00007ffc`0e6a26fc cc              int     3
+0:000> u kernelbase!GetDiskFreeSpaceA
+KERNELBASE!GetDiskFreeSpaceA:
+00007ffc`0d0683f0 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0d0683f5 4889742410      mov     qword ptr [rsp+10h],rsi
+00007ffc`0d0683fa 57              push    rdi
+00007ffc`0d0683fb 4883ec40        sub     rsp,40h
+00007ffc`0d0683ff 488bf2          mov     rsi,rdx
+00007ffc`0d068402 4885c9          test    rcx,rcx
+00007ffc`0d068405 488d15647e0900  lea     rdx,[KERNELBASE!`string' (00007ffc`0d100270)]
+00007ffc`0d06840c 498bd9          mov     rbx,r9
+0:000> u ntdll!GetDiskFreeSpaceA
+Couldn't resolve error at 'ntdll!GetDiskFreeSpaceA'
+0:000> u kernel32!WSARecv
+Couldn't resolve error at 'kernel32!WSARecv'
+0:000> u kernelbase!WSARecv
+KERNELBASE!GetAwarenessFromDpiAwarenessContext:
+00007ffc`0d06d0f0 4883ec28        sub     rsp,28h
+00007ffc`0d06d0f4 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d0f9 ff15a9b40800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d0ff 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0d06d102 4883c428        add     rsp,28h
+00007ffc`0d06d106 c3              ret
+00007ffc`0d06d107 cc              int     3
+00007ffc`0d06d108 cc              int     3
+0:000> u ntdll!WSARecv
+Couldn't resolve error at 'ntdll!WSARecv'
+0:000> u kernel32!send
+Couldn't resolve error at 'kernel32!send'
+0:000> u kernelbase!send
+KERNELBASE!GetAwarenessFromDpiAwarenessContext:
+00007ffc`0d06d0f0 4883ec28        sub     rsp,28h
+00007ffc`0d06d0f4 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d0f9 ff15a9b40800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d0ff 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0d06d102 4883c428        add     rsp,28h
+00007ffc`0d06d106 c3              ret
+00007ffc`0d06d107 cc              int     3
+00007ffc`0d06d108 cc              int     3
+0:000> u ntdll!send
+Couldn't resolve error at 'ntdll!send'
+0:000> u kernel32!WSASetLastError
+Couldn't resolve error at 'kernel32!WSASetLastError'
+0:000> u kernelbase!WSASetLastError
+KERNELBASE!CalculateAspectRatio:
+00007ffc`0cff75b0 b97f000000      mov     ecx,7Fh
+00007ffc`0cff75b5 48ff25ec0f1000  jmp     qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0cff75bc cc              int     3
+00007ffc`0cff75bd cc              int     3
+00007ffc`0cff75be cc              int     3
+00007ffc`0cff75bf cc              int     3
+00007ffc`0cff75c0 cc              int     3
+00007ffc`0cff75c1 cc              int     3
+0:000> u ntdll!WSASetLastError
+Couldn't resolve error at 'ntdll!WSASetLastError'
+0:000> u kernel32!inet_ntoa
+Couldn't resolve error at 'kernel32!inet_ntoa'
+0:000> u kernelbase!inet_ntoa
+KERNELBASE!BeginPanningFeedback:
+00007ffc`0cffb240 33c0            xor     eax,eax
+00007ffc`0cffb242 c3              ret
+00007ffc`0cffb243 cc              int     3
+00007ffc`0cffb244 cc              int     3
+00007ffc`0cffb245 cc              int     3
+00007ffc`0cffb246 cc              int     3
+00007ffc`0cffb247 cc              int     3
+00007ffc`0cffb248 cc              int     3
+0:000> u ntdll!inet_ntoa
+Couldn't resolve error at 'ntdll!inet_ntoa'
+0:000> u kernel32!bind
+Couldn't resolve error at 'kernel32!bind'
+0:000> u kernelbase!bind
+KERNELBASE!GetAwarenessFromDpiAwarenessContext:
+00007ffc`0d06d0f0 4883ec28        sub     rsp,28h
+00007ffc`0d06d0f4 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d0f9 ff15a9b40800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d0ff 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0d06d102 4883c428        add     rsp,28h
+00007ffc`0d06d106 c3              ret
+00007ffc`0d06d107 cc              int     3
+00007ffc`0d06d108 cc              int     3
+0:000> u ntdll!bind
+Couldn't resolve error at 'ntdll!bind'
+0:000> u kernel32!WSACleanup
+Couldn't resolve error at 'kernel32!WSACleanup'
+0:000> u kernelbase!WSACleanup
+KERNELBASE!IERegGetBufferSizeSz:
+00007ffc`0cffcab0 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0cffcab3 c3              ret
+00007ffc`0cffcab4 cc              int     3
+00007ffc`0cffcab5 cc              int     3
+00007ffc`0cffcab6 cc              int     3
+00007ffc`0cffcab7 cc              int     3
+00007ffc`0cffcab8 cc              int     3
+00007ffc`0cffcab9 cc              int     3
+0:000> u ntdll!WSACleanup
+Couldn't resolve error at 'ntdll!WSACleanup'
+0:000> u kernel32!NtEnumerateKey
+Couldn't resolve error at 'kernel32!NtEnumerateKey'
+0:000> u kernelbase!NtEnumerateKey
+Couldn't resolve error at 'kernelbase!NtEnumerateKey'
+0:000> u ntdll!NtEnumerateKey
+ntdll!NtEnumerateKey:
+00007ffc`10af04b0 4c8bd1          mov     r10,rcx
+00007ffc`10af04b3 b832000000      mov     eax,32h
+00007ffc`10af04b8 f604250803fe7f01 test    byte ptr [SharedUserData+0x308 (00000000`7ffe0308)],1
+00007ffc`10af04c0 7503            jne     ntdll!NtEnumerateKey+0x15 (00007ffc`10af04c5)
+00007ffc`10af04c2 0f05            syscall
+00007ffc`10af04c4 c3              ret
+00007ffc`10af04c5 cd2e            int     2Eh
+00007ffc`10af04c7 c3              ret
+0:000> u kernel32!GetFileInformationByHandle
+kernel32!GetFileInformationByHandle:
+00007ffc`0e6a2790 ff259a200500    jmp     qword ptr [kernel32!_imp_GetFileInformationByHandle (00007ffc`0e6f4830)]
+00007ffc`0e6a2796 cc              int     3
+00007ffc`0e6a2797 cc              int     3
+00007ffc`0e6a2798 cc              int     3
+00007ffc`0e6a2799 cc              int     3
+00007ffc`0e6a279a cc              int     3
+00007ffc`0e6a279b cc              int     3
+00007ffc`0e6a279c cc              int     3
+0:000> u kernelbase!GetFileInformationByHandle
+KERNELBASE!GetFileInformationByHandle:
+00007ffc`0cfd73d0 48895c2418      mov     qword ptr [rsp+18h],rbx
+00007ffc`0cfd73d5 55              push    rbp
+00007ffc`0cfd73d6 56              push    rsi
+00007ffc`0cfd73d7 57              push    rdi
+00007ffc`0cfd73d8 488d6c24f0      lea     rbp,[rsp-10h]
+00007ffc`0cfd73dd 4881ec10010000  sub     rsp,110h
+00007ffc`0cfd73e4 488b05959e1d00  mov     rax,qword ptr [KERNELBASE!_security_cookie (00007ffc`0d1b1280)]
+00007ffc`0cfd73eb 4833c4          xor     rax,rsp
+0:000> u ntdll!GetFileInformationByHandle
+Couldn't resolve error at 'ntdll!GetFileInformationByHandle'
+0:000> u kernel32!FindFirstFileA
+kernel32!FindFirstFileA:
+00007ffc`0e6a2620 ff258a230500    jmp     qword ptr [kernel32!_imp_FindFirstFileA (00007ffc`0e6f49b0)]
+00007ffc`0e6a2626 cc              int     3
+00007ffc`0e6a2627 cc              int     3
+00007ffc`0e6a2628 cc              int     3
+00007ffc`0e6a2629 cc              int     3
+00007ffc`0e6a262a cc              int     3
+00007ffc`0e6a262b cc              int     3
+00007ffc`0e6a262c cc              int     3
+0:000> u kernelbase!FindFirstFileA
+KERNELBASE!FindFirstFileA:
+00007ffc`0cf8d890 4889742418      mov     qword ptr [rsp+18h],rsi
+00007ffc`0cf8d895 55              push    rbp
+00007ffc`0cf8d896 57              push    rdi
+00007ffc`0cf8d897 4156            push    r14
+00007ffc`0cf8d899 488dac2440feffff lea     rbp,[rsp-1C0h]
+00007ffc`0cf8d8a1 4881ecc0020000  sub     rsp,2C0h
+00007ffc`0cf8d8a8 488b05d1392200  mov     rax,qword ptr [KERNELBASE!_security_cookie (00007ffc`0d1b1280)]
+00007ffc`0cf8d8af 4833c4          xor     rax,rsp
+0:000> u ntdll!FindFirstFileA
+Couldn't resolve error at 'ntdll!FindFirstFileA'
+0:000> u kernel32!NetWkstaGetInfo
+Couldn't resolve error at 'kernel32!NetWkstaGetInfo'
+0:000> u kernelbase!NetWkstaGetInfo
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!NetWkstaGetInfo
+Couldn't resolve error at 'ntdll!NetWkstaGetInfo'
+0:000> u kernel32!NetWkstaUserGetInfo
+Couldn't resolve error at 'kernel32!NetWkstaUserGetInfo'
+0:000> u kernelbase!NetWkstaUserGetInfo
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!NetWkstaUserGetInfo
+Couldn't resolve error at 'ntdll!NetWkstaUserGetInfo'
+0:000> u kernel32!NetApiBufferFree
+Couldn't resolve error at 'kernel32!NetApiBufferFree'
+0:000> u kernelbase!NetApiBufferFree
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!NetApiBufferFree
+Couldn't resolve error at 'ntdll!NetApiBufferFree'
+0:000> u kernel32!NetUseEnum
+Couldn't resolve error at 'kernel32!NetUseEnum'
+0:000> u kernelbase!NetUseEnum
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!NetUseEnum
+Couldn't resolve error at 'ntdll!NetUseEnum'
+0:000> u kernel32!WinExec
+kernel32!WinExec:
+00007ffc`0e6de660 488bc4          mov     rax,rsp
+00007ffc`0e6de663 48895810        mov     qword ptr [rax+10h],rbx
+00007ffc`0e6de667 48897018        mov     qword ptr [rax+18h],rsi
+00007ffc`0e6de66b 48897820        mov     qword ptr [rax+20h],rdi
+00007ffc`0e6de66f 55              push    rbp
+00007ffc`0e6de670 488d68c8        lea     rbp,[rax-38h]
+00007ffc`0e6de674 4881ec30010000  sub     rsp,130h
+00007ffc`0e6de67b 488b056e5b0400  mov     rax,qword ptr [kernel32!_security_cookie (00007ffc`0e7241f0)]
+0:000> u kernelbase!WinExec
+Couldn't resolve error at 'kernelbase!WinExec'
+0:000> u ntdll!WinExec
+Couldn't resolve error at 'ntdll!WinExec'
+0:000> u kernel32!WSAAsyncSelect
+Couldn't resolve error at 'kernel32!WSAAsyncSelect'
+0:000> u kernelbase!WSAAsyncSelect
+KERNELBASE!IERegGetBufferSizeSz:
+00007ffc`0cffcab0 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0cffcab3 c3              ret
+00007ffc`0cffcab4 cc              int     3
+00007ffc`0cffcab5 cc              int     3
+00007ffc`0cffcab6 cc              int     3
+00007ffc`0cffcab7 cc              int     3
+00007ffc`0cffcab8 cc              int     3
+00007ffc`0cffcab9 cc              int     3
+0:000> u ntdll!WSAAsyncSelect
+Couldn't resolve error at 'ntdll!WSAAsyncSelect'
+0:000> u kernel32!listen
+Couldn't resolve error at 'kernel32!listen'
+0:000> u kernelbase!listen
+KERNELBASE!GetAwarenessFromDpiAwarenessContext:
+00007ffc`0d06d0f0 4883ec28        sub     rsp,28h
+00007ffc`0d06d0f4 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d0f9 ff15a9b40800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d0ff 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0d06d102 4883c428        add     rsp,28h
+00007ffc`0d06d106 c3              ret
+00007ffc`0d06d107 cc              int     3
+00007ffc`0d06d108 cc              int     3
+0:000> u ntdll!listen
+Couldn't resolve error at 'ntdll!listen'
+0:000> u kernel32!gethostname
+Couldn't resolve error at 'kernel32!gethostname'
+0:000> u kernelbase!gethostname
+KERNELBASE!IERegGetBufferSizeSz:
+00007ffc`0cffcab0 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0cffcab3 c3              ret
+00007ffc`0cffcab4 cc              int     3
+00007ffc`0cffcab5 cc              int     3
+00007ffc`0cffcab6 cc              int     3
+00007ffc`0cffcab7 cc              int     3
+00007ffc`0cffcab8 cc              int     3
+00007ffc`0cffcab9 cc              int     3
+0:000> u ntdll!gethostname
+Couldn't resolve error at 'ntdll!gethostname'
+0:000> u kernel32!GetPrivateProfileIntA
+kernel32!GetPrivateProfileIntA:
+00007ffc`0e6a0060 4053            push    rbx
+00007ffc`0e6a0062 4881ec50010000  sub     rsp,150h
+00007ffc`0e6a0069 488b0580410800  mov     rax,qword ptr [kernel32!_security_cookie (00007ffc`0e7241f0)]
+00007ffc`0e6a0070 4833c4          xor     rax,rsp
+00007ffc`0e6a0073 4889842440010000 mov     qword ptr [rsp+140h],rax
+00007ffc`0e6a007b 8364243000      and     dword ptr [rsp+30h],0
+00007ffc`0e6a0080 418bd8          mov     ebx,r8d
+00007ffc`0e6a0083 4c894c2428      mov     qword ptr [rsp+28h],r9
+0:000> u kernelbase!GetPrivateProfileIntA
+Couldn't resolve error at 'kernelbase!GetPrivateProfileIntA'
+0:000> u ntdll!GetPrivateProfileIntA
+Couldn't resolve error at 'ntdll!GetPrivateProfileIntA'
+0:000> u kernel32!InternetOpenA
+Couldn't resolve error at 'kernel32!InternetOpenA'
+0:000> u kernelbase!InternetOpenA
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!InternetOpenA
+Couldn't resolve error at 'ntdll!InternetOpenA'
+0:000> u kernel32!CreateProcessA
+Couldn't resolve error at 'kernel32!CreateProcessA'
+0:000> u kernelbase!CreateProcessA
+KERNELBASE!CreateProcessA:
+00007ffc`0cf8d810 4c8bdc          mov     r11,rsp
+00007ffc`0cf8d813 4883ec68        sub     rsp,68h
+00007ffc`0cf8d817 498363f000      and     qword ptr [r11-10h],0
+00007ffc`0cf8d81c 488b8424b8000000 mov     rax,qword ptr [rsp+0B8h]
+00007ffc`0cf8d824 498943e8        mov     qword ptr [r11-18h],rax
+00007ffc`0cf8d828 488b8424b0000000 mov     rax,qword ptr [rsp+0B0h]
+00007ffc`0cf8d830 498943e0        mov     qword ptr [r11-20h],rax
+00007ffc`0cf8d834 488b8424a8000000 mov     rax,qword ptr [rsp+0A8h]
+0:000> u ntdll!CreateProcessA
+Couldn't resolve error at 'ntdll!CreateProcessA'
+0:000> u kernel32!WritePrivateProfileStringA
+kernel32!WritePrivateProfileStringA:
+00007ffc`0e6d8fc0 4c8bdc          mov     r11,rsp
+00007ffc`0e6d8fc3 4883ec48        sub     rsp,48h
+00007ffc`0e6d8fc7 488bc2          mov     rax,rdx
+00007ffc`0e6d8fca 48f7d8          neg     rax
+00007ffc`0e6d8fcd 4d1bd2          sbb     r10,r10
+00007ffc`0e6d8fd0 498363f000      and     qword ptr [r11-10h],0
+00007ffc`0e6d8fd5 4d23d0          and     r10,r8
+00007ffc`0e6d8fd8 4533c0          xor     r8d,r8d
+0:000> u kernelbase!WritePrivateProfileStringA
+Couldn't resolve error at 'kernelbase!WritePrivateProfileStringA'
+0:000> u ntdll!WritePrivateProfileStringA
+Couldn't resolve error at 'ntdll!WritePrivateProfileStringA'
+0:000> u kernel32!CreateDirectoryA
+kernel32!CreateDirectoryA:
+00007ffc`0e6a2540 ff259a240500    jmp     qword ptr [kernel32!_imp_CreateDirectoryA (00007ffc`0e6f49e0)]
+00007ffc`0e6a2546 cc              int     3
+00007ffc`0e6a2547 cc              int     3
+00007ffc`0e6a2548 cc              int     3
+00007ffc`0e6a2549 cc              int     3
+00007ffc`0e6a254a cc              int     3
+00007ffc`0e6a254b cc              int     3
+00007ffc`0e6a254c cc              int     3
+0:000> u kernelbase!CreateDirectoryA
+KERNELBASE!CreateDirectoryA:
+00007ffc`0cffae20 4053            push    rbx
+00007ffc`0cffae22 4883ec30        sub     rsp,30h
+00007ffc`0cffae26 488bda          mov     rbx,rdx
+00007ffc`0cffae29 488bd1          mov     rdx,rcx
+00007ffc`0cffae2c 488d4c2420      lea     rcx,[rsp+20h]
+00007ffc`0cffae31 e81636f9ff      call    KERNELBASE!Basep8BitStringToDynamicUnicodeString (00007ffc`0cf8e44c)
+00007ffc`0cffae36 85c0            test    eax,eax
+00007ffc`0cffae38 7422            je      KERNELBASE!CreateDirectoryA+0x3c (00007ffc`0cffae5c)
+0:000> u ntdll!CreateDirectoryA
+Couldn't resolve error at 'ntdll!CreateDirectoryA'
+0:000> u kernel32!SetProcessWorkingSetSize
+kernel32!SetProcessWorkingSetSize:
+00007ffc`0e691ba0 4533c9          xor     r9d,r9d
+00007ffc`0e691ba3 48ff25ee340600  jmp     qword ptr [kernel32!_imp_SetProcessWorkingSetSizeEx (00007ffc`0e6f5098)]
+00007ffc`0e691baa cc              int     3
+00007ffc`0e691bab cc              int     3
+00007ffc`0e691bac cc              int     3
+00007ffc`0e691bad cc              int     3
+00007ffc`0e691bae cc              int     3
+00007ffc`0e691baf cc              int     3
+0:000> u kernelbase!SetProcessWorkingSetSize
+Couldn't resolve error at 'kernelbase!SetProcessWorkingSetSize'
+0:000> u ntdll!SetProcessWorkingSetSize
+Couldn't resolve error at 'ntdll!SetProcessWorkingSetSize'
+0:000> u kernel32!IsBadHugeWritePtr
+kernel32!IsBadHugeWritePtr:
+00007ffc`0e6b6460 e92badfeff      jmp     kernel32!IsBadWritePtr (00007ffc`0e6a1190)
+00007ffc`0e6b6465 cc              int     3
+00007ffc`0e6b6466 cc              int     3
+00007ffc`0e6b6467 cc              int     3
+00007ffc`0e6b6468 cc              int     3
+00007ffc`0e6b6469 cc              int     3
+00007ffc`0e6b646a cc              int     3
+00007ffc`0e6b646b cc              int     3
+0:000> u kernelbase!IsBadHugeWritePtr
+Couldn't resolve error at 'kernelbase!IsBadHugeWritePtr'
+0:000> u ntdll!IsBadHugeWritePtr
+Couldn't resolve error at 'ntdll!IsBadHugeWritePtr'
+0:000> u kernel32!SearchPathA
+Couldn't resolve error at 'kernel32!SearchPathA'
+0:000> u kernelbase!SearchPathA
+KERNELBASE!SearchPathA:
+00007ffc`0d0689f0 488bc4          mov     rax,rsp
+00007ffc`0d0689f3 48895808        mov     qword ptr [rax+8],rbx
+00007ffc`0d0689f7 48897010        mov     qword ptr [rax+10h],rsi
+00007ffc`0d0689fb 48897818        mov     qword ptr [rax+18h],rdi
+00007ffc`0d0689ff 4c896020        mov     qword ptr [rax+20h],r12
+00007ffc`0d068a03 55              push    rbp
+00007ffc`0d068a04 4156            push    r14
+00007ffc`0d068a06 4157            push    r15
+0:000> u ntdll!SearchPathA
+Couldn't resolve error at 'ntdll!SearchPathA'
+0:000> u kernel32!GetTempPathW
+kernel32!GetTempPathW:
+00007ffc`0e6a2860 ff25da210500    jmp     qword ptr [kernel32!_imp_GetTempPathW (00007ffc`0e6f4a40)]
+00007ffc`0e6a2866 cc              int     3
+00007ffc`0e6a2867 cc              int     3
+00007ffc`0e6a2868 cc              int     3
+00007ffc`0e6a2869 cc              int     3
+00007ffc`0e6a286a cc              int     3
+00007ffc`0e6a286b cc              int     3
+00007ffc`0e6a286c cc              int     3
+0:000> u kernelbase!GetTempPathW
+KERNELBASE!GetTempPathW:
+00007ffc`0cfe8ba0 4c8bdc          mov     r11,rsp
+00007ffc`0cfe8ba3 49895b10        mov     qword ptr [r11+10h],rbx
+00007ffc`0cfe8ba7 49897318        mov     qword ptr [r11+18h],rsi
+00007ffc`0cfe8bab 57              push    rdi
+00007ffc`0cfe8bac 4156            push    r14
+00007ffc`0cfe8bae 4157            push    r15
+00007ffc`0cfe8bb0 4883ec40        sub     rsp,40h
+00007ffc`0cfe8bb4 488bf2          mov     rsi,rdx
+0:000> u ntdll!GetTempPathW
+Couldn't resolve error at 'ntdll!GetTempPathW'
+0:000> u kernel32!UnlockFile
+kernel32!UnlockFile:
+00007ffc`0e6a29d0 ff253a1f0500    jmp     qword ptr [kernel32!_imp_UnlockFile (00007ffc`0e6f4910)]
+00007ffc`0e6a29d6 cc              int     3
+00007ffc`0e6a29d7 cc              int     3
+00007ffc`0e6a29d8 cc              int     3
+00007ffc`0e6a29d9 cc              int     3
+00007ffc`0e6a29da cc              int     3
+00007ffc`0e6a29db cc              int     3
+00007ffc`0e6a29dc cc              int     3
+0:000> u kernelbase!UnlockFile
+KERNELBASE!UnlockFile:
+00007ffc`0cfe4640 4c8bdc          mov     r11,rsp
+00007ffc`0cfe4643 49895b08        mov     qword ptr [r11+8],rbx
+00007ffc`0cfe4647 57              push    rdi
+00007ffc`0cfe4648 4883ec50        sub     rsp,50h
+00007ffc`0cfe464c 488bf9          mov     rdi,rcx
+00007ffc`0cfe464f 89542440        mov     dword ptr [rsp+40h],edx
+00007ffc`0cfe4653 498d4bd8        lea     rcx,[r11-28h]
+00007ffc`0cfe4657 458943ec        mov     dword ptr [r11-14h],r8d
+0:000> u ntdll!UnlockFile
+Couldn't resolve error at 'ntdll!UnlockFile'
+0:000> u kernel32!IShellLinkA::SetPath
+Couldn't resolve error at 'kernel32!IShellLinkA::SetPath'
+0:000> u kernelbase!IShellLinkA::SetPath
+Couldn't resolve error at 'kernelbase!IShellLinkA::SetPath'
+0:000> u ntdll!IShellLinkA::SetPath
+Couldn't resolve error at 'ntdll!IShellLinkA::SetPath'
+0:000> u kernel32!IShellLinkA::SetArguments
+Couldn't resolve error at 'kernel32!IShellLinkA::SetArguments'
+0:000> u kernelbase!IShellLinkA::SetArguments
+Couldn't resolve error at 'kernelbase!IShellLinkA::SetArguments'
+0:000> u ntdll!IShellLinkA::SetArguments
+Couldn't resolve error at 'ntdll!IShellLinkA::SetArguments'
+0:000> u kernel32!IShellLinkA::SetWorkingDirectory
+Couldn't resolve error at 'kernel32!IShellLinkA::SetWorkingDirectory'
+0:000> u kernelbase!IShellLinkA::SetWorkingDirectory
+Couldn't resolve error at 'kernelbase!IShellLinkA::SetWorkingDirectory'
+0:000> u ntdll!IShellLinkA::SetWorkingDirectory
+Couldn't resolve error at 'ntdll!IShellLinkA::SetWorkingDirectory'
+0:000> u kernel32!IShellLinkA::SetIconLocation
+Couldn't resolve error at 'kernel32!IShellLinkA::SetIconLocation'
+0:000> u kernelbase!IShellLinkA::SetIconLocation
+Couldn't resolve error at 'kernelbase!IShellLinkA::SetIconLocation'
+0:000> u ntdll!IShellLinkA::SetIconLocation
+Couldn't resolve error at 'ntdll!IShellLinkA::SetIconLocation'
+0:000> u kernel32!IShellLinkA::SetShowCmd
+Couldn't resolve error at 'kernel32!IShellLinkA::SetShowCmd'
+0:000> u kernelbase!IShellLinkA::SetShowCmd
+Couldn't resolve error at 'kernelbase!IShellLinkA::SetShowCmd'
+0:000> u ntdll!IShellLinkA::SetShowCmd
+Couldn't resolve error at 'ntdll!IShellLinkA::SetShowCmd'
+0:000> u kernel32!IPersistFile::Save
+Couldn't resolve error at 'kernel32!IPersistFile::Save'
+0:000> u kernelbase!IPersistFile::Save
+Couldn't resolve error at 'kernelbase!IPersistFile::Save'
+0:000> u ntdll!IPersistFile::Save
+Couldn't resolve error at 'ntdll!IPersistFile::Save'
+0:000> u kernel32!ShellExecuteExA
+Couldn't resolve error at 'kernel32!ShellExecuteExA'
+0:000> u kernelbase!ShellExecuteExA
+KERNELBASE!BeginPanningFeedback:
+00007ffc`0cffb240 33c0            xor     eax,eax
+00007ffc`0cffb242 c3              ret
+00007ffc`0cffb243 cc              int     3
+00007ffc`0cffb244 cc              int     3
+00007ffc`0cffb245 cc              int     3
+00007ffc`0cffb246 cc              int     3
+00007ffc`0cffb247 cc              int     3
+00007ffc`0cffb248 cc              int     3
+0:000> u ntdll!ShellExecuteExA
+Couldn't resolve error at 'ntdll!ShellExecuteExA'
+0:000> u kernel32!EndDialog
+Couldn't resolve error at 'kernel32!EndDialog'
+0:000> u kernelbase!EndDialog
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!EndDialog
+Couldn't resolve error at 'ntdll!EndDialog'
+0:000> u kernel32!DialogBoxParamA
+Couldn't resolve error at 'kernel32!DialogBoxParamA'
+0:000> u kernelbase!DialogBoxParamA
+KERNELBASE!AvCreateTaskIndex:
+00007ffc`0d06b780 4883ec28        sub     rsp,28h
+00007ffc`0d06b784 b97f000000      mov     ecx,7Fh
+00007ffc`0d06b789 ff1519ce0800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06b78f 4883c8ff        or      rax,0FFFFFFFFFFFFFFFFh
+00007ffc`0d06b793 4883c428        add     rsp,28h
+00007ffc`0d06b797 c3              ret
+00007ffc`0d06b798 cc              int     3
+00007ffc`0d06b799 cc              int     3
+0:000> u ntdll!DialogBoxParamA
+Couldn't resolve error at 'ntdll!DialogBoxParamA'
+0:000> u kernel32!RegCreateKeyW
+Couldn't resolve error at 'kernel32!RegCreateKeyW'
+0:000> u kernelbase!RegCreateKeyW
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!RegCreateKeyW
+Couldn't resolve error at 'ntdll!RegCreateKeyW'
+0:000> u kernel32!RegFlushKey
+Couldn't resolve error at 'kernel32!RegFlushKey'
+0:000> u kernelbase!RegFlushKey
+Matched: 00007ffc`0cf9c970 KERNELBASE!RegFlushKey (void)
+Matched: 00007ffc`0cffcda0 KERNELBASE!RegFlushKey (void)
+Ambiguous symbol error at 'kernelbase!RegFlushKey'
+0:000> u ntdll!RegFlushKey
+Couldn't resolve error at 'ntdll!RegFlushKey'
+0:000> u kernel32!shutdown
+Couldn't resolve error at 'kernel32!shutdown'
+0:000> u kernelbase!shutdown
+KERNELBASE!GetAwarenessFromDpiAwarenessContext:
+00007ffc`0d06d0f0 4883ec28        sub     rsp,28h
+00007ffc`0d06d0f4 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d0f9 ff15a9b40800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d0ff 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0d06d102 4883c428        add     rsp,28h
+00007ffc`0d06d106 c3              ret
+00007ffc`0d06d107 cc              int     3
+00007ffc`0d06d108 cc              int     3
+0:000> u ntdll!shutdown
+Couldn't resolve error at 'ntdll!shutdown'
+0:000> u kernel32!CopyFileA
+kernel32!CopyFileA:
+00007ffc`0e6da140 48895c2408      mov     qword ptr [rsp+8],rbx
+00007ffc`0e6da145 4889742410      mov     qword ptr [rsp+10h],rsi
+00007ffc`0e6da14a 57              push    rdi
+00007ffc`0e6da14b 4883ec50        sub     rsp,50h
+00007ffc`0e6da14f 488bfa          mov     rdi,rdx
+00007ffc`0e6da152 418bf0          mov     esi,r8d
+00007ffc`0e6da155 488bd1          mov     rdx,rcx
+00007ffc`0e6da158 488d4c2440      lea     rcx,[rsp+40h]
+0:000> u kernelbase!CopyFileA
+Couldn't resolve error at 'kernelbase!CopyFileA'
+0:000> u ntdll!CopyFileA
+Couldn't resolve error at 'ntdll!CopyFileA'
+0:000> u kernel32!recvfrom
+Couldn't resolve error at 'kernel32!recvfrom'
+0:000> u kernelbase!recvfrom
+KERNELBASE!GetAwarenessFromDpiAwarenessContext:
+00007ffc`0d06d0f0 4883ec28        sub     rsp,28h
+00007ffc`0d06d0f4 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d0f9 ff15a9b40800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d0ff 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0d06d102 4883c428        add     rsp,28h
+00007ffc`0d06d106 c3              ret
+00007ffc`0d06d107 cc              int     3
+00007ffc`0d06d108 cc              int     3
+0:000> u ntdll!recvfrom
+Couldn't resolve error at 'ntdll!recvfrom'
+0:000> u kernel32!SuspendThread
+Couldn't resolve error at 'kernel32!SuspendThread'
+0:000> u kernelbase!SuspendThread
+KERNELBASE!SuspendThread:
+00007ffc`0cff9f00 4883ec28        sub     rsp,28h
+00007ffc`0cff9f04 488d542438      lea     rdx,[rsp+38h]
+00007ffc`0cff9f09 ff1579f60f00    call    qword ptr [KERNELBASE!_imp_NtSuspendThread (00007ffc`0d0f9588)]
+00007ffc`0cff9f0f 85c0            test    eax,eax
+00007ffc`0cff9f11 7809            js      KERNELBASE!SuspendThread+0x1c (00007ffc`0cff9f1c)
+00007ffc`0cff9f13 8b442438        mov     eax,dword ptr [rsp+38h]
+00007ffc`0cff9f17 4883c428        add     rsp,28h
+00007ffc`0cff9f1b c3              ret
+0:000> u ntdll!SuspendThread
+Couldn't resolve error at 'ntdll!SuspendThread'
+0:000> u kernel32!ConvertThreadToFiber
+kernel32!ConvertThreadToFiber:
+00007ffc`0e6a2c10 ff25a21b0500    jmp     qword ptr [kernel32!_imp_ConvertThreadToFiber (00007ffc`0e6f47b8)]
+00007ffc`0e6a2c16 cc              int     3
+00007ffc`0e6a2c17 cc              int     3
+00007ffc`0e6a2c18 cc              int     3
+00007ffc`0e6a2c19 cc              int     3
+00007ffc`0e6a2c1a cc              int     3
+00007ffc`0e6a2c1b cc              int     3
+00007ffc`0e6a2c1c cc              int     3
+0:000> u kernelbase!ConvertThreadToFiber
+KERNELBASE!ConvertThreadToFiber:
+00007ffc`0cfe9440 33d2            xor     edx,edx
+00007ffc`0cfe9442 e909000000      jmp     KERNELBASE!ConvertThreadToFiberEx (00007ffc`0cfe9450)
+00007ffc`0cfe9447 cc              int     3
+00007ffc`0cfe9448 cc              int     3
+00007ffc`0cfe9449 cc              int     3
+00007ffc`0cfe944a cc              int     3
+00007ffc`0cfe944b cc              int     3
+00007ffc`0cfe944c cc              int     3
+0:000> u ntdll!ConvertThreadToFiber
+Couldn't resolve error at 'ntdll!ConvertThreadToFiber'
+0:000> u kernel32!CreateFiber
+kernel32!CreateFiber:
+00007ffc`0e6a2c30 ff259a1b0500    jmp     qword ptr [kernel32!_imp_CreateFiber (00007ffc`0e6f47d0)]
+00007ffc`0e6a2c36 cc              int     3
+00007ffc`0e6a2c37 cc              int     3
+00007ffc`0e6a2c38 cc              int     3
+00007ffc`0e6a2c39 cc              int     3
+00007ffc`0e6a2c3a cc              int     3
+00007ffc`0e6a2c3b cc              int     3
+00007ffc`0e6a2c3c cc              int     3
+0:000> u kernelbase!CreateFiber
+KERNELBASE!CreateFiber:
+00007ffc`0cfed0f0 4883ec38        sub     rsp,38h
+00007ffc`0cfed0f4 4c89442420      mov     qword ptr [rsp+20h],r8
+00007ffc`0cfed0f9 4c8bca          mov     r9,rdx
+00007ffc`0cfed0fc 4533c0          xor     r8d,r8d
+00007ffc`0cfed0ff 33d2            xor     edx,edx
+00007ffc`0cfed101 e81a000000      call    KERNELBASE!CreateFiberEx (00007ffc`0cfed120)
+00007ffc`0cfed106 4883c438        add     rsp,38h
+00007ffc`0cfed10a c3              ret
+0:000> u ntdll!CreateFiber
+Couldn't resolve error at 'ntdll!CreateFiber'
+0:000> u kernel32!SwitchToFiber
+kernel32!SwitchToFiber:
+00007ffc`0e6a2c60 ff25621b0500    jmp     qword ptr [kernel32!_imp_SwitchToFiber (00007ffc`0e6f47c8)]
+00007ffc`0e6a2c66 cc              int     3
+00007ffc`0e6a2c67 cc              int     3
+00007ffc`0e6a2c68 cc              int     3
+00007ffc`0e6a2c69 cc              int     3
+00007ffc`0e6a2c6a cc              int     3
+00007ffc`0e6a2c6b cc              int     3
+00007ffc`0e6a2c6c cc              int     3
+0:000> u kernelbase!SwitchToFiber
+KERNELBASE!SwitchToFiber:
+00007ffc`0cff0c40 488b4110        mov     rax,qword ptr [rcx+10h]
+00007ffc`0cff0c44 4833051d151c00  xor     rax,qword ptr [KERNELBASE!BasepFiberCookie (00007ffc`0d1b2168)]
+00007ffc`0cff0c4b 4833c1          xor     rax,rcx
+00007ffc`0cff0c4e 48398120050000  cmp     qword ptr [rcx+520h],rax
+00007ffc`0cff0c55 0f85cd6b0300    jne     KERNELBASE!SwitchToFiber+0x36be8 (00007ffc`0d027828)
+00007ffc`0cff0c5b e9104b0100      jmp     KERNELBASE!SwitchToFiberContext (00007ffc`0d005770)
+00007ffc`0cff0c60 cc              int     3
+00007ffc`0cff0c61 cc              int     3
+0:000> u ntdll!SwitchToFiber
+Couldn't resolve error at 'ntdll!SwitchToFiber'
+0:000> u kernel32!WSARecvFrom
+Couldn't resolve error at 'kernel32!WSARecvFrom'
+0:000> u kernelbase!WSARecvFrom
+KERNELBASE!GetAwarenessFromDpiAwarenessContext:
+00007ffc`0d06d0f0 4883ec28        sub     rsp,28h
+00007ffc`0d06d0f4 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d0f9 ff15a9b40800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d0ff 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0d06d102 4883c428        add     rsp,28h
+00007ffc`0d06d106 c3              ret
+00007ffc`0d06d107 cc              int     3
+00007ffc`0d06d108 cc              int     3
+0:000> u ntdll!WSARecvFrom
+Couldn't resolve error at 'ntdll!WSARecvFrom'
+0:000> u kernel32!DeleteFileW
+kernel32!DeleteFileW:
+00007ffc`0e6a25b0 ff255a240500    jmp     qword ptr [kernel32!_imp_DeleteFileW (00007ffc`0e6f4a10)]
+00007ffc`0e6a25b6 cc              int     3
+00007ffc`0e6a25b7 cc              int     3
+00007ffc`0e6a25b8 cc              int     3
+00007ffc`0e6a25b9 cc              int     3
+00007ffc`0e6a25ba cc              int     3
+00007ffc`0e6a25bb cc              int     3
+00007ffc`0e6a25bc cc              int     3
+0:000> u kernelbase!DeleteFileW
+KERNELBASE!DeleteFileW:
+00007ffc`0cf8e140 4053            push    rbx
+00007ffc`0cf8e142 4883ec30        sub     rsp,30h
+00007ffc`0cf8e146 e82d000000      call    KERNELBASE!DeleteFileInternal (00007ffc`0cf8e178)
+00007ffc`0cf8e14b 4533c9          xor     r9d,r9d
+00007ffc`0cf8e14e c744242003000000 mov     dword ptr [rsp+20h],3
+00007ffc`0cf8e156 4c8d053bfc1600  lea     r8,[KERNELBASE!Feature_BrokeredCreateFile2_logged_traits (00007ffc`0d0fdd98)]
+00007ffc`0cf8e15d baefd6ad00      mov     edx,0ADD6EFh
+00007ffc`0cf8e162 488d0de7572200  lea     rcx,[KERNELBASE!Feature_P0FileDirectoryBrokering__private_propertyCache (00007ffc`0d1b3950)]
+0:000> u ntdll!DeleteFileW
+Couldn't resolve error at 'ntdll!DeleteFileW'
+0:000> u kernel32!IsBadHugeReadPtr
+kernel32!IsBadHugeReadPtr:
+00007ffc`0e6b6450 e9bbfffcff      jmp     kernel32!IsBadReadPtr (00007ffc`0e686410)
+00007ffc`0e6b6455 cc              int     3
+00007ffc`0e6b6456 cc              int     3
+00007ffc`0e6b6457 cc              int     3
+00007ffc`0e6b6458 cc              int     3
+00007ffc`0e6b6459 cc              int     3
+00007ffc`0e6b645a cc              int     3
+00007ffc`0e6b645b cc              int     3
+0:000> u kernelbase!IsBadHugeReadPtr
+Couldn't resolve error at 'kernelbase!IsBadHugeReadPtr'
+0:000> u ntdll!IsBadHugeReadPtr
+Couldn't resolve error at 'ntdll!IsBadHugeReadPtr'
+0:000> u kernel32!NetShareGetInfo
+Couldn't resolve error at 'kernel32!NetShareGetInfo'
+0:000> u kernelbase!NetShareGetInfo
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!NetShareGetInfo
+Couldn't resolve error at 'ntdll!NetShareGetInfo'
+0:000> u kernel32!WSAIoctl
+Couldn't resolve error at 'kernel32!WSAIoctl'
+0:000> u kernelbase!WSAIoctl
+KERNELBASE!GetAwarenessFromDpiAwarenessContext:
+00007ffc`0d06d0f0 4883ec28        sub     rsp,28h
+00007ffc`0d06d0f4 b97f000000      mov     ecx,7Fh
+00007ffc`0d06d0f9 ff15a9b40800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06d0ff 83c8ff          or      eax,0FFFFFFFFh
+00007ffc`0d06d102 4883c428        add     rsp,28h
+00007ffc`0d06d106 c3              ret
+00007ffc`0d06d107 cc              int     3
+00007ffc`0d06d108 cc              int     3
+0:000> u ntdll!WSAIoctl
+Couldn't resolve error at 'ntdll!WSAIoctl'
+0:000> u kernel32!GetProcessTimes
+Couldn't resolve error at 'kernel32!GetProcessTimes'
+0:000> u kernelbase!GetProcessTimes
+KERNELBASE!GetProcessTimes:
+00007ffc`0cfe40f0 4053            push    rbx
+00007ffc`0cfe40f2 56              push    rsi
+00007ffc`0cfe40f3 57              push    rdi
+00007ffc`0cfe40f4 4156            push    r14
+00007ffc`0cfe40f6 4883ec68        sub     rsp,68h
+00007ffc`0cfe40fa 488b057fd11c00  mov     rax,qword ptr [KERNELBASE!_security_cookie (00007ffc`0d1b1280)]
+00007ffc`0cfe4101 4833c4          xor     rax,rsp
+00007ffc`0cfe4104 4889442450      mov     qword ptr [rsp+50h],rax
+0:000> u ntdll!GetProcessTimes
+Couldn't resolve error at 'ntdll!GetProcessTimes'
+0:000> u kernel32!NtQueryKey
+Couldn't resolve error at 'kernel32!NtQueryKey'
+0:000> u kernelbase!NtQueryKey
+Couldn't resolve error at 'kernelbase!NtQueryKey'
+0:000> u ntdll!NtQueryKey
+ntdll!NtQueryKey:
+00007ffc`10af0130 4c8bd1          mov     r10,rcx
+00007ffc`10af0133 b816000000      mov     eax,16h
+00007ffc`10af0138 f604250803fe7f01 test    byte ptr [SharedUserData+0x308 (00000000`7ffe0308)],1
+00007ffc`10af0140 7503            jne     ntdll!NtQueryKey+0x15 (00007ffc`10af0145)
+00007ffc`10af0142 0f05            syscall
+00007ffc`10af0144 c3              ret
+00007ffc`10af0145 cd2e            int     2Eh
+00007ffc`10af0147 c3              ret
+0:000> u kernel32!IClassFactory2::CreateInstanceLic
+Couldn't resolve error at 'kernel32!IClassFactory2::CreateInstanceLic'
+0:000> u kernelbase!IClassFactory2::CreateInstanceLic
+Couldn't resolve error at 'kernelbase!IClassFactory2::CreateInstanceLic'
+0:000> u ntdll!IClassFactory2::CreateInstanceLic
+Couldn't resolve error at 'ntdll!IClassFactory2::CreateInstanceLic'
+0:000> u kernel32!IClassFactory::LockServer
+Couldn't resolve error at 'kernel32!IClassFactory::LockServer'
+0:000> u kernelbase!IClassFactory::LockServer
+Couldn't resolve error at 'kernelbase!IClassFactory::LockServer'
+0:000> u ntdll!IClassFactory::LockServer
+Couldn't resolve error at 'ntdll!IClassFactory::LockServer'
+0:000> u kernel32!IQuickActivate::QuickActivate
+Couldn't resolve error at 'kernel32!IQuickActivate::QuickActivate'
+0:000> u kernelbase!IQuickActivate::QuickActivate
+Couldn't resolve error at 'kernelbase!IQuickActivate::QuickActivate'
+0:000> u ntdll!IQuickActivate::QuickActivate
+Couldn't resolve error at 'ntdll!IQuickActivate::QuickActivate'
+0:000> u kernel32!IOleControl::FreezeEvents
+Couldn't resolve error at 'kernel32!IOleControl::FreezeEvents'
+0:000> u kernelbase!IOleControl::FreezeEvents
+Couldn't resolve error at 'kernelbase!IOleControl::FreezeEvents'
+0:000> u ntdll!IOleControl::FreezeEvents
+Couldn't resolve error at 'ntdll!IOleControl::FreezeEvents'
+0:000> u kernel32!IPersistStream::Load
+Couldn't resolve error at 'kernel32!IPersistStream::Load'
+0:000> u kernelbase!IPersistStream::Load
+Couldn't resolve error at 'kernelbase!IPersistStream::Load'
+0:000> u ntdll!IPersistStream::Load
+Couldn't resolve error at 'ntdll!IPersistStream::Load'
+0:000> u kernel32!IPersistStreamInit::Load
+Couldn't resolve error at 'kernel32!IPersistStreamInit::Load'
+0:000> u kernelbase!IPersistStreamInit::Load
+Couldn't resolve error at 'kernelbase!IPersistStreamInit::Load'
+0:000> u ntdll!IPersistStreamInit::Load
+Couldn't resolve error at 'ntdll!IPersistStreamInit::Load'
+0:000> u kernel32!IRichText::RightMargin
+Couldn't resolve error at 'kernel32!IRichText::RightMargin'
+0:000> u kernelbase!IRichText::RightMargin
+Couldn't resolve error at 'kernelbase!IRichText::RightMargin'
+0:000> u ntdll!IRichText::RightMargin
+Couldn't resolve error at 'ntdll!IRichText::RightMargin'
+0:000> u kernel32!IRichText::Font
+Couldn't resolve error at 'kernel32!IRichText::Font'
+0:000> u kernelbase!IRichText::Font
+Couldn't resolve error at 'kernelbase!IRichText::Font'
+0:000> u ntdll!IRichText::Font
+Couldn't resolve error at 'ntdll!IRichText::Font'
+0:000> u kernel32!IOleObject::GetClientSite
+Couldn't resolve error at 'kernel32!IOleObject::GetClientSite'
+0:000> u kernelbase!IOleObject::GetClientSite
+Couldn't resolve error at 'kernelbase!IOleObject::GetClientSite'
+0:000> u ntdll!IOleObject::GetClientSite
+Couldn't resolve error at 'ntdll!IOleObject::GetClientSite'
+0:000> u kernel32!IOleInPlaceObject::UIDeactivate
+Couldn't resolve error at 'kernel32!IOleInPlaceObject::UIDeactivate'
+0:000> u kernelbase!IOleInPlaceObject::UIDeactivate
+Couldn't resolve error at 'kernelbase!IOleInPlaceObject::UIDeactivate'
+0:000> u ntdll!IOleInPlaceObject::UIDeactivate
+Couldn't resolve error at 'ntdll!IOleInPlaceObject::UIDeactivate'
+0:000> u kernel32!IOleInPlaceObject::SetObjectRects
+Couldn't resolve error at 'kernel32!IOleInPlaceObject::SetObjectRects'
+0:000> u kernelbase!IOleInPlaceObject::SetObjectRects
+Couldn't resolve error at 'kernelbase!IOleInPlaceObject::SetObjectRects'
+0:000> u ntdll!IOleInPlaceObject::SetObjectRects
+Couldn't resolve error at 'ntdll!IOleInPlaceObject::SetObjectRects'
+0:000> u kernel32!IDispatch::GetIDsOfNames
+Couldn't resolve error at 'kernel32!IDispatch::GetIDsOfNames'
+0:000> u kernelbase!IDispatch::GetIDsOfNames
+Couldn't resolve error at 'kernelbase!IDispatch::GetIDsOfNames'
+0:000> u ntdll!IDispatch::GetIDsOfNames
+Couldn't resolve error at 'ntdll!IDispatch::GetIDsOfNames'
+0:000> u kernel32!cWindowsXP::ColorScheme
+Couldn't resolve error at 'kernel32!cWindowsXP::ColorScheme'
+0:000> u kernelbase!cWindowsXP::ColorScheme
+Couldn't resolve error at 'kernelbase!cWindowsXP::ColorScheme'
+0:000> u ntdll!cWindowsXP::ColorScheme
+Couldn't resolve error at 'ntdll!cWindowsXP::ColorScheme'
+0:000> u kernel32!cWindowsXP::DrawXPCtl
+Couldn't resolve error at 'kernel32!cWindowsXP::DrawXPCtl'
+0:000> u kernelbase!cWindowsXP::DrawXPCtl
+Couldn't resolve error at 'kernelbase!cWindowsXP::DrawXPCtl'
+0:000> u ntdll!cWindowsXP::DrawXPCtl
+Couldn't resolve error at 'ntdll!cWindowsXP::DrawXPCtl'
+0:000> u kernel32!GetExitCodeProcess
+Couldn't resolve error at 'kernel32!GetExitCodeProcess'
+0:000> u kernelbase!GetExitCodeProcess
+KERNELBASE!GetExitCodeProcess:
+00007ffc`0cff17b0 4053            push    rbx
+00007ffc`0cff17b2 4883ec60        sub     rsp,60h
+00007ffc`0cff17b6 488364242000    and     qword ptr [rsp+20h],0
+00007ffc`0cff17bc 4c8d442430      lea     r8,[rsp+30h]
+00007ffc`0cff17c1 488bda          mov     rbx,rdx
+00007ffc`0cff17c4 41b930000000    mov     r9d,30h
+00007ffc`0cff17ca 33d2            xor     edx,edx
+00007ffc`0cff17cc ff15b6731000    call    qword ptr [KERNELBASE!_imp_NtQueryInformationProcess (00007ffc`0d0f8b88)]
+0:000> u ntdll!GetExitCodeProcess
+Couldn't resolve error at 'ntdll!GetExitCodeProcess'
+0:000> u kernel32!GetLogicalDriveStringsA
+kernel32!GetLogicalDriveStringsA:
+00007ffc`0e688e50 488bc4          mov     rax,rsp
+00007ffc`0e688e53 48895810        mov     qword ptr [rax+10h],rbx
+00007ffc`0e688e57 48896818        mov     qword ptr [rax+18h],rbp
+00007ffc`0e688e5b 48897020        mov     qword ptr [rax+20h],rsi
+00007ffc`0e688e5f 57              push    rdi
+00007ffc`0e688e60 4156            push    r14
+00007ffc`0e688e62 4157            push    r15
+00007ffc`0e688e64 4883ec30        sub     rsp,30h
+0:000> u kernelbase!GetLogicalDriveStringsA
+Couldn't resolve error at 'kernelbase!GetLogicalDriveStringsA'
+0:000> u ntdll!GetLogicalDriveStringsA
+Couldn't resolve error at 'ntdll!GetLogicalDriveStringsA'
+0:000> u kernel32!RegDeleteValueW
+Couldn't resolve error at 'kernel32!RegDeleteValueW'
+0:000> u kernelbase!RegDeleteValueW
+Matched: 00007ffc`0cf9de00 KERNELBASE!RegDeleteValueW (void)
+Matched: 00007ffc`0cffcda0 KERNELBASE!RegDeleteValueW (void)
+Ambiguous symbol error at 'kernelbase!RegDeleteValueW'
+0:000> u ntdll!RegDeleteValueW
+Couldn't resolve error at 'ntdll!RegDeleteValueW'
+0:000> u kernel32!RegOpenCurrentUser
+Couldn't resolve error at 'kernel32!RegOpenCurrentUser'
+0:000> u kernelbase!RegOpenCurrentUser
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!RegOpenCurrentUser
+Couldn't resolve error at 'ntdll!RegOpenCurrentUser'
+0:000> u kernel32!GetDlgItemTextA
+Couldn't resolve error at 'kernel32!GetDlgItemTextA'
+0:000> u kernelbase!GetDlgItemTextA
+KERNELBASE!AdviseHook:
+00007ffc`0d06ce60 4883ec28        sub     rsp,28h
+00007ffc`0d06ce64 b97f000000      mov     ecx,7Fh
+00007ffc`0d06ce69 ff1539b70800    call    qword ptr [KERNELBASE!_imp_RtlSetLastWin32Error (00007ffc`0d0f85a8)]
+00007ffc`0d06ce6f 33c0            xor     eax,eax
+00007ffc`0d06ce71 4883c428        add     rsp,28h
+00007ffc`0d06ce75 c3              ret
+00007ffc`0d06ce76 cc              int     3
+00007ffc`0d06ce77 cc              int     3
+0:000> u ntdll!GetDlgItemTextA
+Couldn't resolve error at 'ntdll!GetDlgItemTextA'
+0:000> u kernel32!NtSetValueKey
+Couldn't resolve error at 'kernel32!NtSetValueKey'
+0:000> u kernelbase!NtSetValueKey
+Couldn't resolve error at 'kernelbase!NtSetValueKey'
+0:000> u ntdll!NtSetValueKey
+ntdll!NtSetValueKey:
+00007ffc`10af0a60 4c8bd1          mov     r10,rcx
+00007ffc`10af0a63 b860000000      mov     eax,60h
+00007ffc`10af0a68 f604250803fe7f01 test    byte ptr [SharedUserData+0x308 (00000000`7ffe0308)],1
+00007ffc`10af0a70 7503            jne     ntdll!NtSetValueKey+0x15 (00007ffc`10af0a75)
+00007ffc`10af0a72 0f05            syscall
+00007ffc`10af0a74 c3              ret
+00007ffc`10af0a75 cd2e            int     2Eh
+00007ffc`10af0a77 c3              ret
+0:000> u kernel32!IShellLinkA::SetDescription
+Couldn't resolve error at 'kernel32!IShellLinkA::SetDescription'
+0:000> u kernelbase!IShellLinkA::SetDescription
+Couldn't resolve error at 'kernelbase!IShellLinkA::SetDescription'
+0:000> u ntdll!IShellLinkA::SetDescription
+Couldn't resolve error at 'ntdll!IShellLinkA::SetDescription'
+0:000> u kernel32!IShellLinkA::GetPath
+Couldn't resolve error at 'kernel32!IShellLinkA::GetPath'
+0:000> u kernelbase!IShellLinkA::GetPath
+Couldn't resolve error at 'kernelbase!IShellLinkA::GetPath'
+0:000> u ntdll!IShellLinkA::GetPath
+Couldn't resolve error at 'ntdll!IShellLinkA::GetPath'
+0:000> u kernel32!IShellLinkA::GetWorkingDirectory
+Couldn't resolve error at 'kernel32!IShellLinkA::GetWorkingDirectory'
+0:000> u kernelbase!IShellLinkA::GetWorkingDirectory
+Couldn't resolve error at 'kernelbase!IShellLinkA::GetWorkingDirectory'
+0:000> u ntdll!IShellLinkA::GetWorkingDirectory
+Couldn't resolve error at 'ntdll!IShellLinkA::GetWorkingDirectory'
+0:000> u kernel32!IShellLinkA::GetIconLocation
+Couldn't resolve error at 'kernel32!IShellLinkA::GetIconLocation'
+0:000> u kernelbase!IShellLinkA::GetIconLocation
+Couldn't resolve error at 'kernelbase!IShellLinkA::GetIconLocation'
+0:000> u ntdll!IShellLinkA::GetIconLocation
+Couldn't resolve error at 'ntdll!IShellLinkA::GetIconLocation'
+0:000> u kernel32!IShellLinkA::GetShowCmd
+Couldn't resolve error at 'kernel32!IShellLinkA::GetShowCmd'
+0:000> u kernelbase!IShellLinkA::GetShowCmd
+Couldn't resolve error at 'kernelbase!IShellLinkA::GetShowCmd'
+0:000> u ntdll!IShellLinkA::GetShowCmd
+Couldn't resolve error at 'ntdll!IShellLinkA::GetShowCmd'
+0:000> u kernel32!IShellLinkA::GetArguments
+Couldn't resolve error at 'kernel32!IShellLinkA::GetArguments'
+0:000> u kernelbase!IShellLinkA::GetArguments
+Couldn't resolve error at 'kernelbase!IShellLinkA::GetArguments'
+0:000> u ntdll!IShellLinkA::GetArguments
+Couldn't resolve error at 'ntdll!IShellLinkA::GetArguments'
+0:000> u kernel32!WNetOpenEnumA
+Couldn't resolve error at 'kernel32!WNetOpenEnumA'
+0:000> u kernelbase!WNetOpenEnumA
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!WNetOpenEnumA
+Couldn't resolve error at 'ntdll!WNetOpenEnumA'
+0:000> u kernel32!WNetEnumResourceA
+Couldn't resolve error at 'kernel32!WNetEnumResourceA'
+0:000> u kernelbase!WNetEnumResourceA
+Couldn't resolve error at 'kernelbase!WNetEnumResourceA'
+0:000> u ntdll!WNetEnumResourceA
+Couldn't resolve error at 'ntdll!WNetEnumResourceA'
+0:000> u kernel32!WNetCloseEnum
+Couldn't resolve error at 'kernel32!WNetCloseEnum'
+0:000> u kernelbase!WNetCloseEnum
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!WNetCloseEnum
+Couldn't resolve error at 'ntdll!WNetCloseEnum'
+0:000> u kernel32!NetServerEnum
+Couldn't resolve error at 'kernel32!NetServerEnum'
+0:000> u kernelbase!NetServerEnum
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!NetServerEnum
+Couldn't resolve error at 'ntdll!NetServerEnum'
+0:000> u kernel32!NetShareEnum
+Couldn't resolve error at 'kernel32!NetShareEnum'
+0:000> u kernelbase!NetShareEnum
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!NetShareEnum
+Couldn't resolve error at 'ntdll!NetShareEnum'
+0:000> u kernel32!WNetAddConnection2A
+Couldn't resolve error at 'kernel32!WNetAddConnection2A'
+0:000> u kernelbase!WNetAddConnection2A
+Couldn't resolve error at 'kernelbase!WNetAddConnection2A'
+0:000> u ntdll!WNetAddConnection2A
+Couldn't resolve error at 'ntdll!WNetAddConnection2A'
+0:000> u kernel32!NetUseGetInfo
+Couldn't resolve error at 'kernel32!NetUseGetInfo'
+0:000> u kernelbase!NetUseGetInfo
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!NetUseGetInfo
+Couldn't resolve error at 'ntdll!NetUseGetInfo'
+0:000> u kernel32!NetUseAdd
+Couldn't resolve error at 'kernel32!NetUseAdd'
+0:000> u kernelbase!NetUseAdd
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!NetUseAdd
+Couldn't resolve error at 'ntdll!NetUseAdd'
+0:000> u kernel32!WNetCancelConnection2A
+Couldn't resolve error at 'kernel32!WNetCancelConnection2A'
+0:000> u kernelbase!WNetCancelConnection2A
+Couldn't resolve error at 'kernelbase!WNetCancelConnection2A'
+0:000> u ntdll!WNetCancelConnection2A
+Couldn't resolve error at 'ntdll!WNetCancelConnection2A'
+0:000> u kernel32!NetUseDel
+Couldn't resolve error at 'kernel32!NetUseDel'
+0:000> u kernelbase!NetUseDel
+KERNELBASE!AccRewriteSetNamedRights:
+00007ffc`0cffcda0 b87f000000      mov     eax,7Fh
+00007ffc`0cffcda5 c3              ret
+00007ffc`0cffcda6 cc              int     3
+00007ffc`0cffcda7 cc              int     3
+00007ffc`0cffcda8 cc              int     3
+00007ffc`0cffcda9 cc              int     3
+00007ffc`0cffcdaa cc              int     3
+00007ffc`0cffcdab cc              int     3
+0:000> u ntdll!NetUseDel
+Couldn't resolve error at 'ntdll!NetUseDel'
+0:000> u kernel32!QueryDosDeviceW
+kernel32!QueryDosDeviceW:
+00007ffc`0e6a28f0 ff25aa1f0500    jmp     qword ptr [kernel32!_imp_QueryDosDeviceW (00007ffc`0e6f48a0)]
+00007ffc`0e6a28f6 cc              int     3
+00007ffc`0e6a28f7 cc              int     3
+00007ffc`0e6a28f8 cc              int     3
+00007ffc`0e6a28f9 cc              int     3
+00007ffc`0e6a28fa cc              int     3
+00007ffc`0e6a28fb cc              int     3
+00007ffc`0e6a28fc cc              int     3
+0:000> u kernelbase!QueryDosDeviceW
+KERNELBASE!QueryDosDeviceW:
+00007ffc`0cfbc6a0 4c8bdc          mov     r11,rsp
+00007ffc`0cfbc6a3 49895b08        mov     qword ptr [r11+8],rbx
+00007ffc`0cfbc6a7 49897318        mov     qword ptr [r11+18h],rsi
+00007ffc`0cfbc6ab 49895310        mov     qword ptr [r11+10h],rdx
+00007ffc`0cfbc6af 57              push    rdi
+00007ffc`0cfbc6b0 4154            push    r12
+00007ffc`0cfbc6b2 4155            push    r13
+00007ffc`0cfbc6b4 4156            push    r14
+0:000> u ntdll!QueryDosDeviceW
+Couldn't resolve error at 'ntdll!QueryDosDeviceW'
+0:000> q
+quit:

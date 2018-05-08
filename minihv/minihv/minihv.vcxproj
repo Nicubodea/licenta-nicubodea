@@ -1,0 +1,520 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EA88984C-EF04-4FC8-BE6C-BFBDF7D78852}</ProjectGuid>
+    <RootNamespace>minihvex</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(SolutionDir)\tools\vsyasm\vsyasm.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <SourcePath>$(ProjectDir)Sources;$(SourcePath)</SourcePath>
+    <TargetExt>.bin</TargetExt>
+    <CodeAnalysisRuleSet>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <SourcePath>$(ProjectDir)Sources;$(SourcePath)</SourcePath>
+    <TargetExt>.bin</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <SourcePath>$(ProjectDir)Sources;$(SourcePath)</SourcePath>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</IntDir>
+    <TargetExt>.bin</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <SourcePath>$(ProjectDir)Sources;$(SourcePath)</SourcePath>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</IntDir>
+    <TargetExt>.bin</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <YASM>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </YASM>
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>ZYDIS_NO_LIBC;ZYDIS_STATIC_DEFINE;X64;AMD64;DEBUG;_DEBUG;WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling />
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <PrecompiledHeader />
+      <BrowseInformation />
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
+      <EnablePREfast>false</EnablePREfast>
+    </ClCompile>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <Link>
+      <AdditionalOptions>/ALIGN:0x200 /IGNORE:4108 %(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(OutDir)$(ProjectName).bin</OutputFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)\lib;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
+      <MapExports>true</MapExports>
+      <SubSystem>Native</SubSystem>
+      <EntryPointSymbol>__MultiBootEntryPoint</EntryPointSymbol>
+      <BaseAddress>0x0000010000000000</BaseAddress>
+      <TargetMachine>MachineX64</TargetMachine>
+      <AdditionalDependencies>Zydis.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <MergeSections>.boot=.text</MergeSections>
+      <LargeAddressAware>true</LargeAddressAware>
+    </Link>
+    <PostBuildEvent>
+      <Command>"$(SolutionDir)upload_to_pxe.cmd"  $(ProjectName) "$(ProjectDir)" $(PlatformName) $(ConfigurationName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>ZYDIS_NO_LIBC;X64;AMD64;NDEBUG;RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
+      <ExceptionHandling />
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <PrecompiledHeader />
+      <BrowseInformation />
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(SolutionDir)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <AdditionalOptions>/ALIGN:0x200 /IGNORE:4108 %(AdditionalOptions)</AdditionalOptions>
+      <OutputFile>$(OutDir)$(ProjectName).bin</OutputFile>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>Debug</GenerateDebugInformation>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
+      <MapExports>true</MapExports>
+      <SubSystem>Native</SubSystem>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <EntryPointSymbol>__MultiBootEntryPoint</EntryPointSymbol>
+      <BaseAddress>0x0000010000000000</BaseAddress>
+      <TargetMachine>MachineX64</TargetMachine>
+      <AdditionalLibraryDirectories>$(SolutionDir)\lib;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Zydis.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <MergeSections>.boot=.text</MergeSections>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+    <PostBuildEvent>
+      <Command>"$(SolutionDir)upload_to_pxe.cmd"  $(ProjectName) "$(ProjectDir)" $(PlatformName) $(ConfigurationName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Link>
+      <OutputFile>$(OutDir)$(ProjectName).bin</OutputFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)\lib;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Zydis.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
+      <MapExports>true</MapExports>
+      <SubSystem>Native</SubSystem>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <EntryPointSymbol>__MultiBootEntryPoint</EntryPointSymbol>
+      <BaseAddress>0x0000010000000000</BaseAddress>
+      <TargetMachine>MachineX64</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <MergeSections>.boot=.text</MergeSections>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <ClCompile>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4201</DisableSpecificWarnings>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <PreprocessorDefinitions>ZYDIS_NO_LIBC;</PreprocessorDefinitions>
+    </ClCompile>
+    <PostBuildEvent>
+      <Command>"$(SolutionDir)upload_to_pxe.cmd"  $(ProjectName) "$(ProjectDir)" $(PlatformName) $(ConfigurationName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Link>
+      <OutputFile>$(OutDir)$(ProjectName).bin</OutputFile>
+      <AdditionalLibraryDirectories>$(SolutionDir)\lib;$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Zydis.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(OutDir)$(ProjectName).map</MapFileName>
+      <MapExports>true</MapExports>
+      <SubSystem>Native</SubSystem>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseFastLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <EntryPointSymbol>__MultiBootEntryPoint</EntryPointSymbol>
+      <BaseAddress>0x0000010000000000</BaseAddress>
+      <TargetMachine>MachineX64</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <MergeSections>.boot=.text</MergeSections>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <ClCompile>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <DisableSpecificWarnings>4201</DisableSpecificWarnings>
+      <PreprocessorDefinitions>ZYDIS_NO_LIBC;</PreprocessorDefinitions>
+    </ClCompile>
+    <PostBuildEvent>
+      <Command>"$(SolutionDir)upload_to_pxe.cmd"  $(ProjectName) "$(ProjectDir)" $(PlatformName) $(ConfigurationName)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="..\cfgdirs.cmd" />
+    <None Include="..\failmsg.cmd" />
+    <None Include="..\upload_to_pxe.cmd" />
+  </ItemGroup>
+  <ItemGroup>
+    <YASM Include="_init32.yasm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="acpica.c" />
+    <ClCompile Include="acpica\dsargs.c" />
+    <ClCompile Include="acpica\dscontrol.c" />
+    <ClCompile Include="acpica\dsfield.c" />
+    <ClCompile Include="acpica\dsinit.c" />
+    <ClCompile Include="acpica\dsmethod.c" />
+    <ClCompile Include="acpica\dsmthdat.c" />
+    <ClCompile Include="acpica\dsobject.c" />
+    <ClCompile Include="acpica\dsopcode.c" />
+    <ClCompile Include="acpica\dsutils.c" />
+    <ClCompile Include="acpica\dswexec.c" />
+    <ClCompile Include="acpica\dswload.c" />
+    <ClCompile Include="acpica\dswload2.c" />
+    <ClCompile Include="acpica\dswscope.c" />
+    <ClCompile Include="acpica\dswstate.c" />
+    <ClCompile Include="acpica\evevent.c" />
+    <ClCompile Include="acpica\evglock.c" />
+    <ClCompile Include="acpica\evgpe.c" />
+    <ClCompile Include="acpica\evgpeblk.c" />
+    <ClCompile Include="acpica\evgpeinit.c" />
+    <ClCompile Include="acpica\evgpeutil.c" />
+    <ClCompile Include="acpica\evhandler.c" />
+    <ClCompile Include="acpica\evmisc.c" />
+    <ClCompile Include="acpica\evregion.c" />
+    <ClCompile Include="acpica\evrgnini.c" />
+    <ClCompile Include="acpica\evsci.c" />
+    <ClCompile Include="acpica\evxface.c" />
+    <ClCompile Include="acpica\evxfevnt.c" />
+    <ClCompile Include="acpica\evxfgpe.c" />
+    <ClCompile Include="acpica\evxfregn.c" />
+    <ClCompile Include="acpica\exconfig.c" />
+    <ClCompile Include="acpica\exconvrt.c" />
+    <ClCompile Include="acpica\excreate.c" />
+    <ClCompile Include="acpica\exdebug.c" />
+    <ClCompile Include="acpica\exdump.c" />
+    <ClCompile Include="acpica\exfield.c" />
+    <ClCompile Include="acpica\exfldio.c" />
+    <ClCompile Include="acpica\exmisc.c" />
+    <ClCompile Include="acpica\exmutex.c" />
+    <ClCompile Include="acpica\exnames.c" />
+    <ClCompile Include="acpica\exoparg1.c" />
+    <ClCompile Include="acpica\exoparg2.c" />
+    <ClCompile Include="acpica\exoparg3.c" />
+    <ClCompile Include="acpica\exoparg6.c" />
+    <ClCompile Include="acpica\exprep.c" />
+    <ClCompile Include="acpica\exregion.c" />
+    <ClCompile Include="acpica\exresnte.c" />
+    <ClCompile Include="acpica\exresolv.c" />
+    <ClCompile Include="acpica\exresop.c" />
+    <ClCompile Include="acpica\exstore.c" />
+    <ClCompile Include="acpica\exstoren.c" />
+    <ClCompile Include="acpica\exstorob.c" />
+    <ClCompile Include="acpica\exsystem.c" />
+    <ClCompile Include="acpica\exutils.c" />
+    <ClCompile Include="acpica\hwacpi.c" />
+    <ClCompile Include="acpica\hwesleep.c" />
+    <ClCompile Include="acpica\hwgpe.c" />
+    <ClCompile Include="acpica\hwpci.c" />
+    <ClCompile Include="acpica\hwregs.c" />
+    <ClCompile Include="acpica\hwsleep.c" />
+    <ClCompile Include="acpica\hwtimer.c" />
+    <ClCompile Include="acpica\hwvalid.c" />
+    <ClCompile Include="acpica\hwxface.c" />
+    <ClCompile Include="acpica\hwxfsleep.c" />
+    <ClCompile Include="acpica\nsaccess.c" />
+    <ClCompile Include="acpica\nsalloc.c" />
+    <ClCompile Include="acpica\nsarguments.c" />
+    <ClCompile Include="acpica\nsconvert.c" />
+    <ClCompile Include="acpica\nsdump.c" />
+    <ClCompile Include="acpica\nsdumpdv.c" />
+    <ClCompile Include="acpica\nseval.c" />
+    <ClCompile Include="acpica\nsinit.c" />
+    <ClCompile Include="acpica\nsload.c" />
+    <ClCompile Include="acpica\nsnames.c" />
+    <ClCompile Include="acpica\nsobject.c" />
+    <ClCompile Include="acpica\nsparse.c" />
+    <ClCompile Include="acpica\nspredef.c" />
+    <ClCompile Include="acpica\nsprepkg.c" />
+    <ClCompile Include="acpica\nsrepair.c" />
+    <ClCompile Include="acpica\nsrepair2.c" />
+    <ClCompile Include="acpica\nssearch.c" />
+    <ClCompile Include="acpica\nsutils.c" />
+    <ClCompile Include="acpica\nswalk.c" />
+    <ClCompile Include="acpica\nsxfeval.c" />
+    <ClCompile Include="acpica\nsxfname.c" />
+    <ClCompile Include="acpica\nsxfobj.c" />
+    <ClCompile Include="acpica\psargs.c" />
+    <ClCompile Include="acpica\psloop.c" />
+    <ClCompile Include="acpica\psobject.c" />
+    <ClCompile Include="acpica\psopcode.c" />
+    <ClCompile Include="acpica\psopinfo.c" />
+    <ClCompile Include="acpica\psparse.c" />
+    <ClCompile Include="acpica\psscope.c" />
+    <ClCompile Include="acpica\pstree.c" />
+    <ClCompile Include="acpica\psutils.c" />
+    <ClCompile Include="acpica\pswalk.c" />
+    <ClCompile Include="acpica\psxface.c" />
+    <ClCompile Include="acpica\rsaddr.c" />
+    <ClCompile Include="acpica\rscalc.c" />
+    <ClCompile Include="acpica\rscreate.c" />
+    <ClCompile Include="acpica\rsdump.c" />
+    <ClCompile Include="acpica\rsdumpinfo.c" />
+    <ClCompile Include="acpica\rsinfo.c" />
+    <ClCompile Include="acpica\rsio.c" />
+    <ClCompile Include="acpica\rsirq.c" />
+    <ClCompile Include="acpica\rslist.c" />
+    <ClCompile Include="acpica\rsmemory.c" />
+    <ClCompile Include="acpica\rsmisc.c" />
+    <ClCompile Include="acpica\rsserial.c" />
+    <ClCompile Include="acpica\rsutils.c" />
+    <ClCompile Include="acpica\rsxface.c" />
+    <ClCompile Include="acpica\tbdata.c" />
+    <ClCompile Include="acpica\tbfadt.c" />
+    <ClCompile Include="acpica\tbfind.c" />
+    <ClCompile Include="acpica\tbinstal.c" />
+    <ClCompile Include="acpica\tbprint.c" />
+    <ClCompile Include="acpica\tbutils.c" />
+    <ClCompile Include="acpica\tbxface.c" />
+    <ClCompile Include="acpica\tbxfload.c" />
+    <ClCompile Include="acpica\tbxfroot.c" />
+    <ClCompile Include="acpica\utaddress.c" />
+    <ClCompile Include="acpica\utalloc.c" />
+    <ClCompile Include="acpica\utbuffer.c" />
+    <ClCompile Include="acpica\utcache.c" />
+    <ClCompile Include="acpica\utclib.c" />
+    <ClCompile Include="acpica\utcopy.c" />
+    <ClCompile Include="acpica\utdebug.c" />
+    <ClCompile Include="acpica\utdecode.c" />
+    <ClCompile Include="acpica\utdelete.c" />
+    <ClCompile Include="acpica\uterror.c" />
+    <ClCompile Include="acpica\uteval.c" />
+    <ClCompile Include="acpica\utexcep.c" />
+    <ClCompile Include="acpica\utfileio.c" />
+    <ClCompile Include="acpica\utglobal.c" />
+    <ClCompile Include="acpica\uthex.c" />
+    <ClCompile Include="acpica\utids.c" />
+    <ClCompile Include="acpica\utinit.c" />
+    <ClCompile Include="acpica\utlock.c" />
+    <ClCompile Include="acpica\utmath.c" />
+    <ClCompile Include="acpica\utmisc.c" />
+    <ClCompile Include="acpica\utmutex.c" />
+    <ClCompile Include="acpica\utobject.c" />
+    <ClCompile Include="acpica\utosi.c" />
+    <ClCompile Include="acpica\utownerid.c" />
+    <ClCompile Include="acpica\utpredef.c" />
+    <ClCompile Include="acpica\utprint.c" />
+    <ClCompile Include="acpica\utresrc.c" />
+    <ClCompile Include="acpica\utstate.c" />
+    <ClCompile Include="acpica\utstring.c" />
+    <ClCompile Include="acpica\uttrack.c" />
+    <ClCompile Include="acpica\utuuid.c" />
+    <ClCompile Include="acpica\utxface.c" />
+    <ClCompile Include="acpica\utxferror.c" />
+    <ClCompile Include="acpica\utxfinit.c" />
+    <ClCompile Include="acpica\utxfmutex.c" />
+    <ClCompile Include="epthook.c" />
+    <ClCompile Include="except.c" />
+    <ClCompile Include="guest.c" />
+    <ClCompile Include="init64.c" />
+    <ClCompile Include="vmxept.c" />
+    <ClCompile Include="vmxhook.c" />
+    <ClCompile Include="vmxmtf.c" />
+    <ClCompile Include="vmxop.c" />
+    <ClCompile Include="winmod.c" />
+    <ClCompile Include="winproc.c" />
+    <ClCompile Include="_logger.c" />
+    <ClCompile Include="_memcpy.c" />
+    <ClCompile Include="_sprintf.c" />
+    <ClCompile Include="_wdk_dll_async.c" />
+    <ClCompile Include="_wdk_dll_sync.c" />
+    <ClCompile Include="_wdk_dumpmemory.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="acpica.h" />
+    <ClInclude Include="acpica\acapps.h" />
+    <ClInclude Include="acpica\acbuffer.h" />
+    <ClInclude Include="acpica\acclib.h" />
+    <ClInclude Include="acpica\accommon.h" />
+    <ClInclude Include="acpica\acconfig.h" />
+    <ClInclude Include="acpica\acdebug.h" />
+    <ClInclude Include="acpica\acdisasm.h" />
+    <ClInclude Include="acpica\acdispat.h" />
+    <ClInclude Include="acpica\acenv.h" />
+    <ClInclude Include="acpica\acevents.h" />
+    <ClInclude Include="acpica\acexcep.h" />
+    <ClInclude Include="acpica\acglobal.h" />
+    <ClInclude Include="acpica\achware.h" />
+    <ClInclude Include="acpica\acintel.h" />
+    <ClInclude Include="acpica\acinterp.h" />
+    <ClInclude Include="acpica\aclocal.h" />
+    <ClInclude Include="acpica\acmacros.h" />
+    <ClInclude Include="acpica\acnames.h" />
+    <ClInclude Include="acpica\acnamesp.h" />
+    <ClInclude Include="acpica\acobject.h" />
+    <ClInclude Include="acpica\acopcode.h" />
+    <ClInclude Include="acpica\acoutput.h" />
+    <ClInclude Include="acpica\acparser.h" />
+    <ClInclude Include="acpica\acpi.h" />
+    <ClInclude Include="acpica\acpiosxf.h" />
+    <ClInclude Include="acpica\acpixf.h" />
+    <ClInclude Include="acpica\acpredef.h" />
+    <ClInclude Include="acpica\acresrc.h" />
+    <ClInclude Include="acpica\acrestyp.h" />
+    <ClInclude Include="acpica\acstruct.h" />
+    <ClInclude Include="acpica\actables.h" />
+    <ClInclude Include="acpica\actbl.h" />
+    <ClInclude Include="acpica\actbl1.h" />
+    <ClInclude Include="acpica\actbl2.h" />
+    <ClInclude Include="acpica\actbl3.h" />
+    <ClInclude Include="acpica\actypes.h" />
+    <ClInclude Include="acpica\acutils.h" />
+    <ClInclude Include="acpica\acuuid.h" />
+    <ClInclude Include="acpica\acwin64.h" />
+    <ClInclude Include="acpica\amlcode.h" />
+    <ClInclude Include="acpica\amlresrc.h" />
+    <ClInclude Include="alloc.h" />
+    <ClInclude Include="epthook.h" />
+    <ClInclude Include="except.h" />
+    <ClInclude Include="guest.h" />
+    <ClInclude Include="minihv.h" />
+    <ClInclude Include="ntstatus.h" />
+    <ClInclude Include="stdio_n.h" />
+    <ClInclude Include="structures.h" />
+    <ClInclude Include="vmcsdef.h" />
+    <ClInclude Include="vmxept.h" />
+    <ClInclude Include="vmxhook.h" />
+    <ClInclude Include="vmxmtf.h" />
+    <ClInclude Include="vmxop.h" />
+    <ClInclude Include="winmod.h" />
+    <ClInclude Include="winpe.h" />
+    <ClInclude Include="winproc.h" />
+    <ClInclude Include="_wdk.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(SolutionDir)\tools\vsyasm\vsyasm.targets" />
+  </ImportGroup>
+</Project>

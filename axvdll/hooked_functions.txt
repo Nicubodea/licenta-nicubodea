@@ -1,0 +1,25 @@
+kernelbase
+LoadLibraryExW
+LoadLibraryA
+GetProcAddress
+GetModuleFileNameW
+VirtualQuery
+RegCreateKeyExW
+RtlDestroyHeap -> HeapDestroy
+
+kernel32
+GetCurrentThreadId
+GlobalReAlloc
+IsBadReadPtr
+
+ntdll
+RtlAllocateHeap -> HeapAlloc
+RtlFreeHeap -> HeapFree
+NtOpenKey
+NtQueryValueKey
+
+
+nu avem cum:
+gethostbyname
+IQuickActivate::QuickActivate
+CreateWindowExA

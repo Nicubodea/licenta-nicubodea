@@ -1,0 +1,1539 @@
+;
+; PXE 32 bit loader code
+;
+; for documentation check out MULTIBOOT 0.6.96 specs
+; http://www.gnu.org/software/grub/manual/multiboot/multiboot.html
+;
+
+; ianichitei: in order to be sure that this is linked first, we put it in a different section, 
+; then we merge it with the .text section (see Project Properties -> Linker -> Advanced -> Merge)
+
+
+
+%define RELOC(x)		 ((((x)-KERNEL_BASE)-0xB000)+0x500)
+
+
+SECTION .boot
+
+
+
+global __MultiBootEntryPoint
+global write_to_port, read_from_port, write_to_port_char, increase_stack, GetRsp
+global acquireLock, releaseLock, JumpToMBR, Hookint15h, Disablea20
+global SaveGeneralRegs, SaveZone, GetGeneralRegs, getFs, SaveGeneralRegisters
+global HandleMSR, HandleWRMSR, Hook_VMExit
+BASE_MULTIPROC_START equ 0x6000
+BASE_MULTIPROC_VIRTUAL equ 0xA000
+
+extern Init64, TestSpinLock, AcpiOsAllocate, gMutex, MhvStartVmx, printf, doNothing, prelog
+
+;
+; multiboot starts in 32 bit PROTECTED MODE, without paging beeing enabled (FLAT)
+; check out '3.2 Machine state' from docs
+;
+[bits 32]
+
+;
+; we use hardcoded address space / map for our data structures, the multiboot header and the entry point
+; the plain binary image is loaded to 0x00200000 (2MB), the entry point is fixed to 0x00209000
+;
+MULTIBOOT_HEADER_SIZE       equ 48                      ; check out '3.1.1 The layout of Multiboot header'
+MULTIBOOT_HEADER_MAGIC      equ 0x1BADB002
+MULTIBOOT_HEADER_FLAGS      equ 0x00010003
+MULTIBOOT_LOADER_MAGIC      equ 0x2BADB002
+
+MULTIBOOT_INFO_STRUCT_SIZE  equ 90
+
+KERNEL_BASE_VIRTUAL         equ 0x0000010000000000      ; magic 1T
+KERNEL_BASE                 equ 0x2000000               ;
+KERNEL_LENGTH               equ 0x2000000               ; 32 MB (TDI: 2012/11/19)
+
+MULTIBOOT_BASE              equ KERNEL_BASE + 0x400     ; take into account the MZ/PE header + 0x400 allignment
+                                                        ; the multiboot header begins in the _text section
+MULTIBOOT_INFO_STRUCT_BASE  equ MULTIBOOT_BASE + MULTIBOOT_HEADER_SIZE
+MULTIBOOT_ENTRY_POINT       equ KERNEL_BASE + 0xC000    ; at EIP = 0x20C000 we start the execution (32 bit, non-paged)
+
+GDT_TABLE_ADDRESS           equ KERNEL_BASE + 0x4E8     ; keep in mind: all those adresses are fixed, hardcorded
+                                                        ; we choose to do so, and we MUST ensure this .yasm file generates those values
+PML4_TABLE_BASE             equ KERNEL_BASE + 0x2000
+PT_TABLE_BASE               equ KERNEL_BASE + 0x7000
+
+INITIAL_TOP_OF_STACK        equ KERNEL_BASE + 0xA000
+INITIAL_TOP_OF_STACK_1T     equ KERNEL_BASE_VIRTUAL + 0xA000
+
+IA32_EFER                   equ 0xC0000080
+CR4_PAE                     equ 0x00000020
+IA23_EFER_LME               equ 0x100
+
+
+;;
+;; KERNEL_BASE + 0x400 (this must be the first stuff to be linked into the code segment)
+;;
+
+multiboot_header:                                       ; check out '3.1.1 The layout of Multiboot header'
+magic           dd MULTIBOOT_HEADER_MAGIC
+flags           dd MULTIBOOT_HEADER_FLAGS
+checksum        dd 0-(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_HEADER_FLAGS)
+header_addr     dd MULTIBOOT_BASE
+load_addr       dd KERNEL_BASE
+load_end_addr   dd 0
+bss_end_addr    dd 0
+entry_addr      dd MULTIBOOT_ENTRY_POINT
+mode_type       dd 0
+width           dd 0
+height          dd 0
+depth           dd 0
+
+gMultiBootStruct:                                       ; reserve space for the multiboot info structure (will copy here)
+times MULTIBOOT_INFO_STRUCT_SIZE db 0                   ; check out '3.3 Boot information format'
+
+;; leave 0x40 bytes for GDT stuff
+times (0x100 - MULTIBOOT_HEADER_SIZE - MULTIBOOT_INFO_STRUCT_SIZE - 0x40) db 0
+
+CODE16_SEL		equ	     0x18
+DATA16_SEL		equ	     0x20
+CODE32_SEL		equ		 0x08
+DATA32_SEL		equ	     0x10
+
+
+;;
+;; KERNEL_BASE + 0x4C0
+;;
+__gdt_base:                                             ; GDT with 3 entries
+
+gdt_null        dq  0
+gdt_code        dq  0x002F9A000000FFFF                  ; Code segment, 64 bit, execute / read, present
+gdt_data        dq  0x00CF92000000FFFF                  ; Data segment
+gdt_code32		dq	0x00CF9A000000FFFF
+gdt_data32		dq	0x00CF92000000FFFF
+
+CODE64_SEL      equ      0x08                           ; 64 bit mode code selector
+DATA64_SEL      equ      0x10                           ; 64 bit data selector / stack selector
+CODE32new_SEL	equ		 0x18
+DATA32new_SEL	equ		 0x20
+
+
+; size and address of __gdt_base                        ; base is 0x2004D8 (GDT_TABLE_ADDRESS)
+gdt_size        dw  0x28
+gdt_address     dq  KERNEL_BASE + 0x4C0
+
+
+;;
+;; KERNEL_BASE + 0x0500
+;;
+align 0x100, db 0
+; memory map as reported by E820 map and retrieved by the bootloader for us
+; we copy here the memory map from the location specified in the MultiBoot Information structure
+; check out '3.3 Boot information format' and also 'http://en.wikipedia.org/wiki/E820'
+; IMPORTANT: this allows us at most 287 entries of default size (0x18 / entry, 4 bytes initially for length)
+gTempE820:
+times 0x1B00 db 0
+
+
+;;
+;; KERNEL_BASE + 0x2000 - PML4
+;;
+;
+; setup page tables to identity map the 0-8M physical space
+; we also need to map the 1T (0x0000`0100`0000`0000-0x0000`0100`001F`FFFF) virtual space to 2-4M physical space for x64
+;
+; IMPORTANT: here we DO assume that there is always a continous 2-6 physical RAM present and available
+;
+__pml4_table:
+dq              0x2003007                ; entry for 0 - 512G, PDP
+dq 0
+dq              0x2004007                ; entry for 1T - 1,5T, PDP
+times 509 dq 0
+
+;; KERNEL_BASE + 0x3000 - PDP #1, for identity mapping
+__pdp_table_identity:
+dq              0x2005007                ; entry for 0 - 1G, PD #1
+
+times 511 dq 0
+
+;; KERNEL_BASE + 0x4000 - PDP #2, for 1T mapping
+__pdp_table_1t:
+dq              0x2006007                ; entry for 1T - 1T+1G, PD #2
+		
+times 511 dq 0
+ 
+;; KERNEL_BASE + 0x5000 - PD #1
+__pd_table1:
+dq              0x2007007                ; entry for 0 - 2M, PT, using PT to avoid mapping first 4K (do NOT map NULL pointer)
+dq              0x0200087                ; identity mapping for 2-4M, page
+dq              0x0400087                ; identity mapping for 4-6M, page
+dq              0x0600087                ; identity mapping for 6-8M, page
+dq              0x0800087                ; identity mapping for 8-10M, page
+dq              0x0A00087                ; identity mapping for 10-12M, page
+dq              0x0C00087                ; identity mapping for 12-14M, page
+dq              0x0E00087                ; identity mapping for 14-16M, page
+dq              0x1000087                ; identity mapping for 16-18M, page
+dq              0x1200087                ; identity mapping for 18-20M, page
+dq              0x1400087                ; identity mapping for 20-22M, page
+dq              0x1600087                ; identity mapping for 22-24M, page
+dq              0x1800087                ; identity mapping for 24-26M, page
+dq              0x1A00087                ; identity mapping for 26-28M, page
+dq              0x1C00087                ; identity mapping for 28-30M, page
+dq              0x1E00087                ; identity mapping for 30-32M, page
+dq              0x2000087                ; identity mapping for 32-34M, page
+times 495 dq 0
+
+;; KERNEL_BASE + 0x6000 - PD #2
+__pd_table2:
+dq              0x2000087                ; mapping for physical 2-4M to virtual 1T-to-1T+2M range, page
+dq              0x2200087                ; mapping for physical 4-6M to virtual 1T+2M-to-1T+4M range, page
+dq              0x2400087                ; mapping for physical 6-8M to virtual 1T+4M-to-1T+6M range, page
+dq              0x2600087                ; mapping for physical 8-10M to virtual 1T+6M-to-1T+8M range, page
+dq              0x2800087                ; mapping for physical 10-12M to virtual 1T+8M-to-1T+10M range, page
+dq              0x2A00087                ; mapping for physical 12-14M to virtual 1T+10M-to-1T+12M range, page
+dq              0x2C00087                ; mapping for physical 14-16M to virtual 1T+12M-to-1T+14M range, page
+dq              0x2E00087                ; mapping for physical 16-18M, to virtual 1T+14M-to-1T+16M range, page
+dq              0x3000087                ; mapping for physical 18-20M, to virtual 1T+16M-to-1T+18M range, page
+dq              0x3200087                ; mapping for physical 20-22M, to virtual 1T+18M-to-1T+20M range, page
+dq              0x3400087                ; mapping for physical 22-24M, to virtual 1T+20M-to-1T+22M range, page
+dq              0x3600087                ; mapping for physical 24-26M, to virtual 1T+22M-to-1T+24M range, page
+dq              0x3800087                ; mapping for physical 26-28M, to virtual 1T+24M-to-1T+26M range, page
+dq              0x3A00087                ; mapping for physical 28-30M, to virtual 1T+26M-to-1T+28M range, page
+dq              0x3C00087                ; mapping for physical 30-32M, to virtual 1T+28M-to-1T+30M range, page
+dq              0x3E00087                ; mapping for physical 32-34M, to virtual 1T+30M-to-1T+32M range, page
+times 496 dq 0
+
+;; KERNEL_BASE + 0x7000 - PT
+__pt_table:
+dq              0x000007                ; P = 0, NOT preset, to avoid NULL pointers
+times 511 dq 0                          ; will be dynamically generated
+;;dq              0x001007
+;;dq              0x002007
+;;dq              0x003007
+;;...
+;;dq              0x1FF007
+
+;;
+;; KERNEL_BASE + 0x8000 - temporary storage for PXE command line (will be reused as 1K more for stack)
+;;
+__TempCmdLine:
+times 0x400 db 0xDD
+
+
+;;
+;; KERNEL_BASE + 0x8400 - we reserve a 8K stack for the initial thread (1K is above)
+;; TOP-OF-STACK is KERNEL_BASE + 0xA000
+;;
+__stack:
+times 0x1C00 db 0xCC
+
+
+;;
+;; KERNEL_BASE + 0xA000 - AP trampoline code, 16 bit part
+;;
+;; NOTE: this MUST be copied down below 1 MB (at AP_TRAMPOLINE_16B_BASE)
+;;       and has the sole role to switch to flat 32 bit PM, and jump to __ApTrampoline32to64
+;;
+[bits 16]
+	
+	lgdt [0x928]	; load the gdt
+					
+	lidt [0x500]
+	mov eax, cr0					; enable protected mode
+	or al, 1
+	mov cr0, eax
+	jmp CODE32_SEL:0x6100			; jump to 32 bit mod
+	cli
+	hlt
+;; flat 32 bit pm operations
+align 0x100, db 0x0
+[bits 32]
+	mov ax, DATA32_SEL					;	put data selector in ss, ds, es, fs, gs
+	mov ss, ax
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+;FLAT 32 bit mode
+	; things to do in 32 bit mode
+;go to 32-64 trampoline
+
+
+jmp CODE32_SEL:0x6200
+cli
+hlt
+align 0x100, db 0x0
+
+
+;; AP 32 TO 64 Trampoline
+[bits 32]
+lidt [0x934]
+lgdt [0x92E]
+
+
+; 0x7000 is the start stack address
+mov esp, [0x7000] ; will be 12K stack for each processor
+
+mov     eax, cr4
+or      eax, CR4_PAE            ; set bit 0x00000020
+mov     cr4, eax
+
+mov     eax, PML4_TABLE_BASE    ; 0x202000 physical
+mov     cr3, eax                ; set PBDR
+
+
+
+
+mov     ecx, IA32_EFER          ; MSR 0xC0000080, check out '9.8.5 Initializing IA-32e Mode' from Intel docs
+rdmsr                           ; also check out 'Table B-2. IA-32 Architectural MSRs' from Intel docs
+or      eax, IA23_EFER_LME      ; set LME bit, 0x100
+wrmsr
+
+
+; enable paging
+mov     eax, cr0
+or      eax, 0x80000000
+mov     cr0, eax
+
+
+
+[bits 64]
+
+    ; load the new GDT and go to real 64-bit mode
+    mov     rsi, GDT_TABLE_ADDRESS  ; 0x2004D8, with GDT base at 0x2004C0
+    lgdt    [rsi]
+    ; set the cs
+	xor		rsp, rsp
+	xor		rbp, rbp
+    mov     esp, [0x7000]
+	mov		ebp, esp
+    xor     eax, eax
+    mov     ax, CODE64_SEL
+    push    rax                     ; this is a MUST, because retf will pop out 4 bytes for CS (OPE found out this ;-)
+                                    ; and 'push rax' actually means 'push eax', because we still run in 32 bit compat mode
+    call    $ + 5                   ; place return EIP onto the stack
+    mov     eax, 10                 ; instrux length to continue right after 'retf'
+    add     [rsp], eax
+    retf
+
+	
+
+;
+; we are in true 64-bit code, but still using the identity mappings, NOT the final 1T VA
+;
+    ; set also fs, gs
+    ; NOTE: ds, es, ss are NOT used on x64
+    mov     ax, DATA64_SEL
+    mov     fs, ax
+    mov     gs, ax
+
+    ; setup the stack
+    mov     rsp, [0x7004]    ; 12K stack, already using the 1T VA addresses
+
+	mov		rbp, [0x7004]
+
+
+    call    $ + 5                   ; place return RIP onto the stack
+    mov     rax, KERNEL_BASE_VIRTUAL
+    add     qword [rsp], rax
+	sub		qword [rsp], BASE_MULTIPROC_START
+	add		qword [rsp], BASE_MULTIPROC_VIRTUAL
+    add     qword [rsp], 0x24       ; instrux length to continue right after 'retn'
+	retn
+
+mov rax, cr4
+bts rax, 18 ; OSXSAVE support
+mov cr4, rax
+
+;
+; now we are using final 1T virtual addresses, full x64, have an 8K stack in place, so are ready to jump to our C code
+;
+lidt [KERNEL_BASE+0xA000+0x400]
+
+; test stack
+sti
+hlt
+mov rax, "KKKKKKKK"
+push rax
+
+
+call TestSpinLock
+
+cli
+hlt
+; enter vmx operation
+call MhvStartVmx
+
+cli
+hlt
+cli
+hlt
+
+align 0x200, db 0x0
+; IDTR
+idt_64:
+	dw 0x100
+	dd KERNEL_BASE + 0xA000 + 0x500
+align 0x100, db 0x0
+; IDT
+; INT 0 - Divide by 0
+	dw 0xA800
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT 1 -
+	dw 0xA840
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT 2 - NMI
+	dw 0xA880
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT 3 -
+	dw 0xA8C0
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT 4 - 
+	dw 0xA900
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT 5 - 
+	dw 0xA940
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT 6 - 
+	dw 0xA980
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT 7 - 
+	dw 0xA9C0
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT 8 - 
+	dw 0xAA00
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT 9 - 
+	dw 0xAA40
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT A - 
+	dw 0xAA80
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT B - 
+	dw 0xAAC0
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT C - 
+	dw 0xAB00
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT D - 
+	dw 0xAB40
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT E - 
+	dw 0xAB80
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT F - 
+	dw 0xABC0
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+align 0x400, db 0x0
+; INT 0 - Divide by 0
+cli
+mov [0x7200], word "D0"
+jmp WaitForTask
+sti
+iretq
+align 0x40, db 0x0
+
+; INT 1 - Debugger - unhandled
+mov [0x7202], word "DB"
+
+iretq
+align 0x40, db 0x0
+
+; INT 2 - NMI - will return execution to program (used for recovering from halt)
+mov [0x7310], word "NM"
+
+iretq
+align 0x40, db 0x0
+
+; INT 3 - Breakpoint - unhandled
+mov [0x7204], word "BP"
+
+iretq
+align 0x40, db 0x0
+
+; INT 4 - Overflow - unhandled
+mov [0x7206], word "OF"
+
+iretq
+align 0x40, db 0x0
+
+; INT 5 - Bounds - unhandled
+mov [0x7208], word "BN"
+
+iretq
+align 0x40, db 0x0
+
+; INT 6 - Invalid opcode - exit current task
+cli
+mov [0x720A], word "IO"
+mov [0x000B8000], dword "IIOO"
+jmp WaitForTask
+sti
+iretq
+align 0x40, db 0x0
+
+; INT 7 - Coprocessor - exit current task
+cli
+mov [0x720C], word "CP"
+
+jmp WaitForTask
+sti
+iretq
+align 0x40, db 0x0
+
+; INT 8 - Double Fault - exit task
+cli
+mov [0x720E], word "DF"
+jmp WaitForTask
+sti
+iretq
+align 0x40, db 0x0
+
+; INT 9 - Coprocessor - exit
+cli
+mov [0x7210], word "C2"
+
+jmp WaitForTask
+sti
+iretq
+align 0x40, db 0x0
+
+; INT A - Invalid Task State Segment - exit
+cli
+mov [0x7212], word "IT"
+jmp WaitForTask
+
+sti
+iretq
+align 0x40, db 0x0
+
+; INT B - Segment not present- exit
+cli
+mov [0x7214], word "SP"
+
+jmp WaitForTask
+sti
+iretq
+align 0x40, db 0x0
+
+; INT C - Stack Fault - exit
+cli
+mov [0x7216], word "SF"
+
+jmp WaitForTask
+sti
+iretq
+align 0x40, db 0x0
+
+; INT D - General protection - exit
+cli
+mov [0x7218], word "GP"
+jmp WaitForTask
+sti
+iretq
+align 0x40, db 0x0
+
+; INT E - Page Fault - attempt to map memory ; for now exit
+cli
+mov [0x721A], word "PF"
+mov rax, cr2
+mov [0x7300], rax
+jmp WaitForTask
+sti
+iretq
+align 0x40, db 0x0
+
+; INT F - Reserved - exit
+cli
+mov [0x721C], word "RS"
+
+jmp WaitForTask
+sti
+iretq
+align 0x40, db 0x0
+
+times 0x400 db 0xA0
+
+;; KERNEL_BASE + 0xB000 - code to be relocated under 1 mb
+dw 0x3ff
+dd 0
+
+[bits 16]
+									; don't put more instructions here! the hardcoded value must be modified!
+	mov ax, DATA16_SEL
+	mov ss, ax
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+	mov eax, cr0
+	and al, 0xFE
+	mov cr0, eax
+	mov eax, 0x0
+	mov cr3, eax
+	jmp 0:0x600
+	
+align 0x100, db 0
+
+; 0x600
+	mov ax, 0 
+	mov ds, ax
+	mov es, ax
+	mov ss, ax
+
+lidt [0x500]
+sti
+	mov si, 0x1900
+	mov [si], dword 0
+mov di, 0x2000						; put e820 map at 0x2000 initially
+	mov [es:di+20], dword 1
+	mov ecx, 24							; size = 24
+	mov ebx, 0							; initially ebx (continuation) = 0
+	mov eax, 0xe820						; e820 function
+	mov edx, 0x0534D4150				; signature
+	mov sp, 0x5FFF
+	int 0x15							; interrupt 15h
+	jc eticheta							; if carry => instruction failed => out
+	mov edx, 0x0534D4150
+	cmp eax, edx
+	jne eticheta						; fail if eax is not outputed with the signature
+cmp ebx, 0
+je eticheta							; list is 1 entry long, nothing more to do
+jmp inloop
+loope820:
+	mov eax, 0xe820
+	mov [es:di+20], dword 1
+	mov ecx, 24
+	int 0x15
+	jc eticheta
+	mov edx, 0x0534D4150
+inloop:
+	jcxz skip
+	cmp cl, 20
+	jbe verif
+	test [es:di+20], byte 1
+	je skip
+verif:
+	mov ecx, [es:di+8]
+	or ecx, [es:di+12]
+jz skip
+	mov si, 0x1900
+	add [si], byte 1
+	add di, 24
+skip:
+	cmp ebx, 0
+	jne loope820
+eticheta:
+	jmp 0:0x700
+
+cli
+hlt
+
+	
+align 0x100, db 0x0
+;0x700
+	cli
+	mov eax, cr0
+	or al, 1
+	mov cr0, eax
+
+jmp CODE32_SEL:0x800 ; aligned to 0x800 
+align 0x100, db 0x0
+[bits 32]
+;0x800
+	mov ax, DATA32_SEL
+	mov ss, ax
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+	lgdt [0x92E]
+	lidt [0x934]
+	mov esp, [0x5000]	; get esp 
+	sub esp, 8
+	mov ebx, [esp]
+	mov [0x5FE0], ebx
+ret
+
+
+
+align 0x100, db 0x00
+gdt16_base:                                ; GDT descriptor table
+        .null:                                 ; 0x00 - null segment descriptor
+            dd 0x00000000                      ; must be left zero'd
+            dd 0x00000000                      ; must be left zero'd
+             
+        .code32:                               ; 0x01 - 32bit code segment descriptor 0xFFFFFFFF
+            dw 0xFFFF                          ; limit  0:15
+            dw 0x0000                          ; base   0:15
+            db 0x00                            ; base  16:23
+            db 0x9A                            ; present, iopl/0, code, execute/read
+            db 0xCF                            ; 4Kbyte granularity, 32bit selector; limit 16:19
+            db 0x00                            ; base  24:31
+             
+        .data32:                               ; 0x02 - 32bit data segment descriptor 0xFFFFFFFF
+            dw 0xFFFF                          ; limit  0:15
+            dw 0x0000                          ; base   0:15
+            db 0x00                            ; base  16:23
+            db 0x92                            ; present, iopl/0, data, read/write
+            db 0xCF                            ; 4Kbyte granularity, 32bit selector; limit 16:19
+            db 0x00                            ; base  24:31
+             
+        .code16:                               ; 0x03 - 16bit code segment descriptor 0x000FFFFF
+            dw 0xFFFF                          ; limit  0:15
+            dw 0x0000                          ; base   0:15
+            db 0x00                            ; base  16:23
+            db 0x9A                            ; present, iopl/0, code, execute/read
+            db 0x0F                            ; 1Byte granularity, 16bit selector; limit 16:19
+            db 0x00                            ; base  24:31
+             
+        .data16:                               ; 0x04 - 16bit data segment descriptor 0x000FFFFF
+            dw 0xFFFF                          ; limit  0:15
+            dw 0x0000                          ; base   0:15
+            db 0x00                            ; base  16:23
+            db 0x92                            ; present, iopl/0, data, read/write
+            db 0x0F                            ; 1Byte granularity, 16bit selector; limit 16:19
+            db 0x00                            ; base  24:31
+             
+    gdt16_ptr:                                 ; GDT table pointer for 16bit access
+        dw 40
+        dd 0x900
+	gdt32_ptr:
+		dw 0
+		dd 0
+	idt32_ptr:
+		dw 0
+		dd 0	
+
+times 0xC6 db 0xA0
+; KERNEL_BASE + 0xB500
+;; Jump to mbr code here
+[bits 64]
+; go to 16 bits 
+	mov rsi, rcx										; parameter = 0 if BSP, 1 if AP
+														;; we use the rcx in our code, so we will put it in rsi
+	mov rax, GDT_TABLE_ADDRESS
+	lgdt [rax]											; load gdt
+	lidt [KERNEL_BASE+0xA000+0x400]						; load idt
+	mov rsp, INITIAL_TOP_OF_STACK						; stack
+	mov rbp, rsp
+	mov [0x7300], dword "NNAA"
+	mov [0x000B8000], dword "KKKK"
+	mov rax, 0x18										; load 36 into 64-bit acumulator register (see SDM )
+	push rax
+	mov rax, KERNEL_BASE+0xB600							; go to 32 bits
+	push rax
+retf												; load eip and cs with 32 bits values
+align 0x100, db 0x0
+; KERNEL_BASE + 0xB600
+													; now we are in compatibility mode 
+	mov [0x7300], dword "NNBB"
+	mov rax, cr0
+											
+	and eax, 0x7FFFFFFF									; deactivate paging (we are on a 1 to 1 paging, so it's ok)
+	mov cr0, rax
+
+	mov rcx, 0xC0000080									; deactivate LME bit from IA32_EFER
+	rdmsr
+	mov ebx, IA23_EFER_LME
+	not ebx
+	and eax, ebx
+	wrmsr
+
+	mov rax, KERNEL_BASE + 0xB700
+jmp rax												; jump, we are now in 32 bits
+cli
+hlt
+align 0x100, db 0x0
+
+; kernel_base + 0xB700
+[bits 32]
+	
+	mov [0x7300], dword "NNCC"
+	mov eax, cr4										; disable PAE paging
+	mov ebx, CR4_PAE
+	not ebx
+	and eax, ebx
+	mov cr4, eax
+
+	mov eax, cr4										; ensure osxsave is still activated
+	bts eax, 18
+	mov cr4, eax
+													; set stack to protected address
+	mov eax, DATA32new_SEL
+	mov ds, eax
+	mov ss, eax
+	mov es, eax
+	mov fs, eax
+	mov gs, eax
+	mov esp, KERNEL_BASE + 0xA000
+	mov ebp, KERNEL_BASE + 0xA000
+
+	cmp esi, 0											; if current processor is BSP, we will relocate the code in 16 bits under 1 MB in a reserved zone
+	jne oloop											; if not, it will go in a spinlock loop
+	mov eax, 0x4800										; rellocating ...
+	mov ebx, KERNEL_BASE + 0xB800
+	reloc_msr:
+		mov edi, [ebx]
+		mov [eax], edi
+		add eax, 4
+		add ebx, 4
+		cmp ebx, KERNEL_BASE + 0xBB00
+		jl reloc_msr
+		jmp fn
+	oloop:
+	cmp [0x5010],dword 0								; aproape spinlock loop
+	je oloop
+	fn:
+	mov [0x5010], dword 1								; when finished, we can go to 16 bits
+	lgdt [0x928]										; load the 16 bits gdt
+jmp CODE16_SEL:0x4800								; jump to 16 bits address
+
+cli
+hlt
+align 0x100, db 0xA0
+; kernel_base + 0xB800
+[bits 16]
+													; we are now in 16 bits protected mode
+	mov ax, DATA16_SEL
+	mov ds, ax
+	mov es, ax
+	mov ss, ax
+	mov gs, ax
+	mov fs, ax
+
+	mov eax, cr0
+	and al, 0xFE										; deactivate protection
+	mov cr0, eax
+	xor eax, eax
+	mov cr3, eax
+jmp 0:0x4900
+; code to be put at 0x4800
+align 0x100, db 0x0
+; KERNEL_BASE + 0xB900
+													; we are now in real mode
+	mov ax, 0
+	mov ds, ax
+	mov es, ax
+	mov ss, ax
+	mov gs, ax
+	mov fs, ax
+	lidt [0x500]										; get idt
+	sti
+	cmp si, 0											; if processor is BSP, we continue to load the MBR; else a vmcall is done and the processor will then be put on halt state
+	je bspmbr	
+		mov bx, 0x7290										; test ap ...
+		mov ax, [bx]
+		inc ax
+		mov [bx], ax
+		mov cx, 0xFE
+		vmcall												; vmcall for APs
+	bspmbr:
+		 												; load the mbr from bsp
+		
+
+;mov ah, 0x86
+;mov cx, 0x20
+;mov dx, 0xDDDD
+;int 0x15
+
+; load the mbr to 0x7C00
+
+		mov si, 0x4A00										; address of "disk address packet"
+		mov ah, 0x42										; AL is unused
+		mov dl, 0x80										; drive number 0 (OR the drive # with 0x80)
+		int 0x13
+		mov cx, 0xFE
+		vmcall
+	jmp 0:0x7C00
+cli
+hlt
+align 0x100, db 0x0
+; KERNEL_BASE + 0xBA00
+
+	db	0x10
+	db	0
+blkcnt:	dw	2		; int 13 resets this to # of blocks actually read/written
+db_add:	dw	0x7C00	; memory buffer destination address
+	dw	0			; in memory page zero
+d_lba:	dd	0		; put the lba to read in this spot
+	dd	0	
+align 0x100, db 0x0
+times 0x500 db 0xA0
+
+;;
+;; KERNEL_BASE + 0xC000 - code
+;;
+[bits 32]
+; code_start - the multiboot loader transfers execution here (based on the entry_addr in the multiboot header above)
+__MultiBootEntryPoint:
+	
+
+	mov esp, 0x4900
+	pusha
+	; GO TO REAL MODE
+	mov eax, 0x500
+	mov ebx, KERNEL_BASE + 0xB000
+	relocate:
+		mov edi, [ebx]
+		mov [eax], edi
+		add eax, 4
+		add ebx, 4
+		cmp ebx, KERNEL_BASE + 0xC000
+		jl relocate
+
+	sidt [0x934]										; save the idt
+	sgdt [0x92E]										; save the gdt
+	mov [0x5000], esp									; save the esp
+	lgdt [0x928]										; load the 16bit gdt
+
+	
+	call CODE16_SEL:0x506								; go to e820 code
+	cli
+	revenire:
+	mov ecx, [0x1900]									; get number of e820 entries
+	mov eax, KERNEL_BASE + 0x500						; address where to put e820 map
+	mov edi, 0x2000										; address from where to take e820 map
+	mov [eax], ecx										; first put the number of entries
+	add eax, 4											; (number of entries is a double word)
+	jecxz oute											; if no entries, go out
+	move_e820map:										; code to move the e820 map
+		push ecx
+		mov ecx, 6										; every entry has 6 double words (24 bytes)
+		loopone:								
+			mov ebx, [edi]								; effective move of a double word
+			mov [eax], ebx
+			add eax, 4
+			add edi, 4
+		loop loopone									; loop six times
+		pop ecx
+	loop move_e820map									; loop until the number of entries has been moved
+	jmp noutne											; finished moving
+	oute:
+	mov ecx, 1											; we have one entry
+	mov [KERNEL_BASE + 0x500], ecx
+	jmp move_e820map
+	mov [0x000B8004], dword "PPPP"
+	noutne:												; now we relocate the trampolines (16-32, 32-64)
+	mov eax, 0x6000										; address where to put the trampoline code
+	mov ebx, KERNEL_BASE + 0xA000						; address from where to take the trampoline
+	reloc_trampoline:
+		mov edi, [ebx]									; move one double word
+		mov [eax], edi
+		add eax, 4
+		add ebx, 4
+		cmp ebx, KERNEL_BASE + 0xB000					; move 0x400 bytes 
+		jl reloc_trampoline
+
+	add esp, 4
+	popa												; get all the saved registers
+
+	cli
+
+	; continue with going to 64 bits
+	
+
+    ; special TRACE32 breakpoint on I/O 0xBDB0
+    ;;mov     dx, 0xbdb0
+    ;;mov     al, 0x01                ; TRACE32 break code 0x01
+    ;;out     dx, al
+
+    ; simply echo something to the screen, by direct memory write to 80x25 text mode VGA video mem (0xB8000)
+    mov     ecx, '1111'                     ; signal our presence
+    mov     [0x000B8000], ecx
+
+	
+
+    ; setup initial ESP, to have stack
+    mov     esp, INITIAL_TOP_OF_STACK
+
+    ; special TRACE32 breakpoint on I/O 0xBDB0
+    ;mov     ecx, eax
+    ;mov     esi, edx                        ; EDX might contain the legacy-boot magic value
+    ;mov     dx, 0xbdb0
+    ;mov     al, 0x01                        ; TRACE32 break code 0x01
+    ;out     dx, al
+    ;mov     eax, ecx
+    ;mov     edx, esi
+
+    ; check if we were loaded by multiboot
+    cmp     eax, MULTIBOOT_LOADER_MAGIC
+    jz      mb_load
+    
+    mov     eax, 'EEEE'                     ; signal error
+    mov     [0x000B8000], eax 
+     
+
+mb_load:
+
+    ; multiboot loaded us, check for cmd line and copy it inside kernel image at __cmdline
+    mov     eax, '2222'                     ; signal our presence
+    mov     [0x000B8004], eax
+
+	
+	
+    ;
+    ; setup final PT table, to avoid mapping NULL pointers
+    ;
+    cld
+    mov     edi, PT_TABLE_BASE + 8
+    mov     ecx, 511                ; we need 511 entries
+    mov     eax, 0x00001007         ; P = 1, R/W = 1, U/S = 1, base physical address = 0x0000`1000
+    mov     edx, 0x00000000         ; upper half, because we use 64 bit entries
+_one_more_entry:
+    stosd                           ; store lower half of entry
+    add     eax, 0x00001000         ; +4K, next physical page
+    xchg    eax, edx
+    stosd                           ; store upper half 0x0000`0000
+    xchg    eax, edx
+    loop    _one_more_entry
+
+
+;
+; now, we will enable PAE, setup LME, paging, load GDT and go to 64 bit mode
+;
+enable_pae:
+    mov     eax, cr4
+    or      eax, CR4_PAE            ; set bit 0x00000020
+    mov     cr4, eax
+
+    mov     eax, PML4_TABLE_BASE    ; 0x202000 physical
+    mov     cr3, eax                ; set PBDR
+
+
+    mov     ecx, IA32_EFER          ; MSR 0xC0000080, check out '9.8.5 Initializing IA-32e Mode' from Intel docs
+    rdmsr                           ; also check out 'Table B-2. IA-32 Architectural MSRs' from Intel docs
+    or      eax, IA23_EFER_LME      ; set LME bit, 0x100
+    wrmsr
+
+    ; enable paging
+    mov     eax, cr0
+    or      eax, 0x80000000
+    mov     cr0, eax
+
+	
+	
+	
+
+
+;
+; now we should be in 64-bit compatibility mode
+;
+[bits 64]
+    mov     eax, '3333'             ; signal our presence
+    mov     [0x000B8008], eax
+
+    ; load the new GDT and go to real 64-bit mode
+    mov     rsi, GDT_TABLE_ADDRESS  ; 0x2004D8, with GDT base at 0x2004C0
+    lgdt    [rsi]
+
+    ; set the cs
+	xor		rsp, rsp
+	xor		rbp, rbp
+    mov     esp, INITIAL_TOP_OF_STACK
+	mov		ebp, esp
+    xor     eax, eax
+    mov     ax, CODE64_SEL
+    push    rax                     ; this is a MUST, because retf will pop out 4 bytes for CS (OPE found out this ;-)
+                                    ; and 'push rax' actually means 'push eax', because we still run in 32 bit compat mode
+    call    $ + 5                   ; place return EIP onto the stack
+    mov     eax, 10                 ; instrux length to continue right after 'retf'
+    add     [rsp], eax
+    retf
+
+;
+; we are in true 64-bit code, but still using the identity mappings, NOT the final 1T VA
+;
+    ; set also fs, gs
+    ; NOTE: ds, es, ss are NOT used on x64
+    mov     ax, DATA64_SEL
+    mov     fs, ax
+    mov     gs, ax
+
+    mov     eax, '4444'             ; signal our presence
+    mov     [0x000B800C], eax
+
+    ; setup the stack
+    mov     rsp, INITIAL_TOP_OF_STACK_1T    ; 8K stack, already using the 1T VA addresses
+    sub     rsp, 0x20
+	mov		rbp, INITIAL_TOP_OF_STACK_1T
+
+    ; switch to final 1T virtual addresses (0x0000`0100`0000`0000)
+    call    $ + 5                   ; place return RIP onto the stack
+    mov     rax, KERNEL_BASE_VIRTUAL - KERNEL_BASE
+    add     qword [rsp], rax
+    add     qword [rsp], 0x14       ; instrux length to continue right after 'retn'
+    retn
+
+    mov     eax, '5555'             ; signal our presence
+    mov     [0x000B8010], eax
+
+;
+; now we are using final 1T virtual addresses, full x64, have an 8K stack in place, so are ready to jump to our C code
+;
+call_final:
+
+    ; special TRACE32 breakpoint on I/O 0xBDB0
+    ;;mov     dx, 0xbdb0
+    ;;mov     al, 0x02                ; TRACE32 break code 0x02
+    ;;out     dx, al
+
+    sub     rsp, 0x20
+
+	mov rax, cr4
+	bts rax, 18
+	mov cr4, rax
+	
+	lidt [KERNEL_BASE+0xA000+0x400]
+	
+    call    Init64
+    add     rsp, 0x20
+
+    mov     eax, 'BPBP'
+    mov     [0xB8000], eax
+
+    cli
+    hlt
+
+write_to_port:
+	; ecx = first parameter
+	; edx = second parameter
+	mov eax, edx
+	mov dx, cx
+	out dx, eax
+	ret
+
+
+read_from_port:
+	; ecx = first parameter
+	xor eax, eax
+	mov dx, cx
+	in eax, dx
+	ret
+
+write_to_port_char:
+	; ecx = first parameter
+	; edx = second parameter
+	mov al, dl
+	mov dx, cx
+	out dx, al
+	ret
+
+increase_stack:
+	mov rbx, rsp
+	mov rcx, rbp
+	mov rbp, 0x02A00000
+	mov rsp, rbp
+	mvstack:
+	push qword [rcx]
+	sub rcx, 8
+	cmp rbx, rcx
+	jle mvstack
+
+	ret
+
+
+
+acquireLock:
+	; ecx = address of lock object
+	lock bts dword [rcx], 0
+	jc spin
+	ret ; lock is acquired
+spin:
+	test dword [rcx], 1
+	jnz spin
+	jmp acquireLock
+
+releaseLock:
+	; ecx = address of lock object
+	mov dword [rcx], 0
+	ret
+
+
+WaitForTask:
+	cli
+	hlt
+	; handle new task and comeback by int 0 or something ...
+
+
+
+
+Disablea20:
+	push ax
+	in al,92h
+	and al,0fdh
+	out 92h,al
+	pop ax
+	ret
+
+
+
+
+readMsr:
+	push r11
+	mov rsi, r10
+	mov r11, r10
+	add r11, 4096
+	again:
+	cmp dword [rsi], ecx
+	jz found_msr
+	add rsi, 12
+	cmp rsi, r11
+	jb again
+	mov rcx, -1
+	pop r11
+	ret
+	found_msr:
+		mov eax, [rsi+4]
+		mov edx, [rsi+8]
+		pop r11
+		ret
+
+HandleMSR:
+	
+	mov rbx, 0x681E
+	vmread rax, rbx
+	add rax, 2
+
+	vmwrite rbx, rax
+	push rcx
+	call RestoreGeneralRegisters
+	pop r10
+	call readMsr
+	cmp rcx, -1
+	je read_n
+	jne finread
+	read_n:
+		call RestoreGeneralRegisters
+		rdmsr
+		vmresume
+	finread:
+	mov r10, [fs:0x40]
+	mov r11, [fs:0x48]
+	mov rsi, [fs:0x20]
+	vmresume
+	cli
+	hlt
+
+HandleWRMSR:
+	mov rbx, 0x681E
+	vmread rax, rbx
+	add rax, 2
+	vmwrite rbx, rax
+
+	push rcx
+	call RestoreGeneralRegisters
+	pop r10
+	call readMsr
+	push rsi
+	
+	cmp rsi, r11
+	ja new_entry
+	call RestoreGeneralRegisters
+	mov [rsi+4], eax
+	mov [rsi+8], edx
+	vmresume
+
+	new_entry:
+	push r10
+	mov [0x7600], byte "B"
+	
+	call RestoreGeneralRegisters
+	pop r10
+	mov rsi, r10
+	ag_new_entry:
+	cmp dword [rsi], 0
+	jz found_loc
+	add rsi, 12
+	jmp ag_new_entry
+	found_loc:
+	call RestoreGeneralRegisters
+	mov [rsi], ecx
+	mov [rsi+4], eax
+	mov [rsi+8], edx
+	
+	vmresume
+
+	cli
+	hlt
+
+
+
+
+JumpToMBR:
+	[bits 64]
+	;; go to 32 bits
+	mov rax, KERNEL_BASE+0xB500
+	jmp rax
+
+
+
+
+SaveGeneralRegisters:
+	call SaveGeneralRegs
+	ret
+	
+RestoreGeneralRegisters:
+	call getFs
+	call GetGeneralRegs
+	ret
+[bits 16]
+Hook_VMExit:
+	cmp eax, 0xe820
+	jne do_call
+	mov cx, 0xFF
+	vmcall
+	iret
+	do_call:
+	jmp 0xF000:0xF859
+
+[bits 64]
+Hookint15h:
+	mov rax, 0x4B00
+	mov rbx, qword HookCode
+	sub rbx, 4
+	mov rcx, qword HookCode
+	add rcx, 0x100
+	reloc_hook:
+		mov edi, [rbx]
+		mov [rax], edi
+		add rax, 4
+		add rbx, 4
+		cmp rbx, rcx
+	jl reloc_hook
+	mov eax, 0x4C00
+	mov [0x4B00], eax
+	mov eax, 0x4B04
+	mov [4*0x15], eax
+	ret
+
+[bits 16]
+normal_15h dd 0
+HookCode:
+	mov [0x4A50], word "LK"
+	cmp eax, 0xe820
+	jne goto_n15h
+	; e820 code here
+	cmp ebx, 0
+	jz new_e820
+	jnz cont_e820
+	new_e820:
+		mov eax, 0x4C00
+		mov [0x4B00], eax
+		jmp cont_e820
+	cont_e820:
+	mov eax, [0x4B00]
+	mov ebx, eax
+	mov eax, [bx]
+	mov [es:di], eax
+	mov eax, [0x4B00]
+	add eax, 4
+	mov ebx, eax
+	mov eax, [bx]
+	mov [es:di + 4], eax
+	mov eax, [0x4B00]
+	add eax, 8
+	mov ebx, eax
+	mov eax, [bx]
+	mov [0x2400], bx
+	mov [es:di + 8], eax
+	mov eax, [0x4B00]
+	add eax, 12
+	mov ebx, eax
+	mov eax, [bx]
+	mov [es:di + 12], eax
+	mov eax, [0x4B00]
+	add eax, 16
+	mov ebx, eax
+	mov eax, [bx]
+	mov [es:di + 16], eax
+	mov eax, [0x4B00]
+	add eax, 20
+	mov ebx, eax
+	mov eax, [bx]
+	mov [es:di + 20], dword 1
+	mov eax, [0x4B00]
+	add eax, 24
+	mov [0x4B00], eax
+	cmp eax, 0x5000
+	jg ended
+	mov eax, 0x0534D4150
+	jmp not_ended
+	ended:
+		mov eax, 0x0534D4150
+		mov ebx, 0
+		mov ecx, 24
+		stc
+		iret
+	not_ended:
+	mov ebx, 1
+	mov ecx, 24
+	clc
+	iret
+	goto_n15h:
+	jmp 0xF000:0xF859
+	align 0x100, db 0
+
+
+[bits 64]
+
+SaveGeneralRegs:
+	mov [fs:0], rax
+	mov [fs:0x8], rbx
+	mov [fs:0x10], rcx
+	mov [fs:0x18], rdx
+	mov [fs:0x20], rsi
+	mov [fs:0x28], rdi
+	mov [fs:0x30], r8
+	mov [fs:0x38], r9
+	mov [fs:0x40], r10
+	mov [fs:0x48], r11
+	mov [fs:0x50], r12
+	mov [fs:0x58], r13
+	mov [fs:0x60], r14
+	mov [fs:0x68], r15
+	mov [fs:0x70], rsp
+	ret
+
+GetGeneralRegs:
+	mov rax, [fs:0x78]
+	mov cr2, rax
+	mov rax, [fs:0]
+	mov rbx, [fs:0x8]
+	mov rcx, [fs:0x10]
+	mov rdx, [fs:0x18]
+	mov rsi, [fs:0x20]
+	mov rdi, [fs:0x28]
+	mov r8, [fs:0x30]
+	mov r9, [fs:0x38]
+	mov r10, [fs:0x40]
+	mov r11, [fs:0x48]
+	mov r12, [fs:0x50]
+	mov r13, [fs:0x58]
+	mov r14, [fs:0x60]
+	mov r15, [fs:0x68]
+	;mov rsp, [fs:0x70]
+
+	ret
+
+; calls the function to store FS in fs base
+SaveZone:
+	call storeFs
+	ret
+
+getFs:
+	push rdx
+	push rcx
+	push rbx
+	xor rax, rax
+	xor rdx, rdx
+	mov rcx, 0xC0000100
+	rdmsr
+	shl rdx, 31
+	shl rdx, 1
+	or rax, rdx
+	pop rbx
+	pop rcx
+	pop rdx
+	ret
+
+storeFs:
+
+	push rdx
+	push rax
+	push rcx
+	push rbx
+	xor rdx, rdx
+	mov rax, rcx
+	shr rax, 31
+	shr rax, 1
+	mov rdx, rax
+	mov rax, rcx
+	mov rbx, 0x00000000FFFFFFFF
+	and rax, rbx
+	mov rcx, 0xC0000100
+	wrmsr
+	pop rbx
+	pop rcx
+	pop rax
+	pop rdx
+	ret
+
+GetRsp:
+	mov rax, rsp
+	ret

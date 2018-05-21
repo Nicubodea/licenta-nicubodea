@@ -1,8 +1,10 @@
+#include "guest.h"
 #include "epthook.h"
 #include "structures.h"
 #include "vmcsdef.h"
 #include "winproc.h"
 #include "winmod.h"
+
 
 VOID
 MhvHandleEptViolation(
@@ -22,21 +24,31 @@ MhvHandleEptViolation(
 
     phys = MhvTranslateVa(linearAddr, cr3, NULL);
 
-    for (DWORD i = 0; i < gNumberOfEptHooks; i++)
+
+    //LOG("[INFO] Ept violation from %x on %x", rip, linearAddr);
+
+    LIST_ENTRY* list = pGuest.EptHooksList.Flink;
+
+    while (list != &pGuest.EptHooksList)
     {
-        if (gEptHooks[i].GuestLinearAddress == (linearAddr & (~0xFFF)) &&
-            gEptHooks[i].GuestPhysicalAddress == (phys & (~0xFFF)) &&
-            gEptHooks[i].Cr3 == cr3 &&
-            gEptHooks[i].Offset == (phys & 0xFFF)
+        PEPT_HOOK pHook = CONTAINING_RECORD(list, EPT_HOOK, Link);
+
+        list = list->Flink;
+
+        if ((pHook->GuestLinearAddress == (linearAddr & (~0xFFF)) || pHook->GuestLinearAddress == NULL) &&
+            pHook->GuestPhysicalAddress == (phys & (~0xFFF)) &&
+            (pHook->Cr3 == cr3 || pHook->Cr3 == NULL) &&
+            pHook->Offset >= (phys & 0xFFF) && pHook->Offset < ((phys & 0xFFF) + pHook->Size)
             )
         {
-            if (gEptHooks[i].PreActionCallback == NULL)
+            if (pHook->PreActionCallback == NULL)
             {
                 // we should also have hooks with only post action callbacks
                 action = 1;
                 break;
             }
-            NTSTATUS status = gEptHooks[i].PreActionCallback(Processor, &gEptHooks[i], rip, cr3, NULL);
+            //LOG("[INFO] calling preCallback");
+            NTSTATUS status = pHook->PreActionCallback(Processor, pHook, rip, cr3, NULL);
             if (status == STATUS_SUCCESS)
             {
                 action = 1;
@@ -46,15 +58,20 @@ MhvHandleEptViolation(
                 action = 0;
             }
         }
+
     }
 
     if (action)
     {
+
+        //LOG("[INFO] Will use MTF as callback returned TRUE or no callback was found!");
         __vmx_vmwrite(VMX_EPT_POINTER, ((QWORD)proc->FullRightsEptPointer | EPT_4LEVELS_POINTER));
 
         //replace with monitor trap flag here...
         QWORD rflags = 0;
         proc->LastInterruptDisabled = FALSE;
+
+        
         __vmx_vmread(VMX_GUEST_RFLAGS, &rflags);
 
         if ((rflags & (1 << 9)) != 0)
@@ -64,6 +81,7 @@ MhvHandleEptViolation(
             proc->LastInterruptDisabled = TRUE;
         }
 
+        // activate the MTF
         QWORD procControls = 0;
         __vmx_vmread(VMX_PROC_CONTROLS_FIELD, &procControls);
         procControls |= (1 << 27);

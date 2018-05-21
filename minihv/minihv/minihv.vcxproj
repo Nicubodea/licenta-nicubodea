@@ -435,6 +435,7 @@
     <ClCompile Include="acpica\utxferror.c" />
     <ClCompile Include="acpica\utxfinit.c" />
     <ClCompile Include="acpica\utxfmutex.c" />
+    <ClCompile Include="alloc.c" />
     <ClCompile Include="epthook.c" />
     <ClCompile Include="except.c" />
     <ClCompile Include="guest.c" />

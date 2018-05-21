@@ -1,9 +1,160 @@
+#include "guest.h"
 #include "winmod.h"
 #include "ntstatus.h"
 #include "minihv.h"
 #include "vmxhook.h"
 #include "structures.h"
 #include "winproc.h"
+#include "alloc.h"
+
+NTSTATUS
+Kernel32Written(
+    PVOID Procesor,
+    PVOID Hook,
+    QWORD Rip,
+    QWORD Cr3,
+    PVOID Context
+)
+{
+    LOG("I was written :((((");
+}
+
+VOID
+MhvInsertModuleInListIfNotExistent(
+    PMHVPROCESS Process,
+    QWORD Start,
+    QWORD End,
+    PBYTE Name,
+    WORD NameLength
+)
+{
+    BOOLEAN found = FALSE;
+    LIST_ENTRY* list = Process->Modules.Flink;
+
+    if (!found)
+    {
+        PBYTE name = MemAllocContiguosMemory(NameLength / 2 + 2);
+        PMHVMODULE pMod = MemAllocContiguosMemory(sizeof(MHVMODULE));
+
+        int j = 0;
+        for (DWORD i = 0; i < NameLength; i += 2)
+        {
+            name[j] = Name[i];
+            j++;
+        }
+
+        name[j] = 0;
+
+        pMod->Name = name;
+        pMod->End = End;
+        pMod->Start = Start;
+        pMod->Process = Process;
+
+        LOG("[Process %s] Module %s just loaded at [%x -> %x]", Process->Name, pMod->Name, pMod->Start, pMod->End);
+
+        InsertTailList(&(Process->Modules), &(pMod->Link));
+
+        if (Process->Name[0] == 'i' && Process->Name[1] == 'n' && Process->Name[2] == 't' && Process->Name[3] == 'r')
+        {
+            if (pMod->Name[24] == '3')
+            {
+                LOG("hooking kernel32!!!")
+                MhvCreateEptHook(pGuest.Vcpu, MhvTranslateVa(pMod->Start, Process->Cr3, NULL), EPT_WRITE_RIGHT, Process->Cr3, pMod->Start,
+                    Kernel32Written, NULL, PAGE_SIZE);
+            }
+        }
+    }
+}
+
+
+BYTE nameString[0x1000];
+
+VOID
+MhvGetVadName(
+    PMMVAD_SHORT64 Vad,
+    PMHVPROCESS Process,
+    QWORD Cr3
+)
+{
+
+    PBYTE ctlArea, fileObject;
+    WORD nameLength;
+    QWORD nameGva;
+
+    MhvMemRead(Vad->Subsection, 8, Cr3, &ctlArea);
+
+    MhvMemRead(ctlArea + 0x40, 8, Cr3, &fileObject);
+
+    fileObject = ((QWORD) fileObject) & 0xFFFFFFFFFFFFFFF0;
+
+    MhvMemRead(fileObject + 0x58, 2, Cr3, &nameLength);
+
+    MhvMemRead(fileObject + 0x60, 8, Cr3, &nameGva);
+
+    MhvMemRead(nameGva, nameLength, Cr3, nameString);
+
+    QWORD s1 = Vad->StartingVpn;
+    QWORD s2 = Vad->StartingVpnHigh;
+    QWORD f1 = Vad->EndingVpn;
+    QWORD f2 = Vad->EndingVpnHigh;
+
+    QWORD start = (s1 | (s2 << 32)) << 12;
+
+    QWORD finish = (f1 | (f2 << 32)) << 12;
+
+    MhvInsertModuleInListIfNotExistent(Process, start, finish, nameString, nameLength);
+
+}
+
+VOID
+MhvIterateVadList(
+    PMHVPROCESS Process
+)
+{
+
+}
+
+BOOLEAN bGata = TRUE;
+BYTE pagini[0x1500];
+
+VOID
+MhvNewModuleLoaded(
+    PPROCESOR Context
+)
+{
+    QWORD cr3;
+    __vmx_vmread(VMX_GUEST_CR3, &cr3);
+    LOG("[WINMOD] VadGva: %x, Cr3: %x", Context->context._rcx, cr3);
+
+    MMVAD_SHORT64 pVad = { 0 };
+    
+    //MhvMemRead(Context->context._rcx, sizeof(MMVAD_SHORT64), cr3, &pVad);
+
+    QWORD currentCr3 = pGuest.SystemCr3;
+
+    if (currentCr3 == 0)
+    {
+        currentCr3 = cr3;
+    }
+
+
+    MhvMemRead(Context->context._rcx, sizeof(MMVAD_SHORT64), currentCr3, &pVad);
+
+    PMHVPROCESS pProc = MhvFindProcessByCr3(cr3);
+
+    if (NULL == pProc)
+    {
+        LOG("[INFO] No process is pointed by cr3!");
+        return;
+    }
+
+    if (pVad.VadFlags.VadType == 2)
+    {
+        MhvGetVadName(&pVad, pProc, currentCr3);
+    }
+
+    
+}
 
 NTSTATUS
 MhvModuleFullyLoaded(
@@ -21,7 +172,7 @@ MhvModuleFullyLoaded(
     PUM_MODULE Module = NULL;
     PMHVPROCESS pProcess = NULL;
     QWORD cr3 = pHook->Cr3;
-    MhvEptPurgeHook(Processor, pHook->GuestPhysicalAddress | pHook->Offset);
+    MhvEptPurgeHook(Processor, pHook->GuestPhysicalAddress | pHook->Offset, FALSE);
     
     //pProcess = &gProcesses[MhvFindProcessByCr3(cr3)];
 
@@ -101,7 +252,7 @@ MhvGetModFromWrittenEntry(
 
     if (imgNamePhysAddr[0] == 0 && imgNamePhysAddr[1] == 0)
     {
-        MhvEptMakeHook(
+        /*MhvEptMakeHook(
             pProc,
             imgNamePhysAddr,
             EPT_WRITE_RIGHT,
@@ -109,7 +260,7 @@ MhvGetModFromWrittenEntry(
             imgNameAddr,
             NULL,
             MhvModuleFullyLoaded
-        );
+        );*/
         return STATUS_SUCCESS;
     }
 

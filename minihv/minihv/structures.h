@@ -66,6 +66,9 @@ typedef struct _PROCESSOR
 
     QWORD           LastGLA;
     BOOLEAN         LastInterruptDisabled;
+
+    QWORD           OldPTE;
+    EPT_HOOK        LastHook;
     
 } PROCESSOR, *PPROCESOR;
 

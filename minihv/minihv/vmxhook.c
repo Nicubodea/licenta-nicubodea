@@ -57,6 +57,19 @@ _Emu3(PPROCESOR Processor) {
 
 }
 
+VOID
+_Emu5(PPROCESOR Processor) {
+
+    QWORD rsp;
+    __vmx_vmread(VMX_GUEST_RSP, &rsp);
+    rsp += 0x18;
+    QWORD cr3 = 0;
+    __vmx_vmread(VMX_GUEST_CR3, &cr3);
+    PQWORD writeAddr = MhvTranslateVa(rsp, cr3, NULL);
+    writeAddr[0] = Processor->context._rbx;
+
+}
+
 API_SIGNATURE gHookSignatures[NR_OF_SIGNATURES] = {
     {
         "PspInsertProcess",
@@ -188,7 +201,35 @@ API_SIGNATURE gHookSignatures[NR_OF_SIGNATURES] = {
         },
         _Emu3,
         MhvDeleteProcessFromList
-    }
+    },
+    {
+        "MiGetWsAndInsertVad",
+        0x64,
+        {
+            0x48, 0x89, 0x5c, 0x24, 0x200,                   // mov     qword ptr [rsp+18h],rbx
+            0x48, 0x89, 0x74, 0x24, 0x200,                   // mov     qword ptr [rsp+20h],rsi
+            0x57,                                           // push    rdi
+            0x48, 0x83, 0xec, 0x200,                         // sub     rsp,20h
+            0x65, 0x48, 0x8b, 0x04, 0x25, 0x88, 0x01, 0x00, 0x00, // mov   rax,qword ptr gs:[188h]
+            0x48, 0x8b, 0xf1,                               // mov     rsi,rcx
+            0x48, 0x89, 0x6c, 0x24, 0x200,                   // mov     qword ptr [rsp+30h],rbp
+            0x48, 0x8b, 0xb8, 0x200, 0x00, 0x00, 0x00,       // mov     rdi,qword ptr [rax+0B8h]
+            0x0f, 0xb6, 0x87, 0x200, 0x200, 0x00, 0x00,       // movzx   eax,byte ptr [rdi+5B8h]
+            0x24, 0x07,                                     // and     al,7
+            0x48, 0x8d, 0x9f, 0x200, 0x200, 0x00, 0x00,       // lea     rbx,[rdi+500h]
+            0x3c, 0x02,                                     // cmp     al,2
+            0x0f, 0x84, 0x200, 0x200, 0x200, 0x200,             // je      nt! ?? ::FNODOBFM::`string'+0x1b17c (fffff800`8d7fd33c)
+            0x48, 0x8d, 0x8b, 0x200, 0x00, 0x00, 0x00,       // lea     rcx,[rbx+0C0h]
+            0x44, 0x0f, 0x20, 0xc5,                         // mov     rbp,cr8
+            0xb8, 0x02, 0x00, 0x00, 0x00,                   // mov     eax,2
+            0x44, 0x0f, 0x22, 0xc0,                         // mov     cr8,rax
+            0xf6, 0x05, 0x200, 0x200, 0x200, 0x200, 0x200,       // test    byte ptr [nt!PerfGlobalGroupMask+0x6 (fffff800`8da31286)],21h
+            0x40, 0x0f, 0xb6, 0xd5,                         // movzx   edx,bpl
+            0x0f, 0x85, 0x200, 0x200, 0x200, 0x200,             // jne     nt! ?? ::FNODOBFM::`string'+0x1b188 (fffff800`8d7fd348)
+        },
+        _Emu5,
+        MhvNewModuleLoaded
+    },
 
 };
 
@@ -276,7 +317,7 @@ MhvHookFunctionsInMemory(
     gNumberOfHooks = 0;
     
     __vmx_vmread(VMX_GUEST_CR3, &cr3);
-    LOG("[HELLO] I'm here");
+
     kernelMap = MhvTranslateVa(gProcessors[procId].KernelBase, cr3, NULL);
     
     PIMAGE_DOS_HEADER dosHeader = kernelMap;

@@ -3,6 +3,7 @@
 #include "minihv.h"
 #include "ntstatus.h"
 #include "acpica.h"
+#include "_wdk.h"
 
 typedef NTSTATUS
 (*PFUNC_EptCallback)(
@@ -15,6 +16,7 @@ typedef NTSTATUS
 
 typedef struct _EPT_HOOK
 {
+    LIST_ENTRY Link;
     QWORD GuestLinearAddress;
     QWORD GuestPhysicalAddress;
     QWORD Cr3;
@@ -22,6 +24,11 @@ typedef struct _EPT_HOOK
     PFUNC_EptCallback PostActionCallback;
     PFUNC_EptCallback PreActionCallback;
     QWORD TimesCalled;
+    QWORD Flags;
+    QWORD AccessHooked;
+    QWORD Size;
+    struct _EPT_HOOK* LinkHook;
+    struct _EPT_HOOK* ParentHook;
 } EPT_HOOK, *PEPT_HOOK;
 
 VOID
@@ -47,9 +54,6 @@ MhvLdrAboutToBeWritten(
     PVOID Context
 );
 
-
-EPT_HOOK gEptHooks[1000];
-QWORD gNumberOfEptHooks;
 ACPI_SPINLOCK gEptLock;
 
 #endif

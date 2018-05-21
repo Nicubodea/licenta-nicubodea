@@ -34,6 +34,14 @@ MhvTranslateVa(
     BOOLEAN *Writable
 );
 
+PVOID
+MhvMemRead(
+    QWORD Address,
+    QWORD Size,
+    QWORD Cr3,
+    PVOID Buffer
+);
+
 /*
 Get the physical address of a 1T translated address
 */

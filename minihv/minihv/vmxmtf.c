@@ -1,3 +1,4 @@
+#include "guest.h"
 #include "vmxmtf.h"
 #include "structures.h"
 #include "vmxop.h"
@@ -31,13 +32,25 @@ MhvHandleMTF(
 
     __vmx_vmwrite(VMX_EPT_POINTER, pProc->EptPointer);
 
-    for (DWORD i = 0; i < gNumberOfEptHooks; i++)
+    LIST_ENTRY* list = pGuest.EptHooksList.Flink;
+
+    while (list != &pGuest.EptHooksList)
     {
-        if (gEptHooks[i].Offset == (pProc->LastGLA & 0xFFF) 
-            && ((QWORD)physLinearAddr & (~0xFFF)) == gEptHooks[i].GuestPhysicalAddress)
+        PEPT_HOOK pHook = CONTAINING_RECORD(list, EPT_HOOK, Link);
+
+        list = list->Flink;
+
+        if ((pHook->GuestLinearAddress == (pProc->LastGLA & (~0xFFF)) || pHook->GuestLinearAddress == NULL) &&
+            pHook->GuestPhysicalAddress == ((QWORD)physLinearAddr & (~0xFFF)) &&
+            (pHook->Cr3 == cr3 || pHook->Cr3 == NULL) &&
+            pHook->Offset >= ((QWORD)physLinearAddr & 0xFFF) &&
+            pHook->Offset < ((QWORD)physLinearAddr & 0xFFF) + pHook->Size
+            )
         {
-            gEptHooks[i].PostActionCallback(pProc, &gEptHooks[i], rip, cr3, *physLinearAddr);
+            LOG("[INFO] Calling POST callback!");
+            pHook->PostActionCallback(pProc, pHook, rip, cr3, *physLinearAddr);
         }
+
     }
 
 }

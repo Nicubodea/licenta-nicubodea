@@ -40,14 +40,29 @@ MhvEptMakeHook(
     QWORD               Cr3,
     QWORD               GLA,
     PFUNC_EptCallback   PreCallback,
-    PFUNC_EptCallback   PostCallback
+    PFUNC_EptCallback   PostCallback,
+    QWORD               Flags,
+    QWORD               Size
 
+);
+
+VOID
+MhvCreateEptHook(
+    PVOID Procesor,
+    QWORD PhysPage,
+    QWORD AccessHooked,
+    QWORD Cr3,
+    QWORD Gla,
+    PFUNC_EptCallback   PreCallback,
+    PFUNC_EptCallback   PostCallback,
+    QWORD               Size
 );
 
 VOID
 MhvEptPurgeHook(
     PVOID       Procesor,
-    QWORD       PhysPage
+    QWORD       PhysPage,
+    BOOLEAN     PurgePDE
 );
 
 #endif

@@ -11,50 +11,6 @@
 #define PEB_OFFSET_IN_EPROCESS 0x3f8
 #define VADROOT_OFFSET_IN_EPROCESS 0x620
 
-typedef struct _MMVAD_SHORT64
-{
-    QWORD           Left;
-    QWORD           Right;
-    QWORD           ParentValue;
-
-    DWORD           StartingVpn;
-    DWORD           EndingVpn;
-    BYTE            StartingVpnHigh;
-    BYTE            EndingVpnHigh;
-
-    BYTE            CommitChargeHigh;
-    BYTE            SpareNT64VadUChar;
-
-    DWORD           ReferenceCount;
-    QWORD           PushLock;
-
-    struct
-    {
-        DWORD       VadType : 3;
-        DWORD       Protection : 5;
-        DWORD       PreferredNode : 6;
-        DWORD       NoChange : 1;
-        DWORD       PrivateMemory : 1;
-        DWORD       PrivateFixup : 1;
-        DWORD       ManySubsections : 1;
-        DWORD       Enclave : 1;
-        DWORD       DeleteInProgress : 1;
-        DWORD       PageSize64K : 1;
-        DWORD       Spare : 11;
-    } VadFlags;
-
-    struct
-    {
-        DWORD       CommitCharge : 31;
-        DWORD       MemCommit : 1;
-    } VadFlags1;
-
-    QWORD           EventList;
-    QWORD           VadFlags2;
-    QWORD           Subsection;
-
-} MMVAD_SHORT64, *PMMVAD_SHORT64;
-
 
 PMHVMODULE
 MhvGetModuleByAddress(
@@ -111,151 +67,47 @@ MhvGetModuleData(
 #define min(a,b) ((a) > (b) ? (a) : (b))
 
 VOID
-MhvInsertModuleInListIfNotExistent(
-    PMHVPROCESS Process,
-    QWORD Start,
-    QWORD End,
-    PBYTE Name,
-    WORD NameLength
-)
-{
-    BOOLEAN found = FALSE;
-    LIST_ENTRY* list = Process->Modules.Flink;
-
-    while (list != &Process->Modules)
-    {
-        PMHVMODULE pMod = CONTAINING_RECORD(list, MHVMODULE, Link);
-
-        list = list->Flink;
-        if (pMod->Start == Start && pMod->End == End)
-        {
-            found = TRUE;
-            break;
-        }
-    }
-
-    if (!found)
-    {
-        QWORD restOfPage = (((QWORD)Name + 0x1000) & 0xFFFFFFFFFFFFF000) - (QWORD)Name;
-        PBYTE name = MemAllocContiguosMemory(min(NameLength / 2 + 1, restOfPage));
-        PMHVMODULE pMod = MemAllocContiguosMemory(sizeof(MHVMODULE));
-
-        int j = 0;
-        for (DWORD i = 0; i < min(NameLength, restOfPage); i += 2)
-        {
-            name[j] = Name[i];
-            j++;
-        }
-
-        name[j] = 0;
-
-        pMod->Name = name;
-        pMod->End = End;
-        pMod->Start = Start;
-        pMod->Process = Process;
-
-        InsertTailList(&Process->Modules, &pMod->Link);
-    }
-}
-
-
-VOID
-MhvGetVadName(
-    PMMVAD_SHORT64 Vad,
-    PMHVPROCESS Process
-)
-{
-    PQWORD subsection = MhvTranslateVa(Vad->Subsection, pGuest.SystemCr3, NULL);
-    if (subsection == NULL)
-    {
-        return;
-    }
-    PBYTE ctlArea = MhvTranslateVa(*subsection, pGuest.SystemCr3, NULL);
-    if (ctlArea == NULL)
-    {
-        return;
-    }
-    if (((QWORD)ctlArea & 0xFFFFFFFFFFFFF000) != (((QWORD)ctlArea + 0x40) & 0xFFFFFFFFFFFFF000))
-    {
-        return;
-    }
-    PBYTE fileObject = MhvTranslateVa((*(PQWORD)(ctlArea + 0x40)) & 0xFFFFFFFFFFFFFFF0, pGuest.SystemCr3, NULL);
-    if (fileObject == NULL)
-    {
-        return;
-    }
-    if (((QWORD)fileObject & 0xFFFFFFFFFFFFF000) != (((QWORD)fileObject + 0x60) & 0xFFFFFFFFFFFFF000))
-    {
-        return;
-    }
-
-    WORD nameLength = *(PWORD)(fileObject + 0x58);
-    PBYTE nameString = MhvTranslateVa(*(PQWORD)(fileObject + 0x60), pGuest.SystemCr3, NULL);
-    if (nameString == NULL)
-    {
-        return;
-    }
-
-    QWORD s1 = Vad->StartingVpn;
-    QWORD s2 = Vad->StartingVpnHigh;
-    QWORD f1 = Vad->EndingVpn;
-    QWORD f2 = Vad->EndingVpnHigh;
-    
-    QWORD start = (s1 | (s2 << 32)) << 12;
-    
-    QWORD finish = (f1 | (f2 << 32)) << 12;
-
-    MhvInsertModuleInListIfNotExistent(Process, start, finish, nameString, nameLength);
-
-}
-
-VOID
 MhvIterateVadTree(
     QWORD Node,
     DWORD Level,
     PMHVPROCESS Process
 )
 {
-    if (Node == 0)
+    if (Node == 0 || Node )
     {
         return;
     }
 
-    if ((Node & 0xFFFFFFFFFFFFF000) != ((Node + sizeof(MMVAD_SHORT64)) & 0xFFFFFFFFFFFFF000))
-    {
-        LOG("[INFO] Vad at %x is on 2 pages, will not protect ...", Node);
-        return;
-    }
-    PMMVAD_SHORT64 pVad = MhvTranslateVa(Node, pGuest.SystemCr3, NULL);
-    if (pVad == NULL)
-    {
-        return;
-    }
+    
+    MMVAD_SHORT64 pVad = { 0 };
 
-    LOG("goto left -> %x", pVad->Left);
-    MhvIterateVadTree(pVad->Left, Level + 1, Process);
+    MhvMemRead(Node, sizeof(MMVAD_SHORT64), pGuest.SystemCr3, &pVad);
+
+    LOG("goto left -> %x", pVad.Left);
+    MhvIterateVadTree(pVad.Left, Level + 1, Process);
 
     //if (Level != 0)
     //{
-        QWORD start = pVad->StartingVpn;
-        QWORD startHigh = pVad->StartingVpnHigh;
-        QWORD finish = pVad->EndingVpn;
-        QWORD finishHigh = pVad->EndingVpnHigh;
-        WORD type = pVad->VadFlags.VadType & 0xFFFF;
+        QWORD start = pVad.StartingVpn;
+        QWORD startHigh = pVad.StartingVpnHigh;
+        QWORD finish = pVad.EndingVpn;
+        QWORD finishHigh = pVad.EndingVpnHigh;
+        WORD type = pVad.VadFlags.VadType & 0xFFFF;
         QWORD rsp = GetRsp();
 
-        LOG("[VAD] %x -> [%x, %x] -> %x RSP: %x", Node,
+        /*LOG("[VAD] %x -> [%x, %x] -> %x RSP: %x", Node,
             (QWORD)start | (startHigh << 32),
             (QWORD)finish | (finishHigh << 32),
             type, rsp);
+        */
         if (type == 2)
         {
-            MhvGetVadName(pVad,
+            MhvGetVadName(&pVad,
                 Process);
         }
     //}
-        LOG("goto right -> %x", pVad->Right);
-    MhvIterateVadTree(pVad->Right, Level + 1, Process);
+        LOG("goto right -> %x", pVad.Right);
+    MhvIterateVadTree(pVad.Right, Level + 1, Process);
 
 }
 
@@ -298,16 +150,6 @@ MhvInsertProcessInList(
         pGuest.SystemCr3 = cr3;
     }
 
-    LOG("[INFO] PROClist");
-    LIST_ENTRY* list = pGuest.ProcessList.Flink;
-    while (list != &pGuest.ProcessList)
-    {
-        PMHVPROCESS pProc = CONTAINING_RECORD(list, MHVPROCESS, Link);
-
-        list = list->Flink;
-
-    }
-    LOG("[INFO] PROClist finish");
     PBYTE namePhys = MhvTranslateVa(nameOffset, cr3, NULL);
     memcpys(namePhys, newProcess->Name, 16);
 
@@ -334,8 +176,11 @@ MhvInsertProcessInList(
 
     InsertTailList(&pGuest.ProcessList, &newProcess->Link);
 
+
     LOG("[WINPROC] Process %s, pid %d with cr3 %x just started!", newProcess->Name, newProcess->Pid, newProcess->Cr3);
-    
+
+    //MhvIterateVadTree(newProcess->VadRoot, 0, newProcess);
+
     gNumberOfActiveProcesses++;
 
 }

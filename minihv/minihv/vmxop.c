@@ -833,10 +833,34 @@ PVOID
 MhvMemRead(
     QWORD Address,
     QWORD Size,
-    QWORD Cr3
+    QWORD Cr3,
+    PVOID Buffer
 )
 {
-    
+    PBYTE firstPage;
+    PBYTE secondPage;
+    BOOLEAN onePage = TRUE;
+    PBYTE buff = Buffer;
+
+    firstPage = MhvTranslateVa(Address & (~0xFFF), Cr3, NULL);
+
+    if ((Address & (~0xFFF)) != ((Address + Size) & (~0xFFF)))
+    {
+        secondPage = MhvTranslateVa((Address + Size) & (~0xFFF), Cr3, NULL);
+        onePage = FALSE;
+    }
+
+    DWORD cnt = 0;
+    for (DWORD i = (Address & 0xFFF); cnt < Size && i < PAGE_SIZE; i++, cnt++)
+    {
+        buff[cnt] = firstPage[i];
+    }
+
+    for (DWORD i = 0; cnt < Size; i++, cnt++)
+    {
+        buff[cnt] = secondPage[i];
+    }
+
 
 }
 
@@ -866,6 +890,7 @@ MhvTranslateVa(
 
     pPd = CLEAN_PHYS_ADDR(pPdp[iPdp]);
 
+
     if (((QWORD)pPdp[iPdp] & PAGE_BIT_P) == 0)
     {
         return 0;
@@ -878,7 +903,6 @@ MhvTranslateVa(
 
     if ((pPdp[iPdp] & PAGE_BIT_PS) != 0)
     {
-       
         return ((QWORD)pPd & (~0x3FFFFFFF)) + (Rip & 0x3FFFFFFF);
     }
 
@@ -895,7 +919,6 @@ MhvTranslateVa(
 
     if ((pPd[iPd] & PAGE_BIT_PS) != 0)
     {
-        
         return ((QWORD)pPt & (~0x1FFFFF)) + (Rip & 0x1FFFFF);
     }
 
@@ -1054,11 +1077,25 @@ void MhvHandleInterrupt() {
 }
 
 
+NTSTATUS
+MhvHandleKernWrite(
+    PVOID Procesor,
+    PVOID Hook,
+    QWORD Rip,
+    QWORD Cr3,
+    PVOID Context
+)
+{
+    LOG("[INFO] someone writing on the kernel...");
+}
+
+
 void MhvInitHook() {
 
     __vmx_vmwrite(VMX_PAGE_FAULT_ERROR_MASK, 0x0);
     __vmx_vmwrite(VMX_PAGE_FAULT_ERROR_MATCH, 0x0);
-    __vmx_vmwrite(VMX_EXCEPTION_BITMAP, (1 << VMX_ENABLE_PAGE_FAULT) | (1<<3));
+    //__vmx_vmwrite(VMX_EXCEPTION_BITMAP, (1 << VMX_ENABLE_PAGE_FAULT) | (1<<3));
+    __vmx_vmwrite(VMX_EXCEPTION_BITMAP, (1 << 3));
     QWORD idtr = 0;
     __vmx_vmread(VMX_GUEST_IDTR, &idtr);
    
@@ -1104,6 +1141,17 @@ void MhvInitHook() {
         {
             gProcessors[i].KernelBase = gProcessors[0].KernelBase;
         }
+
+        MhvCreateEptHook(&gProcessors[0],
+            MhvTranslateVa(gProcessors[procId].KernelBase, cr3, NULL),
+            EPT_WRITE_RIGHT,
+            cr3,
+            gProcessors[procId].KernelBase,
+            MhvHandleKernWrite,
+            NULL,
+            PAGE_SIZE
+            );
+        
         MhvHookFunctionsInMemory();
         ZydisStatus status;
 
@@ -1387,8 +1435,7 @@ void MhvGeneralHandler()
     }
     else if (VMX_EXIT_EPT_VIOLATION == exitReason)
     {
-        LOG("[EPT VIOLATION] De unde plm???");
-        __halt();
+        MhvHandleEptViolation(&gProcessors[MhvGetProcessorId()]);
     }
     else if (VMX_EXIT_MONITOR_TF == exitReason)
     {

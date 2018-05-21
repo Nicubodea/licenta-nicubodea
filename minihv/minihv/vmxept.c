@@ -1,8 +1,10 @@
+#include "guest.h"
 #include "vmxept.h"
 #include "structures.h"
 #include "acpica.h"
 #include "vmxop.h"
 #include "epthook.h"
+
 
 #define PML4_INDEX(Va) (((Va) & 0x0000ff8000000000) >> 39)
 #define PDP_INDEX(Va) (((Va) & 0x0000007fc0000000) >> 30)
@@ -10,11 +12,154 @@
 #define PT_INDEX(Va) (((Va) & 0x00000000001ff000) >> 12)
 #define CLEAN_PHYS_ADDR(Addr) ((Addr) & 0x000FFFFFFFFFF000)
 
+#define FLAG_NORMAL_HOOK 0
+#define FLAG_PML4_HOOK 1
+#define FLAG_PDPTE_HOOK 2
+#define FLAG_PDE_HOOK 3
+#define FLAG_PT_HOOK 4
+
 VOID
 MhvInitEptHooksModule(
 
 )
 {
+
+}
+
+VOID
+MhvHookPageTables(
+    QWORD Gla,
+    QWORD Cr3
+)
+{
+   
+
+}
+
+NTSTATUS
+MhvSwapCallback(
+    PVOID Procesor,
+    PVOID Hook,
+    QWORD Rip,
+    QWORD Cr3,
+    PVOID Context
+)
+{
+    PEPT_HOOK pHook = ((PEPT_HOOK)Hook);
+    PQWORD old = ((PBYTE)pHook->GuestPhysicalAddress) + pHook->Offset;
+    PPROCESOR Processor = Procesor;
+
+    LOG("[INFO] PT written: @%x -> new: %x, flags: %d", pHook->GuestPhysicalAddress + pHook->Offset, *old, pHook->Flags);
+
+    if (((*old) & 1) == 1)
+    {
+        LOG("[INFO] pde hook, remake the hook");
+
+        PEPT_HOOK pHooks = pHook->LinkHook;
+        QWORD cflag = pHook->Flags;
+        EPT_HOOK lastHooks[5];
+        LOG("[INFO] LinkHook: %x", pHooks);
+        while (cflag < 5)
+        {
+            lastHooks[cflag] = *pHooks;
+            PEPT_HOOK saved = pHooks->LinkHook;
+
+            LOG("[INFO] saved: %x", saved);
+            MhvEptPurgeHook(Procesor, pHooks->GuestPhysicalAddress + pHooks->Offset, TRUE);
+            pHooks = saved;
+            cflag++;
+        }
+
+        cflag = pHook->Flags;
+        while (cflag < 5)
+        {
+            old = ((PBYTE)pHook->GuestPhysicalAddress) + pHook->Offset;
+            pHook->LinkHook = MhvEptMakeHook(Procesor, 
+                CLEAN_PHYS_ADDR(*old) + lastHooks[cflag].Offset, 
+                lastHooks[cflag].AccessHooked, 
+                lastHooks[cflag].Cr3, 
+                lastHooks[cflag].GuestLinearAddress, 
+                lastHooks[cflag].PreActionCallback, 
+                lastHooks[cflag].PostActionCallback, 
+                lastHooks[cflag].Flags, 
+                lastHooks[cflag].Size);
+            pHook = pHook->LinkHook;
+            cflag++;
+        }
+    }
+
+    return STATUS_SUCCESS;
+}
+
+NTSTATUS
+MhvSwapBeforeCallback(
+    PVOID Procesor,
+    PVOID Hook,
+    QWORD Rip,
+    QWORD Cr3,
+    PVOID Context
+)
+{
+    PEPT_HOOK pHook = ((PEPT_HOOK)Hook);
+    PQWORD old = ((PBYTE)pHook->GuestPhysicalAddress) + pHook->Offset;
+    PPROCESOR Processor = Procesor;
+
+    LOG("[INFO] PT hook: @%x -> old: %x, flags: %d", pHook->GuestPhysicalAddress + pHook->Offset, *old, pHook->Flags);
+
+    //if (pHook->Flags == FLAG_PDE_HOOK)
+    //{
+        //LOG("[INFO] Pt Hook -> purging hook...");
+        //MhvEptPurgeHook(Procesor, CLEAN_PHYS_ADDR(*old), TRUE);
+        Processor->OldPTE = *old;
+    //}
+
+    return STATUS_SUCCESS;
+
+}
+
+VOID
+MhvCreateEptHook(
+    PVOID Procesor,
+    QWORD PhysPage,
+    QWORD AccessHooked,
+    QWORD Cr3,
+    QWORD Gla,
+    PFUNC_EptCallback   PreCallback,
+    PFUNC_EptCallback   PostCallback,
+    QWORD Size
+)
+{
+    PEPT_HOOK pRealHook = MhvEptMakeHook(Procesor, PhysPage, AccessHooked, Cr3, Gla, PreCallback, PostCallback, FLAG_NORMAL_HOOK, Size);
+
+    PQWORD pml4, pdpte, pde;
+    PQWORD phys;
+    pml4 = Cr3;
+    
+    PEPT_HOOK pHookPml = MhvEptMakeHook(Procesor, pml4 + PML4_INDEX(Gla), EPT_WRITE_RIGHT, NULL, NULL, MhvSwapBeforeCallback, MhvSwapCallback, FLAG_PML4_HOOK, 8);
+
+    pdpte = CLEAN_PHYS_ADDR(pml4[PML4_INDEX(Gla)]);
+
+    PEPT_HOOK pHookPdpte = MhvEptMakeHook(Procesor, pdpte + PDP_INDEX(Gla), EPT_WRITE_RIGHT, NULL, NULL, MhvSwapBeforeCallback, MhvSwapCallback, FLAG_PDPTE_HOOK, 8);
+
+    pHookPml->LinkHook = pHookPdpte;
+    pHookPml->ParentHook = NULL;
+    pHookPdpte->ParentHook = pHookPml;
+
+    pde = CLEAN_PHYS_ADDR(pdpte[PDP_INDEX(Gla)]);
+
+    PEPT_HOOK pHookPde = MhvEptMakeHook(Procesor, pde + PD_INDEX(Gla), EPT_WRITE_RIGHT, NULL, NULL, MhvSwapBeforeCallback, MhvSwapCallback, FLAG_PDE_HOOK, 8);
+
+    pHookPdpte->LinkHook = pHookPde;
+
+    phys = CLEAN_PHYS_ADDR(pde[PD_INDEX(Gla)]);
+
+    PEPT_HOOK pHookPt = MhvEptMakeHook(Procesor, phys + PT_INDEX(Gla), EPT_WRITE_RIGHT, NULL, NULL, MhvSwapBeforeCallback, MhvSwapCallback, FLAG_PT_HOOK, 8);
+
+    pHookPde->LinkHook = pHookPt;
+
+    pHookPt->LinkHook = pRealHook;
+
+    LOG("[INFO] Pml %x -> Pdpte %x -> Pde %x -> Pt %x -> real %x", pHookPml, pHookPdpte, pHookPde, pHookPt, pRealHook);
 
 }
 
@@ -26,7 +171,9 @@ MhvEptMakeHook(
     QWORD               Cr3,
     QWORD               GLA,
     PFUNC_EptCallback   PreCallback,
-    PFUNC_EptCallback   PostCallback
+    PFUNC_EptCallback   PostCallback,
+    QWORD               Flags,
+    QWORD               Size
 
 )
 {
@@ -44,31 +191,35 @@ MhvEptMakeHook(
     //AcpiOsAcquireLock(gEptLock);
 
     pdeEntry->PhysicalAddress[PT_INDEX(PhysPage)] &= ~AccessHooked;
-    EPT_HOOK newEptHook;
+    PEPT_HOOK newEptHook = MemAllocContiguosMemory(sizeof(EPT_HOOK));
     QWORD cr3 = 0;
 
-    newEptHook.Offset = PhysPage & 0xFFF;
-    newEptHook.Cr3 = Cr3;
-    newEptHook.GuestLinearAddress = CLEAN_PHYS_ADDR(GLA);
-    newEptHook.GuestPhysicalAddress = CLEAN_PHYS_ADDR(PhysPage);
-    newEptHook.PreActionCallback = PreCallback;
-    newEptHook.PostActionCallback = PostCallback;
-    newEptHook.TimesCalled = 0;
+    newEptHook->Offset = PhysPage & 0xFFF;
+    newEptHook->Cr3 = Cr3;
+    newEptHook->GuestLinearAddress = GLA;
+    newEptHook->GuestPhysicalAddress = CLEAN_PHYS_ADDR(PhysPage);
+    newEptHook->PreActionCallback = PreCallback;
+    newEptHook->PostActionCallback = PostCallback;
+    newEptHook->AccessHooked = AccessHooked;
+    newEptHook->TimesCalled = 0;
+    newEptHook->Flags = Flags;
+    newEptHook->Size = Size;
+    newEptHook->LinkHook = NULL;
 
-    // TODO: linked list
-    gEptHooks[gNumberOfEptHooks] = newEptHook;
+    LOG("[INFO] new hook gla %x gpa %x [%x %x]", newEptHook->GuestLinearAddress, newEptHook->GuestPhysicalAddress, newEptHook->Offset, newEptHook->Offset + newEptHook->Size);
 
-    gNumberOfEptHooks++;
+    //MhvHookPageTables(GLA, Cr3);
 
-    toReturn = &gEptHooks[gNumberOfEptHooks - 1];
+    InsertTailList(&pGuest.EptHooksList, &newEptHook->Link);
 
-    return toReturn;
+    return newEptHook;
 }
 
 VOID
 MhvEptPurgeHook(
     PVOID       Procesor,
-    QWORD       PhysPage
+    QWORD       PhysPage,
+    BOOLEAN     PurgePDE
 )
 {
     PPROCESOR Processor = Procesor;
@@ -82,14 +233,21 @@ MhvEptPurgeHook(
 
     //AcpiOsAcquireLock(gEptLock);
     DWORD refCnt = 0;
-    for (DWORD i = 0; i < gNumberOfEptHooks; i++)
+
+    LIST_ENTRY* list = pGuest.EptHooksList.Flink;
+
+    while (list != &pGuest.EptHooksList)
     {
-        if (gEptHooks[i].GuestPhysicalAddress == CLEAN_PHYS_ADDR(PhysPage))
+        PEPT_HOOK pHook = CONTAINING_RECORD(list, EPT_HOOK, Link);
+
+        list = list->Flink;
+
+        if (pHook->GuestPhysicalAddress == CLEAN_PHYS_ADDR(PhysPage))
         {
             refCnt++;
         }
     }
-
+   
     if (refCnt <= 1)
     {
         // don't delete page hook only if the last one!!!
@@ -99,24 +257,33 @@ MhvEptPurgeHook(
     {
         LOG("[INFO] Still keeping hook as refCnt = %x", refCnt);
     }
-    DWORD hookIndex = gNumberOfEptHooks;
-    for (DWORD i = 0; i < gNumberOfEptHooks; i++)
+
+    PEPT_HOOK toDelete = NULL;
+
+    list = pGuest.EptHooksList.Flink;
+
+    while (list != &pGuest.EptHooksList)
     {
-        if (gEptHooks[i].GuestPhysicalAddress == CLEAN_PHYS_ADDR(PhysPage) &&
-            gEptHooks[i].Offset == (PhysPage & 0xFFF))
+        PEPT_HOOK pHook = CONTAINING_RECORD(list, EPT_HOOK, Link);
+
+        list = list->Flink;
+
+        if (pHook->GuestPhysicalAddress == CLEAN_PHYS_ADDR(PhysPage) &&
+            (pHook->Offset == (PhysPage & 0xFFF)))
         {
-            LOG("[HK-DMP] Deleting hook ---> %x offset %x", gEptHooks[i].GuestPhysicalAddress, gEptHooks[i].Offset);
-            hookIndex = i;
+            LOG("[HK-DMP] Deleting hook ---> %x offset %x", pHook->GuestPhysicalAddress, pHook->Offset);
+            toDelete = pHook;
             break;
         }
     }
-    for (DWORD i = hookIndex; i < gNumberOfEptHooks - 1; i++)
+
+    if (toDelete != NULL)
     {
-        gEptHooks[i] = gEptHooks[i + 1];
+        RemoveEntryList(&toDelete->Link);
     }
-    if (hookIndex != gNumberOfEptHooks)
+    else
     {
-        gNumberOfEptHooks--;
+        LOG("[WTF???]");
     }
 }
 

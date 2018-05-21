@@ -43,5 +43,5 @@ typedef struct _HOOK {
 
 QWORD gNumberOfHooks;
 
-#define NR_OF_SIGNATURES 4
+#define NR_OF_SIGNATURES 5
 #endif

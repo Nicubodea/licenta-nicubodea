@@ -575,6 +575,9 @@
     <ClCompile Include="except.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="alloc.c">
+      <Filter>Header Files\Allocator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="minihv.h">

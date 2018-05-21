@@ -61,8 +61,8 @@ void log_message(char* x)
     write_string_port("\r\n"); //new line
 }
 
-char gBuffer[256];
-char gBuffer2[256];
+char gBuffer[1024];
+char gBuffer2[1024];
 void prelog(char* file, int line, char * x, ...)
 {
     if(doneAcpica)

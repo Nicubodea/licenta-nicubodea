@@ -27,8 +27,11 @@ typedef struct _EPT_HOOK
     QWORD Flags;
     QWORD AccessHooked;
     QWORD Size;
+    QWORD WhatIsThere;
     struct _EPT_HOOK* LinkHook;
     struct _EPT_HOOK* ParentHook;
+
+    PVOID Owner;
 } EPT_HOOK, *PEPT_HOOK;
 
 VOID

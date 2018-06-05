@@ -31,6 +31,7 @@ typedef void*               PVOID;
 typedef unsigned __int8     BOOLEAN;
 typedef char*               PCHAR;
 typedef unsigned long*      ULONG_PTR;
+typedef unsigned __int64    size_t;
 //
 // special TRACE32 macro
 //
@@ -38,7 +39,7 @@ typedef unsigned long*      ULONG_PTR;
 
 /// ...
 
-
+#define ARRAYSIZE(x) (sizeof(x)/sizeof(x[0]))
 
 
 

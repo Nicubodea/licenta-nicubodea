@@ -578,6 +578,12 @@
     <ClCompile Include="alloc.c">
       <Filter>Header Files\Allocator</Filter>
     </ClCompile>
+    <ClCompile Include="heap.c">
+      <Filter>Header Files\Allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="llist.c">
+      <Filter>Header Files\Allocator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="minihv.h">
@@ -756,6 +762,12 @@
     </ClInclude>
     <ClInclude Include="except.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="heap.h">
+      <Filter>Header Files\Allocator</Filter>
+    </ClInclude>
+    <ClInclude Include="llist.h">
+      <Filter>Header Files\Allocator</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

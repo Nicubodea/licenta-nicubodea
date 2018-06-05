@@ -17,5 +17,8 @@ MemFreeContiguosMemory(
     PVOID Memaddr
 );
 
+VOID
+MemInitHeap();
+
 
 #endif

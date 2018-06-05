@@ -6,9 +6,53 @@
 #include "structures.h"
 #include "winproc.h"
 #include "alloc.h"
+#include "winpe.h"
+#include "Zydis/Zydis.h"
+
+PMHVMODULE
+MhvFindModuleByRip(
+    QWORD Rip,
+    PMHVPROCESS Process
+)
+{
+    LIST_ENTRY* list = Process->Modules.Flink;
+
+    while (list != &Process->Modules)
+    {
+        PMHVMODULE pMod = CONTAINING_RECORD(list, MHVMODULE, Link);
+
+        list = list->Flink;
+
+        if (pMod->Start <= Rip && pMod->End >= Rip)
+        {
+            return pMod;
+        }
+    }
+    return NULL;
+}
+
+PCHAR
+MhvGetNameFromPath(
+    PCHAR Path
+)
+{
+    PCHAR init = Path;
+    DWORD i = 0;
+    DWORD last;
+    while (Path[i] != 0)
+    {
+        if (Path[i] == '\\')
+        {
+            last = i;
+        }
+        i++;
+    }
+
+    return &init[last+1];
+}
 
 NTSTATUS
-Kernel32Written(
+MhvModHandleWrite(
     PVOID Procesor,
     PVOID Hook,
     QWORD Rip,
@@ -16,7 +60,291 @@ Kernel32Written(
     PVOID Context
 )
 {
-    LOG("I was written :((((");
+    PEPT_HOOK pHook = Hook;
+    QWORD address;
+
+    __vmx_vmread(VMX_GUEST_LINEAR_ADDRESS, &address);
+
+    PMHVPROCESS pProc = MhvFindProcessByCr3(Cr3);
+    if (pProc == NULL)
+    {
+        PMHVMODULE pMod = pHook->Owner;
+        if (pMod == NULL)
+        {
+            LOG("[ERROR] Ept violation on %x came from nowhere!");
+
+            return STATUS_SUCCESS;
+        }
+        pProc = pMod->Process;
+
+        // ugliest hack in the world
+        pProc->Cr3 = Cr3;
+    }
+
+
+    PMHVMODULE pModVictim = pHook->Owner;
+    PMHVMODULE pModAttacker = MhvFindModuleByRip(Rip, pProc);
+
+
+    //MemDumpAllocStats();
+
+    if (pModAttacker != NULL)
+    {
+        //LOG("[INFO] %s ", MhvGetNameFromPath(pModAttacker->Name));
+        if (strcmp(MhvGetNameFromPath(pModAttacker->Name), "ntdll.dll") == 0)
+        {
+            return STATUS_SUCCESS;
+        }
+
+        if (strcmp(MhvGetNameFromPath(pModAttacker->Name), MhvGetNameFromPath(pModVictim->Name)) == 0)
+        {
+            return STATUS_SUCCESS;
+        }
+    }
+
+   
+
+    LOG("~~~~~~~~~~~~~~~~~~~~~~~~~~~~ALERT~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    LOG("Process -> %s Pid %d Cr3 %x", pProc->Name, pProc->Pid, pProc->Cr3);
+    LOG("Attacker -> %s RIP %x", pModAttacker == NULL ? "<unknown>" : pModAttacker->Name, Rip);
+    LOG("Victim -> %s address %x", pModVictim->Name, address);
+    LOG("[INFO] Hook @ %x physical: %x virtual: %x, offset: %x", pHook, pHook->GuestPhysicalAddress, pHook->GuestLinearAddress, pHook->Offset);
+    LOG("[INFO] Dumping instructions from %x", Rip);
+
+
+
+    return STATUS_SUCCESS;
+}
+
+VOID
+MhvHandleModuleUnload(
+    PPROCESOR Context
+)
+{
+    QWORD cr3, start, end;
+    PMHVPROCESS pProc;
+
+    __vmx_vmread(VMX_GUEST_CR3, &cr3);
+
+    start = Context->context._rcx;
+    end = Context->context._rdx + 1;
+
+    pProc = MhvFindProcessByCr3(cr3);
+
+    if (pProc == NULL)
+    {
+        //LOG("[ERROR] No process with CR3 found!");
+        return;
+    }
+
+    // we are not interested in unprotected processes
+    if (!pProc->Protected)
+    {
+        return;
+    }
+
+    LIST_ENTRY* list = pProc->Modules.Flink;
+    PMHVMODULE pModFound = NULL;
+
+    while (list != &pProc->Modules)
+    {
+        PMHVMODULE pMod = CONTAINING_RECORD(list, MHVMODULE, Link);
+
+        list = list->Flink;
+
+        if (pMod->Start == start && pMod->End == end)
+        {
+            pModFound = pMod;
+            break;
+        }
+
+    }
+
+    if (pModFound == NULL)
+    {
+        return;
+    }
+    
+    RemoveEntryList(&pModFound->Link);
+    
+    LOG("[INFO] Module %s [%x %x] in Process %d is unloading", pModFound->Name, pModFound->Start, pModFound->End, pModFound->Process->Pid);
+
+    MhvDeleteHookByOwner(pModFound);
+
+    LOG("[INFO] Module %s unhooked succesfully!", pModFound->Name);
+
+    MemFreeContiguosMemory(pModFound->Name);
+    MemFreeContiguosMemory(pModFound);
+
+}
+
+VOID
+MhvHookModule(
+    PMHVMODULE Module
+)
+{
+
+    IMAGE_DOS_HEADER dos = { 0 };
+    IMAGE_NT_HEADERS64 nth = { 0 };
+    IMAGE_SECTION_HEADER sec = { 0 };
+    NTSTATUS status;
+
+    QWORD cr3 = Module->Process->Cr3;
+
+    status = MhvMemRead(Module->Start, 
+        sizeof(IMAGE_DOS_HEADER), 
+        cr3, 
+        &dos);
+
+    if (!NT_SUCCESS(status))
+    {
+        LOG("[ERROR] MhvMemRead status: 0x%x", status);
+        return;
+    }
+
+    //LOG("[INFO] Signature is: %x, e_lfanew: %x", dos.e_magic, dos.e_lfanew)
+
+    QWORD ntHeaderGva = Module->Start + dos.e_lfanew;
+
+    status = MhvMemRead(ntHeaderGva, sizeof(IMAGE_DOS_HEADER), cr3, &nth);
+    if (!NT_SUCCESS(status))
+    {
+        LOG("[ERROR] MhvMemRead status: 0x%x", status);
+        return;
+    }
+
+    QWORD sectionRva = Module->Start + dos.e_lfanew + sizeof(IMAGE_FILE_HEADER) + nth.FileHeader.SizeOfOptionalHeader + sizeof(nth.Signature);
+    
+
+    for (DWORD i = 0; i < nth.FileHeader.NumberOfSections; i++)
+    {
+        status = MhvMemRead(sectionRva,
+            sizeof(IMAGE_SECTION_HEADER),
+            cr3,
+            &sec);
+
+        if (!NT_SUCCESS(status))
+        {
+            LOG("[ERROR] MhvMemRead status: 0x%x", status);
+            return;
+        }
+
+        if ((sec.Characteristics & 0x80000000) == 0 && (sec.Characteristics & 0x02000000) == 0)
+        {
+            QWORD rvaStart = sec.VirtualAddress & 0xFFFFFFFF;
+            QWORD rvaEnd = (sec.VirtualAddress + sec.Misc.VirtualSize) & 0xFFFFFFFF;
+
+            LOG("[INFO] Hooking section %s [%x -> %x]", sec.Name, rvaStart, rvaEnd);
+
+            for (DWORD page = rvaStart; page < rvaEnd; page += PAGE_SIZE)
+            {
+               
+                QWORD rvaCurrent = Module->Start + page;
+                QWORD sz = PAGE_SIZE;
+                
+                if (page == (rvaEnd & (~0xFFF)) && (rvaEnd & 0xFFF) != 0)
+                {
+                    sz = rvaEnd & 0xFFF;
+                }
+
+                //LOG("[INFO] Hooking page %x sz %x", rvaCurrent, sz);
+
+                PEPT_HOOK pHook = MhvCreateEptHook(pGuest.Vcpu,
+                    MhvTranslateVa(rvaCurrent, cr3, NULL),
+                    EPT_WRITE_RIGHT,
+                    cr3,
+                    rvaCurrent,
+                    MhvModHandleWrite,
+                    NULL,
+                    sz,
+                    FALSE
+                );
+
+                pHook->Owner = Module;
+            }
+
+        }
+
+        sectionRva += sizeof(IMAGE_SECTION_HEADER);
+    }
+
+
+
+}
+
+
+NTSTATUS
+MhvModReadyToHook(
+    PVOID Procesor,
+    PVOID Hook,
+    QWORD Rip,
+    QWORD Cr3,
+    PVOID Context
+)
+{
+    PMHVPROCESS pProc = MhvFindProcessByCr3(Cr3);
+    PEPT_HOOK pHook = Hook;
+    PMHVMODULE foundMod = NULL;
+
+    if (pProc == NULL)
+    {
+        LOG("[ERROR] Process could not be found for module!");
+        return STATUS_SUCCESS;
+    }
+
+    LIST_ENTRY* list = pProc->Modules.Flink;
+
+    while (list != &pProc->Modules)
+    {
+        PMHVMODULE pMod = CONTAINING_RECORD(list, MHVMODULE, Link);
+
+        list = list->Flink;
+
+        if (pMod->Start == pHook->GuestLinearAddress)
+        {
+            foundMod = pMod;
+            break;
+        }
+    }
+
+    if (foundMod != NULL)
+    {
+        LOG("[INFO] (proc %s, %d) Module @%x %s [%x %x] is ready to be hooked, headers in memory!", pProc->Name, pProc->Pid, foundMod, foundMod->Name, foundMod->Start, foundMod->End);
+        MhvDeleteHookHierarchy(pHook);
+        MhvHookModule(foundMod);
+    }
+
+    return STATUS_SUCCESS;
+}
+
+char* gProtectedModules[] = {
+    "\\Windows\\System32\\ntdll.dll",
+    "\\Windows\\System32\\kernel32.dll",
+    "\\Windows\\System32\\KernelBase.dll"
+};
+
+
+BOOLEAN 
+MhvIsModuleProtected(
+    PMHVPROCESS Process,
+    PMHVMODULE Module
+)
+{
+    if (!Process->Protected)
+    {
+        return FALSE;
+    }
+
+    for (DWORD i = 0; i < ARRAYSIZE(gProtectedModules); i++)
+    {
+        if (strcmp(Module->Name, gProtectedModules[i]) == 0)
+        {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+
 }
 
 VOID
@@ -30,6 +358,19 @@ MhvInsertModuleInListIfNotExistent(
 {
     BOOLEAN found = FALSE;
     LIST_ENTRY* list = Process->Modules.Flink;
+
+    while (list != &Process->Modules)
+    {
+        PMHVMODULE pMod = CONTAINING_RECORD(list, MHVMODULE, Link);
+
+        list = list->Flink;
+
+        if (pMod->Start == Start && pMod->End == End)
+        {
+            found = TRUE;
+            break;
+        }
+    }
 
     if (!found)
     {
@@ -49,20 +390,40 @@ MhvInsertModuleInListIfNotExistent(
         pMod->End = End;
         pMod->Start = Start;
         pMod->Process = Process;
+        InitializeListHead(&pMod->Hooks);
 
         LOG("[Process %s] Module %s just loaded at [%x -> %x]", Process->Name, pMod->Name, pMod->Start, pMod->End);
 
         InsertTailList(&(Process->Modules), &(pMod->Link));
 
-        if (Process->Name[0] == 'i' && Process->Name[1] == 'n' && Process->Name[2] == 't' && Process->Name[3] == 'r')
+        // at this point we don't care anymore for this module if it is not protected...
+        if (!MhvIsModuleProtected(Process, pMod))
         {
-            if (pMod->Name[24] == '3')
-            {
-                LOG("hooking kernel32!!!")
-                MhvCreateEptHook(pGuest.Vcpu, MhvTranslateVa(pMod->Start, Process->Cr3, NULL), EPT_WRITE_RIGHT, Process->Cr3, pMod->Start,
-                    Kernel32Written, NULL, PAGE_SIZE);
-            }
+            return;
         }
+
+        PBYTE pSig = MhvTranslateVa(pMod->Start, Process->Cr3, NULL);
+
+        if (pSig != NULL && pSig[0] == 'M' && pSig[1] == 'Z')
+        {
+            LOG("[INFO] (proc %s, %d) Module @%x %x %s [%x %x] is ready to be hooked, headers in memory!", Process->Name, Process->Pid, pMod, pMod->Name, pMod->Start, pMod->End);
+            MhvHookModule(pMod);
+            return;
+        }
+
+        PEPT_HOOK pHook = MhvCreateEptHook(pGuest.Vcpu,
+            MhvTranslateVa(pMod->Start, Process->Cr3, NULL),
+            EPT_WRITE_RIGHT,
+            Process->Cr3,
+            pMod->Start,
+            NULL,
+            MhvModReadyToHook,
+            PAGE_SIZE,
+            TRUE
+        );
+
+        // we got to set the hook Owner to this current module so that we know that 
+        pHook->Owner = pMod;
     }
 }
 
@@ -106,16 +467,54 @@ MhvGetVadName(
 
 }
 
+
+VOID
+MhvIterateVadsRecursively(
+    QWORD Node,
+    PMHVPROCESS Process
+)
+{
+    if (Node == 0)
+    {
+        return;
+    }
+
+    QWORD cr3;
+    __vmx_vmread(VMX_GUEST_CR3, &cr3);
+    MMVAD_SHORT64 pVad = { 0 };
+    QWORD currentCr3 = pGuest.SystemCr3;
+
+    if (currentCr3 == 0)
+    {
+        currentCr3 = cr3;
+    }
+
+    MhvMemRead(Node, sizeof(MMVAD_SHORT64), currentCr3, &pVad);
+
+    if (pVad.Left != 0)
+    {
+        MhvIterateVadsRecursively(pVad.Left, Process);
+    }
+
+    if (pVad.VadFlags.VadType == 2)
+    {
+        MhvGetVadName(&pVad, Process, currentCr3);
+    }
+
+    if (pVad.Right != 0)
+    {
+        MhvIterateVadsRecursively(pVad.Right, Process);
+    }
+}
+
 VOID
 MhvIterateVadList(
     PMHVPROCESS Process
 )
 {
-
+    MhvIterateVadsRecursively(Process->VadRoot, Process);
 }
 
-BOOLEAN bGata = TRUE;
-BYTE pagini[0x1500];
 
 VOID
 MhvNewModuleLoaded(
@@ -124,11 +523,8 @@ MhvNewModuleLoaded(
 {
     QWORD cr3;
     __vmx_vmread(VMX_GUEST_CR3, &cr3);
-    LOG("[WINMOD] VadGva: %x, Cr3: %x", Context->context._rcx, cr3);
 
     MMVAD_SHORT64 pVad = { 0 };
-    
-    //MhvMemRead(Context->context._rcx, sizeof(MMVAD_SHORT64), cr3, &pVad);
 
     QWORD currentCr3 = pGuest.SystemCr3;
 
@@ -137,145 +533,23 @@ MhvNewModuleLoaded(
         currentCr3 = cr3;
     }
 
-
-    MhvMemRead(Context->context._rcx, sizeof(MMVAD_SHORT64), currentCr3, &pVad);
-
     PMHVPROCESS pProc = MhvFindProcessByCr3(cr3);
 
     if (NULL == pProc)
     {
-        LOG("[INFO] No process is pointed by cr3!");
+        // probably process not yet loaded
         return;
     }
+
+    if (!pProc->Protected)
+    {
+        return;
+    }
+
+    MhvMemRead(Context->context._rcx, sizeof(MMVAD_SHORT64), currentCr3, &pVad);
 
     if (pVad.VadFlags.VadType == 2)
     {
         MhvGetVadName(&pVad, pProc, currentCr3);
-    }
-
-    
-}
-
-NTSTATUS
-MhvModuleFullyLoaded(
-    PVOID Processor,
-    PVOID Hook,
-    QWORD Rip,
-    QWORD Cr3,
-    PVOID Context
-)
-{
-    PEPT_HOOK pHook = Hook;
-    PBYTE imgNamePhysAddr = pHook->GuestPhysicalAddress | pHook->Offset;
-    DWORD i;
-    QWORD k;
-    PUM_MODULE Module = NULL;
-    PMHVPROCESS pProcess = NULL;
-    QWORD cr3 = pHook->Cr3;
-    MhvEptPurgeHook(Processor, pHook->GuestPhysicalAddress | pHook->Offset, FALSE);
-    
-    //pProcess = &gProcesses[MhvFindProcessByCr3(cr3)];
-
-    //if (MhvFindProcessByCr3(Cr3) == -1)
-    //{
-        LOG("[CRITICAL] Cr3 = %x", cr3);
-    //}
-
-    //PQWORD modBase = imgNamePhysAddr - 0x20;
-
-        //Module = &(pProcess->Modules[pProcess->NumberOfModules-1]);
-
-
-        
-    if (Module == NULL)
-    {
-        LOG("[ERROR] Could not find module with base %x in process %s!!!", Module->ModuleBase, pProcess->Name);
-        return STATUS_NOT_FOUND;
-    }
-    i = 0;
-    k = 0;
-    while (imgNamePhysAddr[i] != 0 || imgNamePhysAddr[i + 1] != 0)
-    {
-        Module->Name[k] = imgNamePhysAddr[i];
-        i += 2;
-        k++;
-    }
-    Module->Name[k] = 0;
-    Module->NameSize = k;
-
-    LOG("[WINMOD] <Process %s> Module %s loaded at %x with size %x", pProcess->Name, 
-        Module->Name, Module->ModuleBase, Module->ModuleSize);
-
-}
-
-NTSTATUS
-MhvGetModFromWrittenEntry(
-    PVOID Processor,
-    QWORD Entry,
-    QWORD Cr3,
-    UM_MODULE* Module
-)
-{
-    if (Entry == 0)
-    {
-        return STATUS_INVALID_PARAMETER_1;
-    }
-    if (Cr3 == 0)
-    {
-        return STATUS_INVALID_PARAMETER_2;
-    }
-    if (Module == NULL)
-    {
-        return STATUS_INVALID_PARAMETER_3;
-    }
-    PPROCESOR pProc = Processor;
-    PBYTE pPhysEntry = MhvTranslateVa(Entry, Cr3, NULL);
-    DWORD i = 0, k = 0;
-
-    if (pPhysEntry == 0)
-    {
-        LOG("[ERROR] Cannot map LDR_DATA_TABLE_ENTRY %x into %x", Entry, Cr3);
-        return STATUS_NOT_FOUND;
-    }
-
-    QWORD imgBase = *((PQWORD)(pPhysEntry + 0x30));
-    QWORD imgSize = *((PQWORD)(pPhysEntry + 0x40));
-    QWORD imgNameAddr = *((PQWORD)(pPhysEntry + 0x50));
-
-    PBYTE imgNamePhysAddr = MhvTranslateVa(imgNameAddr, Cr3, NULL);
-
-    Module->ModuleBase = imgBase;
-    Module->ModuleSize = imgSize;
-
-    LOG("[-->WINMOD HOOKS<--] CR3: %x imgNameAddr = %x", Cr3, imgNameAddr);
-    LOG("[-->WINMOD HOOKS<--] CR3: %x imgNameAddrPhys = %x", Cr3, imgNamePhysAddr);
-
-    if (imgNamePhysAddr[0] == 0 && imgNamePhysAddr[1] == 0)
-    {
-        /*MhvEptMakeHook(
-            pProc,
-            imgNamePhysAddr,
-            EPT_WRITE_RIGHT,
-            Cr3,
-            imgNameAddr,
-            NULL,
-            MhvModuleFullyLoaded
-        );*/
-        return STATUS_SUCCESS;
-    }
-
-    
-
-    while (imgNamePhysAddr[i] != 0 || imgNamePhysAddr[i + 1] != 0)
-    {
-        Module->Name[k] = imgNamePhysAddr[i];
-        i += 2;
-        k++;
-    }
-    Module->Name[k] = 0;
-    Module->NameSize = k;
-
-    LOG("[WINMOD-WOW] Module %s LOADED!!!", Module->Name);
-    
-    return STATUS_SUCCESS;
+    }  
 }

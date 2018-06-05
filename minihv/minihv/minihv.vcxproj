@@ -439,7 +439,9 @@
     <ClCompile Include="epthook.c" />
     <ClCompile Include="except.c" />
     <ClCompile Include="guest.c" />
+    <ClCompile Include="heap.c" />
     <ClCompile Include="init64.c" />
+    <ClCompile Include="llist.c" />
     <ClCompile Include="vmxept.c" />
     <ClCompile Include="vmxhook.c" />
     <ClCompile Include="vmxmtf.c" />
@@ -500,6 +502,8 @@
     <ClInclude Include="epthook.h" />
     <ClInclude Include="except.h" />
     <ClInclude Include="guest.h" />
+    <ClInclude Include="heap.h" />
+    <ClInclude Include="llist.h" />
     <ClInclude Include="minihv.h" />
     <ClInclude Include="ntstatus.h" />
     <ClInclude Include="stdio_n.h" />

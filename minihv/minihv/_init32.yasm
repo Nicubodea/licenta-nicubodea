@@ -19,7 +19,7 @@ SECTION .boot
 
 global __MultiBootEntryPoint
 global write_to_port, read_from_port, write_to_port_char, increase_stack, GetRsp
-global acquireLock, releaseLock, JumpToMBR, Hookint15h, Disablea20
+global acquireLock, releaseLock, JumpToMBR, Hookint15h, Disablea20, MyInvEpt
 global SaveGeneralRegs, SaveZone, GetGeneralRegs, getFs, SaveGeneralRegisters
 global HandleMSR, HandleWRMSR, Hook_VMExit
 BASE_MULTIPROC_START equ 0x6000
@@ -1467,12 +1467,10 @@ SaveGeneralRegs:
 	mov [fs:0x58], r13
 	mov [fs:0x60], r14
 	mov [fs:0x68], r15
-	mov [fs:0x70], rsp
+	mov [fs:0x70], rbp
 	ret
 
 GetGeneralRegs:
-	mov rax, [fs:0x78]
-	mov cr2, rax
 	mov rax, [fs:0]
 	mov rbx, [fs:0x8]
 	mov rcx, [fs:0x10]
@@ -1487,7 +1485,7 @@ GetGeneralRegs:
 	mov r13, [fs:0x58]
 	mov r14, [fs:0x60]
 	mov r15, [fs:0x68]
-	;mov rsp, [fs:0x70]
+	mov rbp, [fs:0x70]
 
 	ret
 
@@ -1536,4 +1534,8 @@ storeFs:
 
 GetRsp:
 	mov rax, rsp
+	ret
+
+MyInvEpt:
+	db  66h, 0fh, 38h, 80h, 0ah
 	ret

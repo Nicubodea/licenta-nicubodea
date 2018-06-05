@@ -8,11 +8,13 @@ typedef struct _GUEST
     DWORD NumberOfVcpu;
 
     LIST_ENTRY EptHooksList;
+    LIST_ENTRY ToAppendHooks;
     LIST_ENTRY PtHookList;
     LIST_ENTRY ProcessList;
     LIST_ENTRY ApiHookList;
     LIST_ENTRY ExceptionsList;
-
+    PEPT_HOOK ToDelete[100];
+    DWORD     NrToDelete;
     QWORD SystemCr3;
 
     VOID* GlobalLock;

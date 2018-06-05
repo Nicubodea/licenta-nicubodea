@@ -12,126 +12,12 @@
 #define VADROOT_OFFSET_IN_EPROCESS 0x620
 
 
-PMHVMODULE
-MhvGetModuleByAddress(
-    PMHVPROCESS Process,
-    QWORD Address
-)
-{
-    LIST_ENTRY* list = Process->Modules.Flink;
+char* gProtectedProcesses[] = {
+    "firefox.exe",
+    "chrome.exe"
+};
 
-    while (list != &Process->Modules)
-    {
-        PMHVMODULE pMod = CONTAINING_RECORD(list, MHVMODULE, Link);
-
-        list = list->Flink;
-        if (pMod->Start <= Address && pMod->End > Address)
-        {
-            return pMod;
-        }
-    }
-
-    return NULL;
-}
-
-PMHVMODULE
-MhvGetModuleData(
-    PMHVPROCESS Process,
-    QWORD Start,
-    QWORD End,
-    PBYTE Name,
-    WORD NameLength
-)
-{
-    QWORD restOfPage = (((QWORD)Name + 0x1000) & 0xFFFFFFFFFFFFF000) - (QWORD)Name;
-    PBYTE name = MemAllocContiguosMemory(min(NameLength / 2 + 1, restOfPage));
-    PMHVMODULE pMod = MemAllocContiguosMemory(sizeof(MHVMODULE));
-
-    int j = 0;
-    for (DWORD i = 0; i < min(NameLength, restOfPage); i += 2)
-    {
-        name[j] = Name[i];
-        j++;
-    }
-
-    name[j] = 0;
-
-    pMod->Name = name;
-    pMod->End = End;
-    pMod->Start = Start;
-    pMod->Process = Process;
-
-    return pMod;
-}
-
-#define min(a,b) ((a) > (b) ? (a) : (b))
-
-VOID
-MhvIterateVadTree(
-    QWORD Node,
-    DWORD Level,
-    PMHVPROCESS Process
-)
-{
-    if (Node == 0 || Node )
-    {
-        return;
-    }
-
-    
-    MMVAD_SHORT64 pVad = { 0 };
-
-    MhvMemRead(Node, sizeof(MMVAD_SHORT64), pGuest.SystemCr3, &pVad);
-
-    LOG("goto left -> %x", pVad.Left);
-    MhvIterateVadTree(pVad.Left, Level + 1, Process);
-
-    //if (Level != 0)
-    //{
-        QWORD start = pVad.StartingVpn;
-        QWORD startHigh = pVad.StartingVpnHigh;
-        QWORD finish = pVad.EndingVpn;
-        QWORD finishHigh = pVad.EndingVpnHigh;
-        WORD type = pVad.VadFlags.VadType & 0xFFFF;
-        QWORD rsp = GetRsp();
-
-        /*LOG("[VAD] %x -> [%x, %x] -> %x RSP: %x", Node,
-            (QWORD)start | (startHigh << 32),
-            (QWORD)finish | (finishHigh << 32),
-            type, rsp);
-        */
-        if (type == 2)
-        {
-            MhvGetVadName(&pVad,
-                Process);
-        }
-    //}
-        LOG("goto right -> %x", pVad.Right);
-    MhvIterateVadTree(pVad.Right, Level + 1, Process);
-
-}
-
-
-VOID
-MhvReiterateProcessModules(
-
-)
-{
-    
-    LIST_ENTRY* list = pGuest.ProcessList.Flink;
-    while (list != &pGuest.ProcessList)
-    {
-        PMHVPROCESS pProc = CONTAINING_RECORD(list, MHVPROCESS, Link);
-
-        list = list->Flink;
-
-        LOG("[PROC-LIST] %s -> %d %x; vad root = %x", pProc->Name, pProc->Pid, pProc->Cr3, pProc->VadRoot);
-
-        MhvIterateVadTree(pProc->VadRoot, 0, pProc);
-
-    }
-}
-
+BOOLEAN protect = FALSE;
 
 VOID
 MhvInsertProcessInList(
@@ -168,19 +54,27 @@ MhvInsertProcessInList(
     newProcess->NumberOfModules = 0;
     newProcess->VadRoot = *vadRootPhys;
     newProcess->Eprocess = Context->context._rcx;
+    newProcess->Protected = FALSE;
 
-    // assume every process is protected for now
-    newProcess->Protected = TRUE;
+    for(DWORD i = 0; i<ARRAYSIZE(gProtectedProcesses); i++)
+    {
+        if (strcmp(newProcess->Name, gProtectedProcesses[i]) == 0)
+        {
+            newProcess->Protected = TRUE;
+
+        }
+    }
 
     InitializeListHead(&newProcess->Modules);
 
     InsertTailList(&pGuest.ProcessList, &newProcess->Link);
 
+    LOG("[WINPROC] Process %s, pid %d with cr3 %x just started! %s", newProcess->Name, newProcess->Pid, newProcess->Cr3, newProcess->Protected ? "PROTECTED" : "NOT PROTECTED");
 
-    LOG("[WINPROC] Process %s, pid %d with cr3 %x just started!", newProcess->Name, newProcess->Pid, newProcess->Cr3);
-
-    //MhvIterateVadTree(newProcess->VadRoot, 0, newProcess);
-
+    if (newProcess->Protected)
+    {
+        MhvIterateVadList(newProcess);
+    }
     gNumberOfActiveProcesses++;
 
 }
@@ -194,17 +88,33 @@ MhvDeleteProcessFromList(
     QWORD cr3 = 0;
     DWORD i = 0;
     QWORD cr3Offset = Context->context._rcx + CR3_OFFSET_IN_EPROCESS;
-    //PQWORD cr3Phys;
     PMHVPROCESS pProc;
-    
-    //__vmx_vmread(VMX_GUEST_CR3, &cr3);
-    //cr3Phys = MhvTranslateVa(cr3Offset, cr3, NULL);
 
     pProc = MhvFindProcessByEprocess(Context->context._rcx);
     if (pProc == NULL)
     {
         LOG("[ERROR] Process deleted but does not exist in our list...");
         return;
+    }
+
+    LIST_ENTRY * list = pProc->Modules.Flink;
+
+    while (list != &pProc->Modules)
+    {
+        PMHVMODULE pMod = CONTAINING_RECORD(list, MHVMODULE, Link);
+
+        list = list->Flink;
+
+        RemoveEntryList(&pMod->Link);
+
+        LOG("[INFO] Module %s [%x %x] in Process %d is unloading", pMod->Name, pMod->Start, pMod->End, pMod->Process->Pid);
+
+        MhvDeleteHookByOwner(pMod);
+
+        LOG("[INFO] Module %s unhooked succesfully!", pMod->Name);
+
+        MemFreeContiguosMemory(pMod->Name);
+        MemFreeContiguosMemory(pMod);
     }
     
     RemoveEntryList(&pProc->Link);

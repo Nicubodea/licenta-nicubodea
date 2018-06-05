@@ -34,7 +34,7 @@ MhvTranslateVa(
     BOOLEAN *Writable
 );
 
-PVOID
+NTSTATUS
 MhvMemRead(
     QWORD Address,
     QWORD Size,

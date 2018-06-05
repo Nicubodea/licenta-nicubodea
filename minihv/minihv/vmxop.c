@@ -251,6 +251,8 @@ void MhvStartVmx()
         __vmx_vmwrite(VMX_EPT_POINTER, gProcessors[procId].EptPointer);
     }
    
+
+    MemInitHeap();
     // init our internal guest state.
     if (procId == 0)
     {
@@ -364,6 +366,7 @@ void MhvInitControls()
     secProc |= (1 << VMX_SECPROC_ENABLE_EPT);
     secProc |= (1 << VMX_SECPROC_ENABLE_RDTSCP);
     secProc |= (1 << VMX_SECPROC_UNRESTRICTED_GUEST);
+    //secProc |= (1 << VMX_SECPROC_ENABLE_INVPCID);
     secProc |= msr_proc2_low;
     secProc &= msr_proc2_high;
     if ((secProc & (1 << VMX_SECPROC_ENABLE_EPT)) == 0)
@@ -750,7 +753,7 @@ void MhvInitGuest(PROCESSOR CurrentProc)
     __vmx_vmwrite(VMX_GUEST_CS_LIMIT, -1);
     __vmx_vmwrite(VMX_GUEST_CS_ATTR, 0xA09B);
     __vmx_vmwrite(VMX_GUEST_CS_SEL, 0x8);
-    __vmx_vmwrite(VMX_GUEST_RSP, CurrentProc.context._rsp);
+    __vmx_vmwrite(VMX_GUEST_RSP, 0x8000);
     __vmx_vmwrite(VMX_GUEST_IDTR, KERNEL_BASE + 0xA400); // idtr
 
 
@@ -796,8 +799,9 @@ void MhvInitGuest(PROCESSOR CurrentProc)
 }
 void doNothing()
 {
+    __halt();
     JumpToMBR(1);
-    while (1);
+    
 }
 
 void doBsp()
@@ -829,7 +833,7 @@ PQWORD DbgDumpVirtualSpace(
 #define PAGE_BIT_PS 0x80
 #define PAGE_BIT_W (1<<11)
 
-PVOID
+NTSTATUS
 MhvMemRead(
     QWORD Address,
     QWORD Size,
@@ -844,9 +848,18 @@ MhvMemRead(
 
     firstPage = MhvTranslateVa(Address & (~0xFFF), Cr3, NULL);
 
+    if (firstPage == 0)
+    {
+        return STATUS_UNSUCCESSFUL;
+    }
+
     if ((Address & (~0xFFF)) != ((Address + Size) & (~0xFFF)))
     {
         secondPage = MhvTranslateVa((Address + Size) & (~0xFFF), Cr3, NULL);
+        if (secondPage == 0)
+        {
+            return STATUS_UNSUCCESSFUL;
+        }
         onePage = FALSE;
     }
 
@@ -861,7 +874,7 @@ MhvMemRead(
         buff[cnt] = secondPage[i];
     }
 
-
+    return STATUS_SUCCESS;
 }
 
 PQWORD
@@ -988,7 +1001,7 @@ void MhvHandleInterrupt() {
     block:
 
         {
-            LOG("[HERE] We are here!");
+            /*LOG("[HERE] We are here!");
             MemDumpAllocStats();
             PMHVPROCESS pProc = MhvFindProcessByCr3(cr3);
             if (pProc == NULL)
@@ -1037,11 +1050,13 @@ void MhvHandleInterrupt() {
             LOG("[ALERT] Module: %s has been the victim of an illegal operation", pModVictim != NULL ? pModVictim->Name : "<not found>");
 
             // except everything for now;
-        except:
+        
 
             __vmx_vmwrite(VMX_ENTRY_INTERRUPTION_INFO, (14) | (3 << 8) | (1 << 11) | (1 << 31));
             __vmx_vmwrite(VMX_ENTRY_EXCEPTION_ERROR, errcode);
             goto exit;
+            */
+        except:;
         }
 
         /*
@@ -1087,6 +1102,7 @@ MhvHandleKernWrite(
 )
 {
     LOG("[INFO] someone writing on the kernel...");
+    return STATUS_UNSUCCESSFUL;
 }
 
 
@@ -1095,7 +1111,7 @@ void MhvInitHook() {
     __vmx_vmwrite(VMX_PAGE_FAULT_ERROR_MASK, 0x0);
     __vmx_vmwrite(VMX_PAGE_FAULT_ERROR_MATCH, 0x0);
     //__vmx_vmwrite(VMX_EXCEPTION_BITMAP, (1 << VMX_ENABLE_PAGE_FAULT) | (1<<3));
-    __vmx_vmwrite(VMX_EXCEPTION_BITMAP, (1 << 3));
+    __vmx_vmwrite(VMX_EXCEPTION_BITMAP, (1<<3));
     QWORD idtr = 0;
     __vmx_vmread(VMX_GUEST_IDTR, &idtr);
    
@@ -1142,6 +1158,7 @@ void MhvInitHook() {
             gProcessors[i].KernelBase = gProcessors[0].KernelBase;
         }
 
+        /*
         MhvCreateEptHook(&gProcessors[0],
             MhvTranslateVa(gProcessors[procId].KernelBase, cr3, NULL),
             EPT_WRITE_RIGHT,
@@ -1149,9 +1166,21 @@ void MhvInitHook() {
             gProcessors[procId].KernelBase,
             MhvHandleKernWrite,
             NULL,
-            PAGE_SIZE
-            );
+            PAGE_SIZE,
+            FALSE
+        );
         
+        MhvCreateEptHook(&gProcessors[0],
+            MhvTranslateVa(gProcessors[procId].KernelBase + 0x1000, cr3, NULL),
+            EPT_WRITE_RIGHT,
+            cr3,
+            gProcessors[procId].KernelBase + 0x1000,
+            MhvHandleKernWrite,
+            NULL,
+            PAGE_SIZE,
+            FALSE
+        );
+        */
         MhvHookFunctionsInMemory();
         ZydisStatus status;
 
@@ -1354,8 +1383,10 @@ void MhvGeneralHandler()
     LOG("Exit reason: %d, CPU Id: %d", exitReason, procId);
 #endif
 
-    AcpiOsAcquireLock(pGuest.GlobalLock);
+    //AcpiOsAcquireLock(pGuest.GlobalLock);
     //LOG("[INFO] (VCPU %d) vm exit reason: %d", procId, exitReason);
+
+    pGuest.NrToDelete = 0;
 
     if (VMX_EXIT_VMCALL == exitReason)
     {
@@ -1386,7 +1417,8 @@ void MhvGeneralHandler()
     }
     else if (VMX_EXIT_CR_ACCESS == exitReason)
     {
-        MhvHandleCr3Exit(&gProcessors[procId]);
+        //MhvHandleCr3Exit(&gProcessors[procId]);
+        __halt();
     }
     else if (VMX_EXIT_CPUID == exitReason)
     {
@@ -1448,7 +1480,41 @@ void MhvGeneralHandler()
         __halt();
     }
 
-    AcpiOsReleaseLock(pGuest.GlobalLock, 0);
+    // commit the deleted hooks
+    LIST_ENTRY* list;
+    
+
+    list = pGuest.ToAppendHooks.Flink;
+
+    while (list != &pGuest.ToAppendHooks)
+    {
+        PEPT_HOOK pHook = CONTAINING_RECORD(list, EPT_HOOK, Link);
+
+        list = list->Flink;
+
+        RemoveEntryList(&pHook->Link);
+        InsertTailList(&pGuest.EptHooksList, &pHook->Link);
+    }
+
+    list = pGuest.EptHooksList.Flink;
+
+    while (list != &pGuest.EptHooksList)
+    {
+        PEPT_HOOK pHook = CONTAINING_RECORD(list, EPT_HOOK, Link);
+
+        list = list->Flink;
+
+        if ((pHook->Flags & 0x40) != 0)
+        {
+            //LOG("[INFO] Deleting hook @ x on physical page %x, offset %x", pHook, pHook->GuestPhysicalAddress, pHook->Offset);
+            MhvEptPurgeHookFromEpt(pHook, pGuest.Vcpu);
+            RemoveEntryList(&pHook->Link);
+            MemFreeContiguosMemory(pHook);
+        }
+    }
+
+
+    //AcpiOsReleaseLock(pGuest.GlobalLock, 0);
     //LOG("[INFO] (VCPU %d) vm entry again", procId);
     GetGeneralRegs();
     __vmx_vmresume();

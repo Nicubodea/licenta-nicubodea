@@ -18,7 +18,7 @@ typedef struct _CONTEXT
     __int64 _r13;
     __int64 _r14;
     __int64 _r15;
-    __int64 _rsp;
+    __int64 _rbp;
     __int64 _cr2;
 } CONTEXT, *PCONTEXT;
 
@@ -65,6 +65,8 @@ typedef struct _PROCESSOR
     PEPT_POINTER    FullRightsEptPointer;
 
     QWORD           LastGLA;
+    QWORD           LastGPA;
+    BOOLEAN         InvalidGLA;
     BOOLEAN         LastInterruptDisabled;
 
     QWORD           OldPTE;

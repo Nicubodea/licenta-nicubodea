@@ -5,6 +5,7 @@
 #include "minihv.h"
 #include "ntstatus.h"
 #include "structures.h"
+#include "winproc.h"
 
 typedef struct _MMVAD_SHORT64
 {
@@ -51,24 +52,18 @@ typedef struct _MMVAD_SHORT64
 } MMVAD_SHORT64, *PMMVAD_SHORT64;
 
 
-
-typedef struct _UM_MODULE {
-    BYTE Name[256];
-    QWORD ModuleBase;
-    QWORD ModuleSize;
-    QWORD NameSize;
-} UM_MODULE, *PUM_MODULE;
-
-NTSTATUS
-MhvGetModFromWrittenEntry(
-    PVOID Processor,
-    QWORD Entry,
-    QWORD Cr3,
-    UM_MODULE* Module
+VOID
+MhvNewModuleLoaded(
+    PPROCESOR Context
 );
 
 VOID
-MhvNewModuleLoaded(
+MhvIterateVadList(
+    struct _MHVPROCESS* Process
+);
+
+VOID
+MhvHandleModuleUnload(
     PPROCESOR Context
 );
 #endif

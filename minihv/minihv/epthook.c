@@ -5,6 +5,13 @@
 #include "winproc.h"
 #include "winmod.h"
 
+#define max(a,b) a>b?a:b;
+
+#define PML4_INDEX(Va) (((Va) & 0x0000ff8000000000) >> 39)
+#define PDP_INDEX(Va) (((Va) & 0x0000007fc0000000) >> 30)
+#define PD_INDEX(Va) (((Va) & 0x000000003fe00000) >> 21)
+#define PT_INDEX(Va) (((Va) & 0x00000000001ff000) >> 12)
+#define CLEAN_PHYS_ADDR(Addr) ((Addr) & 0x000FFFFFFFFFF000)
 
 VOID
 MhvHandleEptViolation(
@@ -17,17 +24,51 @@ MhvHandleEptViolation(
     QWORD rip = 0;
     QWORD phys;
     QWORD action = 1;
+    BOOLEAN found = FALSE;
 
     __vmx_vmread(VMX_GUEST_LINEAR_ADDRESS, &linearAddr);
     __vmx_vmread(VMX_GUEST_CR3, &cr3);
     __vmx_vmread(VMX_GUEST_RIP, &rip);
+    QWORD eptp;
+    __vmx_vmread(VMX_EPT_POINTER, &eptp);
 
     phys = MhvTranslateVa(linearAddr, cr3, NULL);
 
+    
 
-    //LOG("[INFO] Ept violation from %x on %x", rip, linearAddr);
+    QWORD qualification = 0;
+
+    __vmx_vmread(VMX_EXIT_QUALIFICATION, &qualification);
+
+    QWORD realAddress;
+    __vmx_vmread(0x2400, &realAddress);
+
+    //LOG("[INFO] on full rights ept: %x -> %x -> %x -> %x -> %x", pGuest.Vcpu->FullRightsEptPointer, pml4[0], pdpe[PDP_INDEX(phys)], pde[PD_INDEX(phys)], pte);
 
     LIST_ENTRY* list = pGuest.EptHooksList.Flink;
+
+
+    if (realAddress != phys)
+    {
+        // Vmware mangles the GLA ......
+
+        linearAddr = NULL;
+        phys = realAddress;
+
+    }
+
+    PEPT_POINTER ept = CLEAN_PHYS_ADDR((QWORD)eptp);
+    PEPT_PML4_ENTRY* pml4 = CLEAN_PHYS_ADDR((QWORD)ept->PdpeArray);
+    PEPT_PDPE_ENTRY* pdpe = ((PEPT_PML4_ENTRY)CLEAN_PHYS_ADDR((QWORD)pml4[0]))->PdeArray;
+    PEPT_PDE_ENTRY* pde = ((PEPT_PDPE_ENTRY)CLEAN_PHYS_ADDR((QWORD)pdpe[PDP_INDEX(phys)]))->PteArray;
+
+    QWORD* pt = ((PEPT_PDE_ENTRY)CLEAN_PHYS_ADDR((QWORD)pde[PD_INDEX(phys)]))->PhysicalAddress;
+
+    QWORD pte = pt[PT_INDEX(phys)];
+
+    //LOG("[INFO] Ept violation from %x on %x (%x, real %x), current EPT entry for gpa: %x -> %x -> %x -> %x -> %x qualification: %x", rip, linearAddr, phys, realAddress, eptp, pml4[0], pdpe[PDP_INDEX(phys)], pde[PD_INDEX(phys)], pte, qualification);
+
+    MemDumpAllocStats();
 
     while (list != &pGuest.EptHooksList)
     {
@@ -35,23 +76,33 @@ MhvHandleEptViolation(
 
         list = list->Flink;
 
-        if ((pHook->GuestLinearAddress == (linearAddr & (~0xFFF)) || pHook->GuestLinearAddress == NULL) &&
+        if ((pHook->Flags & 0x10) != 0 || (pHook->Flags & 0x40) != 0)
+        {
+            continue;
+        }
+
+
+        if (((pHook->GuestLinearAddress & (~0xFFF)) == (linearAddr & (~0xFFF)) || pHook->GuestLinearAddress == NULL || linearAddr == NULL) &&
             pHook->GuestPhysicalAddress == (phys & (~0xFFF)) &&
-            (pHook->Cr3 == cr3 || pHook->Cr3 == NULL) &&
-            pHook->Offset >= (phys & 0xFFF) && pHook->Offset < ((phys & 0xFFF) + pHook->Size)
+            pHook->Offset <= (phys & 0xFFF) && pHook->Offset + pHook->Size > ((phys & 0xFFF))
             )
         {
             if (pHook->PreActionCallback == NULL)
             {
                 // we should also have hooks with only post action callbacks
-                action = 1;
-                break;
+                continue;
             }
             //LOG("[INFO] calling preCallback");
+            //LOG("[INFO] Calling PRECALLBACK on Hook @ %x with GLA: %x physical %x offset %x size %x flags %x", pHook, pHook->GuestLinearAddress, pHook->GuestPhysicalAddress, pHook->Offset, pHook->Size, pHook->Flags);
+
             NTSTATUS status = pHook->PreActionCallback(Processor, pHook, rip, cr3, NULL);
+
+            //LOG("[INFO] Pre callback returned %x", status);
+
+            found = TRUE;
             if (status == STATUS_SUCCESS)
             {
-                action = 1;
+                action = min(action, 1);
             }
             else
             {
@@ -61,17 +112,21 @@ MhvHandleEptViolation(
 
     }
 
-    if (action)
+    if (action || !found)
     {
+
+        //__vmx_invept();
 
         //LOG("[INFO] Will use MTF as callback returned TRUE or no callback was found!");
         __vmx_vmwrite(VMX_EPT_POINTER, ((QWORD)proc->FullRightsEptPointer | EPT_4LEVELS_POINTER));
 
+        __writecr3(__readcr3());
+
         //replace with monitor trap flag here...
         QWORD rflags = 0;
         proc->LastInterruptDisabled = FALSE;
-
         
+        /*
         __vmx_vmread(VMX_GUEST_RFLAGS, &rflags);
 
         if ((rflags & (1 << 9)) != 0)
@@ -80,6 +135,7 @@ MhvHandleEptViolation(
             __vmx_vmwrite(VMX_GUEST_RFLAGS, rflags);
             proc->LastInterruptDisabled = TRUE;
         }
+        */
 
         // activate the MTF
         QWORD procControls = 0;
@@ -87,9 +143,16 @@ MhvHandleEptViolation(
         procControls |= (1 << 27);
         __vmx_vmwrite(VMX_PROC_CONTROLS_FIELD, procControls);
 
-        __vmx_vmwrite(VMX_GUEST_INTERUPT_STATE, 0);
+        //__vmx_vmwrite(VMX_GUEST_INTERUPT_STATE, 0);
 
         proc->LastGLA = linearAddr;
+        if (linearAddr == 0)
+        {
+            proc->InvalidGLA = TRUE;
+            proc->LastGPA = phys;
+        }
+
+        MyInvEpt(2, NULL);
     }
     else
     {
@@ -98,6 +161,7 @@ MhvHandleEptViolation(
         rip += instrLength;
         __vmx_vmwrite(VMX_GUEST_RIP, rip);
     }
+
 
     return;
 }

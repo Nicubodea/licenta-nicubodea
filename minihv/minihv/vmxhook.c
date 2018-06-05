@@ -70,6 +70,38 @@ _Emu5(PPROCESOR Processor) {
 
 }
 
+VOID
+_Emu6(PPROCESOR Processor) {
+
+    QWORD rsp;
+    QWORD cr3 = 0;
+    __vmx_vmread(VMX_GUEST_RSP, &rsp);
+    __vmx_vmread(VMX_GUEST_CR3, &cr3);
+    rsp -= 8;
+    
+    PQWORD writeAddr = MhvTranslateVa(rsp, cr3, NULL);    
+    writeAddr[0] = Processor->context._rbp;
+
+    rsp -= 8;
+
+    writeAddr = MhvTranslateVa(rsp, cr3, NULL);
+    writeAddr[0] = Processor->context._rbx;
+
+    // rsi, rdi
+    
+    rsp -= 8;
+
+    writeAddr = MhvTranslateVa(rsp, cr3, NULL);
+    writeAddr[0] = Processor->context._rsi;
+
+    rsp -= 8;
+
+    writeAddr = MhvTranslateVa(rsp, cr3, NULL);
+    writeAddr[0] = Processor->context._rdi;
+
+    __vmx_vmwrite(VMX_GUEST_RSP, rsp);
+}
+
 API_SIGNATURE gHookSignatures[NR_OF_SIGNATURES] = {
     {
         "PspInsertProcess",
@@ -105,70 +137,7 @@ API_SIGNATURE gHookSignatures[NR_OF_SIGNATURES] = {
         _Emu1,
         MhvInsertProcessInList
     },
-    {
-        "PspInsertProcess",
-        0x51,
-        {
-            0x44, 0x89, 0x4C, 0x24, 0x200,                           // mov     dword ptr [rsp+20h],r9d
-            0x44, 0x89, 0x44, 0x24, 0x200,                           // mov     dword ptr [rsp+18h],r8d
-            0x53,                                                   // push    rbx
-            0x55,                                                   // push    rbp
-            0x56,                                                   // push    rsi
-            0x57,                                                   // push    rdi
-            0x41, 0x55,                                             // push    r13
-            0x41, 0x56,                                             // push    r14
-            0x41, 0x57,                                             // push    r15
-            0x48, 0x83, 0xEC, 0x60,                                 // sub     rsp,60h
-            0x65, 0x4C, 0x8B, 0x3C, 0x25, 0x200, 0x200, 0x00, 0x00,   // mov     r15,qword ptr gs:[188h]
-            0x48, 0x8B, 0xEA,                                       // mov     rbp,rdx
-            0x4C, 0x8B, 0x91, 0x200, 0x200, 0x00, 0x00,               // mov     r10,qword ptr [rcx+418h]
-            0x48, 0x8B, 0xF9,                                       // mov     rdi,rcx
-            0x8B, 0x81, 0x200, 0x200, 0x00, 0x00,                     // mov     eax,dword ptr [rcx+2E0h]
-            0x33, 0xD2,                                             // xor     edx,edx
-            0xB9, 0x200, 0x00, 0x00, 0x00,                           // mov     ecx,85h
-            0x41, 0x8B, 0xF1,                                       // mov     esi,r9d
-            0x4D, 0x8B, 0xAF, 0x200, 0x00, 0x00, 0x00,               // mov     r13,qword ptr [r15+0B8h]
-            0x41, 0x89, 0x42, 0x200,                                 // mov     dword ptr [r10+28h],eax
-            0xE8, 0x200, 0x200, 0x00, 0x00,                           // call    nt!SeAuditingWithTokenForSubcategory (fffff803`216da7c0)
-            0x45, 0x33, 0xF6                                        // xor     r14d,r14d
-        },
-        _Emu2,
-        MhvInsertProcessInList
-    },
-    {
-        "PspInsertProcess",
-        0x60,
-        {
-            0x44, 0x89, 0x44, 0x24, 0x200,                   // mov     dword ptr [rsp+18h],r8d
-            0x53,                                           // push    rbx
-            0x55,                                           // push    rbp
-            0x56,                                           // push    rsi
-            0x57,                                           // push    rdi
-            0x41, 0x54,                                     // push    r12
-            0x41, 0x55,                                     // push    r13
-            0x41, 0x56,                                     // push    r14
-            0x48, 0x83, 0xec, 0x200,                         // sub     rsp,40h
-            0x65, 0x4c, 0x8b, 0x34, 0x25, 0x88, 0x01, 0x00, 0x00, // mov   r14,qword ptr gs:[188h]
-            0x48, 0x8b, 0xf2,                               // mov     rsi,rdx
-            0x4c, 0x8b, 0x91, 0x200, 0x200, 0x200, 0x200,       // mov     r10,qword ptr [rcx+418h]
-            0x48, 0x8b, 0xd9,                               // mov     rbx,rcx
-            0x8b, 0x81, 0x200, 0x200, 0x00, 0x00,             // mov     eax,dword ptr [rcx+2E8h]
-            0x33, 0xd2,                                     // xor     edx,edx
-            0xb9, 0x200, 0x200, 0x200, 0x200,                   // mov     ecx,85h
-            0x45, 0x8b, 0xe1,                               // mov     r12d,r9d
-            0x4d, 0x8b, 0xae, 0x200, 0x00, 0x00, 0x00,       // mov     r13,qword ptr [r14+0B8h]
-            0x41, 0x89, 0x42, 0x200,                         // mov     dword ptr [r10+28h],eax
-            0xe8, 0x200, 0x200, 0x200, 0x200,                   // call    nt!SeAuditingWithTokenForSubcategory (fffff801`c8ad276c)
-            0x84, 0xc0,                                     // test    al,al
-            0x0f, 0x85, 0x200, 0x200, 0x200, 0x200,             // jne     nt!PspInsertProcess+0x241 (fffff801`c8ad1a49)
-            0x48, 0x85, 0xf6,                               // test    rsi,rsi
-            0x74, 0x200,                                     // je      nt!PspInsertProcess+0x7e (fffff801`c8ad1886)
-            0x48, 0x8b, 0x86, 0x200, 0x200, 0x200, 0x200,       // mov     rax,qword ptr [rsi+3B0h]
-            0x48, 0x85, 0xc0,                               // test    rax,rax
-        },
-    _Emu4,
-    MhvInsertProcessInList
-    },
+    
     {
         "PspProcessDelete",
         0x63,
@@ -229,6 +198,36 @@ API_SIGNATURE gHookSignatures[NR_OF_SIGNATURES] = {
         },
         _Emu5,
         MhvNewModuleLoaded
+    },
+
+    {
+        "MiDeleteVirtualAddresses",
+        0x62,
+        {
+            0x40, 0x55,                                     // push    rbp
+            0x53,                                           // push    rbx
+            0x56,                                           // push    rsi
+            0x57,                                           // push    rdi
+            0x41, 0x55,                                     // push    r13
+            0x41, 0x56,                                     // push    r14
+            0x48, 0x8d, 0xac, 0x24, 0x200, 0xff, 0xff, 0xff, // lea     rbp,[rsp-0D8h]
+            0x48, 0x81, 0xec, 0x200, 0x200, 0x00, 0x00,       // sub     rsp,1D8h
+            0x48, 0x8b, 0x05, 0x200, 0x200, 0x200, 0x200,       // mov     rax,qword ptr [nt!_security_cookie (fffff801`c770eb40)]
+            0x48, 0x33, 0xc4,                               // xor     rax,rsp
+            0x48, 0x89, 0x85, 0x200, 0x00, 0x00, 0x00,       // mov     qword ptr [rbp+0C0h],rax
+            0x48, 0x8b, 0x85, 0x200, 0x200, 0x00, 0x00,       // mov     rax,qword ptr [rbp+130h]
+            0xbf, 0xff, 0x03, 0x00, 0x00,                   // mov     edi,3FFh
+            0x48, 0x89, 0x44, 0x24, 0x78,                   // mov     qword ptr [rsp+78h],rax
+            0x45, 0x0f, 0xb6, 0xf1,                         // movzx   r14d,r9b
+            0x65, 0x48, 0x8b, 0x04, 0x25, 0x88, 0x01, 0x00, 0x00, // mov   rax,qword ptr gs:[188h]
+            0x48, 0x8b, 0xf1,                               // mov     rsi,rcx
+            0x4c, 0x89, 0x74, 0x24, 0x200,                   // mov     qword ptr [rsp+58h],r14
+            0x48, 0x8d, 0x0d, 0x200, 0x200, 0x200, 0x200,       // lea     rcx,[nt!MiSystemPartition (fffff801`c773c380)]
+            0x44, 0x89, 0x44, 0x24, 0x200,                   // mov     dword ptr [rsp+34h],r8d
+            0x48, 0x8b, 0x80, 0x200, 0x00, 0x00, 0x00,       // mov     rax,qword ptr [rax+0B8h]
+        },
+        _Emu6,
+        MhvHandleModuleUnload
     },
 
 };

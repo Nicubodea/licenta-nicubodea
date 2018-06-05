@@ -1,6 +1,6 @@
 #include "stdio_n.h"
 #include "acpica.h"
-#define PORT 0x2f8 // com1 port
+#define PORT  0x2f8 //0x2f8 // com1 port
 extern void  write_to_port_char(int a, char b);
 extern int read_from_port(int port);
 int INITIALISED_PORT = 0;

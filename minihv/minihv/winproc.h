@@ -28,6 +28,7 @@ typedef struct _MHVMODULE
     PMHVPROCESS Process;
     QWORD Start;
     QWORD End;
+    LIST_ENTRY Hooks;
 } MHVMODULE, *PMHVMODULE;
 
 typedef struct _PEB64

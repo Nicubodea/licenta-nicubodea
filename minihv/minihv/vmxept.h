@@ -46,7 +46,7 @@ MhvEptMakeHook(
 
 );
 
-VOID
+PEPT_HOOK
 MhvCreateEptHook(
     PVOID Procesor,
     QWORD PhysPage,
@@ -55,7 +55,8 @@ MhvCreateEptHook(
     QWORD Gla,
     PFUNC_EptCallback   PreCallback,
     PFUNC_EptCallback   PostCallback,
-    QWORD               Size
+    QWORD               Size,
+    BOOLEAN             IsSwapIn
 );
 
 VOID
@@ -63,6 +64,27 @@ MhvEptPurgeHook(
     PVOID       Procesor,
     QWORD       PhysPage,
     BOOLEAN     PurgePDE
+);
+
+VOID MhvEptDeleteHook(
+    PEPT_HOOK Hook,
+    PVOID Procesor
+);
+
+VOID
+MhvDeleteHookHierarchy(
+    PEPT_HOOK Hook
+);
+
+VOID
+MhvDeleteHookByOwner(
+    PVOID Owner
+);
+
+VOID
+MhvEptPurgeHookFromEpt(
+    PEPT_HOOK Hook,
+    PVOID Procesor
 );
 
 #endif

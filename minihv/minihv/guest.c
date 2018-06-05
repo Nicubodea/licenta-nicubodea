@@ -12,6 +12,7 @@ MhvInitGuestState()
     AcpiOsCreateLock(&pGuest.GlobalLock);
     InitializeListHead(&pGuest.ApiHookList);
     InitializeListHead(&pGuest.EptHooksList);
+    InitializeListHead(&pGuest.ToAppendHooks);
     InitializeListHead(&pGuest.PtHookList);
     InitializeListHead(&pGuest.ProcessList);
     InitializeListHead(&pGuest.ExceptionsList);

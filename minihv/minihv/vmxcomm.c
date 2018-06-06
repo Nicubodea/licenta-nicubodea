@@ -26,8 +26,6 @@ MhvHandleInterfaceComm(
 
     __vmx_vmread(VMX_GUEST_CR3, &cr3);
 
-    LOG("[INFO] Interface called!!!");
-
     mapping = MhvTranslateVa(Processor->context._rdx, cr3, NULL);
     if (mapping == 0)
     {

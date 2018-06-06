@@ -46,7 +46,7 @@ MhvHandleMTF(
         __vmx_vmwrite(VMX_GUEST_INTERUPT_STATE, interState);
     }
 
-    /*
+    
     if (pProc->LastMOVSSDisabled)
     {
 
@@ -60,7 +60,11 @@ MhvHandleMTF(
 
         __vmx_vmwrite(VMX_GUEST_INTERUPT_STATE, interState);
     }
-    */
+    
+
+    //LOG("[INFO] MTF occurred -> RIP %x", rip);
+    
+
     __vmx_vmwrite(VMX_EPT_POINTER, pProc->EptPointer);
 
     __writecr3(__readcr3());

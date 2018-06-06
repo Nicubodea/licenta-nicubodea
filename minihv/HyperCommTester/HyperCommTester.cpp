@@ -61,7 +61,7 @@ LogCurrentEvent(
             currentRip += Event->ModuleAlertEvent.Instructions[i].Length;
         }
 
-        pExceptAlertFunction(Event);
+        //pExceptAlertFunction(Event);
 
     }
 }
@@ -103,10 +103,21 @@ int main()
     pGetEventFunction = (PFUNC_HyperCommGetLatestEvent)GetProcAddress(hMod, "HyperCommGetLatestEvent");
     pExceptAlertFunction = (PFUNC_HyperCommExceptAlert)GetProcAddress(hMod, "HyperCommExceptAlert");
 
-    pAddProcessFunction("introum_detour", 0x7);
-    pAddProcessFunction("firefox.exe", 0);
+    //pAddProcessFunction("introum_detour", 0x7);
+    //pAddProcessFunction("firefox.exe", 0);
 
     HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)EventListener, NULL, 0, NULL);
+
+    while (true)
+    {
+        CHAR process[32];
+        DWORD flags;
+        scanf("%s %d", process, &flags);
+
+        printf("[INFO] Will protect %s with flags %d\n", process, flags);
+
+        pAddProcessFunction(process, flags);
+    }
 
     WaitForSingleObject(hThread, INFINITE);
     

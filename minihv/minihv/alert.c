@@ -340,8 +340,6 @@ MhvExceptAlert(
     {
         InitializeListHead(&gExceptions);
         bExceptInitialized = TRUE;
-
-        MhvTestDummyException();
     }
 
     LIST_ENTRY* list = gExceptions.Flink;

@@ -45,7 +45,10 @@ MhvProtectProcess(
 
     LOG("[VMXCOMM] Requested to change protection from process %s from %x to %x", Protection->Name, oldFlags, Protection->Protection);
 
-    InsertTailList(&gProtectedProcesses, &Protection->Link);
+    if (Protection->Protection)
+    {
+        InsertTailList(&gProtectedProcesses, &Protection->Link);
+    }
 }
 
 NTSTATUS
@@ -58,7 +61,7 @@ MhvProtectProcessRequest(
 
     PPROTECTION_INFO pGuestProt = MhvTranslateVa(Address, Cr3, NULL);
 
-    LOG("[INFO] Getting pProt!");
+    pGuestProt->Name[14] = 0;
 
     *pProt = *pGuestProt;
 
@@ -78,12 +81,6 @@ MhvInsertProcessInList(
     {
         InitializeListHead(&gProtectedProcesses);
         bProtInitialized = TRUE;
-
-        PPROTECTION_INFO prot = MemAllocContiguosMemory(sizeof(PROTECTION_INFO));
-        memcpy_s(prot->Name, "firefox.exe", sizeof("firefox.exe"));
-        prot->Protection = 0x17;
-
-        MhvProtectProcess(prot);
     }
 
     PMHVPROCESS newProcess = MemAllocContiguosMemory(sizeof(MHVPROCESS));

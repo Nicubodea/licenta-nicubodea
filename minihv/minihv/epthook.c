@@ -63,6 +63,8 @@ MhvHandleEptViolation(
 
     QWORD pte = pt[PT_INDEX(phys)];
 
+    //LOG("[EPT VIOLATION] physical %x, rip %x", phys, rip);
+
     MemDumpAllocStats();
 
     while (list != &pGuest.EptHooksList)
@@ -138,26 +140,25 @@ MhvHandleEptViolation(
                 __vmx_vmwrite(VMX_GUEST_RFLAGS, rflags);
                 proc->LastInterruptDisabled = TRUE;
             }
-        }
-        
-        /*QWORD interruptState = 0;
-        __vmx_vmread(VMX_GUEST_INTERUPT_STATE, &interruptState);
 
-        if ((interruptState & 4) != 0)
-        {
-            interruptState &= (~1);
-            //__vmx_vmwrite(VMX_GUEST_INTERUPT_STATE, (interruptState & (~1)));
-            proc->LastSTIDisabled = TRUE;
-        }*/
+            QWORD interruptState = 0;
+            __vmx_vmread(VMX_GUEST_INTERUPT_STATE, &interruptState);
 
-        /*
-        if ((interruptState & 2) != 0)
-        {
-            interruptState &= (~2);
-            proc->LastMOVSSDisabled = TRUE;
+            if ((interruptState & 1) != 0)
+            {
+                interruptState &= (~1);
+                proc->LastSTIDisabled = TRUE;
+            }
+
+
+            if ((interruptState & 2) != 0)
+            {
+                interruptState &= (~2);
+                proc->LastMOVSSDisabled = TRUE;
+            }
+
+            __vmx_vmwrite(VMX_GUEST_INTERUPT_STATE, interruptState);
         }
-        */
-        //__vmx_vmwrite(VMX_GUEST_INTERUPT_STATE, interruptState);
 
         // activate the MTF
         QWORD procControls = 0;

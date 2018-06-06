@@ -34,7 +34,7 @@ MhvHandleEptViolation(
 
     phys = MhvTranslateVa(linearAddr, cr3, NULL);
 
-    
+    BOOLEAN disableInterrupts = FALSE;
 
     QWORD qualification = 0;
 
@@ -99,6 +99,11 @@ MhvHandleEptViolation(
             {
                 action = min(action, 1);
             }
+            else if (status == STATUS_SUCCESS_DISABLE_INTERRUPTS)
+            {
+                action = min(action, 1);
+                disableInterrupts = TRUE;
+            }
             else
             {
                 action = 0;
@@ -120,25 +125,45 @@ MhvHandleEptViolation(
         //replace with monitor trap flag here...
         QWORD rflags = 0;
         proc->LastInterruptDisabled = FALSE;
+        proc->LastSTIDisabled = FALSE;
+        proc->LastMOVSSDisabled = FALSE;
         
-        
-        /*__vmx_vmread(VMX_GUEST_RFLAGS, &rflags);
-
-        if ((rflags & (1 << 9)) != 0)
+        if (disableInterrupts)
         {
-            rflags &= ~(1 << 9);
-            __vmx_vmwrite(VMX_GUEST_RFLAGS, rflags);
-            proc->LastInterruptDisabled = TRUE;
+            __vmx_vmread(VMX_GUEST_RFLAGS, &rflags);
+
+            if ((rflags & (1 << 9)) != 0)
+            {
+                rflags &= ~(1 << 9);
+                __vmx_vmwrite(VMX_GUEST_RFLAGS, rflags);
+                proc->LastInterruptDisabled = TRUE;
+            }
+        }
+        
+        /*QWORD interruptState = 0;
+        __vmx_vmread(VMX_GUEST_INTERUPT_STATE, &interruptState);
+
+        if ((interruptState & 4) != 0)
+        {
+            interruptState &= (~1);
+            //__vmx_vmwrite(VMX_GUEST_INTERUPT_STATE, (interruptState & (~1)));
+            proc->LastSTIDisabled = TRUE;
+        }*/
+
+        /*
+        if ((interruptState & 2) != 0)
+        {
+            interruptState &= (~2);
+            proc->LastMOVSSDisabled = TRUE;
         }
         */
+        //__vmx_vmwrite(VMX_GUEST_INTERUPT_STATE, interruptState);
 
         // activate the MTF
         QWORD procControls = 0;
         __vmx_vmread(VMX_PROC_CONTROLS_FIELD, &procControls);
         procControls |= (1 << 27);
         __vmx_vmwrite(VMX_PROC_CONTROLS_FIELD, procControls);
-
-        //__vmx_vmwrite(VMX_GUEST_INTERUPT_STATE, 0);
 
         proc->LastGLA = linearAddr;
         if (linearAddr == 0)

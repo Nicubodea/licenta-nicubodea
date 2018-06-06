@@ -81,7 +81,7 @@ MhvCreateModuleLoadEvent(
 
     pEvent->ModuleLoadEvent.Module.Start = Module->Start;
     pEvent->ModuleLoadEvent.Module.End = Module->End;
-    memcpy_s(pEvent->ModuleLoadEvent.Module.Name, Module->Name, 16);
+    memcpy_s(pEvent->ModuleLoadEvent.Module.Name, Module->Name, strlen(Module->Name));
 
     MhvEnqueueEvent(pEvent);
 
@@ -109,7 +109,7 @@ MhvCreateModuleUnloadEvent(
 
     pEvent->ModuleUnloadEvent.Module.Start = Module->Start;
     pEvent->ModuleUnloadEvent.Module.End = Module->End;
-    memcpy_s(pEvent->ModuleUnloadEvent.Module.Name, Module->Name, 16);
+    memcpy_s(pEvent->ModuleUnloadEvent.Module.Name, Module->Name, strlen(Module->Name));
 
     MhvEnqueueEvent(pEvent);
 
@@ -340,6 +340,8 @@ MhvExceptAlert(
     {
         InitializeListHead(&gExceptions);
         bExceptInitialized = TRUE;
+
+        MhvTestDummyException();
     }
 
     LIST_ENTRY* list = gExceptions.Flink;

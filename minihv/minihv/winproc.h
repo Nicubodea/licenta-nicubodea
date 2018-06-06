@@ -8,7 +8,7 @@
 typedef struct _PROTECTION_INFO 
 {
     LIST_ENTRY Link;
-    BYTE* Name;
+    BYTE Name[16];
     DWORD Protection;
 } PROTECTION_INFO, *PPROTECTION_INFO;
 

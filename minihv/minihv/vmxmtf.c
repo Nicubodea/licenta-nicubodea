@@ -23,7 +23,7 @@ MhvHandleMTF(
     procControls &= ~(1 << 27);
     __vmx_vmwrite(VMX_PROC_CONTROLS_FIELD, procControls);
 
-    /*if (pProc->LastInterruptDisabled)
+    if (pProc->LastInterruptDisabled)
     {
         pProc->LastInterruptDisabled = FALSE;
         
@@ -31,8 +31,36 @@ MhvHandleMTF(
         __vmx_vmread(VMX_GUEST_RFLAGS, &rflags);
         rflags |= (1 << 9);
         __vmx_vmwrite(VMX_GUEST_RFLAGS, rflags);
-    }*/
+    }
 
+    if (pProc->LastSTIDisabled)
+    {
+        pProc->LastSTIDisabled = FALSE;
+
+        QWORD interState = 0;
+
+        __vmx_vmread(VMX_GUEST_INTERUPT_STATE, &interState);
+
+        interState |= 1;
+
+        __vmx_vmwrite(VMX_GUEST_INTERUPT_STATE, interState);
+    }
+
+    /*
+    if (pProc->LastMOVSSDisabled)
+    {
+
+        pProc->LastMOVSSDisabled = FALSE;
+
+        QWORD interState = 0;
+
+        __vmx_vmread(VMX_GUEST_INTERUPT_STATE, &interState);
+
+        interState |= 2;
+
+        __vmx_vmwrite(VMX_GUEST_INTERUPT_STATE, interState);
+    }
+    */
     __vmx_vmwrite(VMX_EPT_POINTER, pProc->EptPointer);
 
     __writecr3(__readcr3());

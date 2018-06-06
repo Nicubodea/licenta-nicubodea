@@ -248,6 +248,7 @@ find where to insert new error codes
                        //
 #define STATUS_SUCCESS                   ((NTSTATUS)0x00000000L)    // ntsubauth
 
+#define STATUS_SUCCESS_DISABLE_INTERRUPTS ((NTSTATUS)0x00000003)
                        //
                        // MessageId: STATUS_WAIT_1
                        //

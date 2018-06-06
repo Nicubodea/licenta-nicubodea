@@ -240,12 +240,12 @@ MhvModHandleWrite(
         //LOG("[INFO] %s ", MhvGetNameFromPath(pModAttacker->Name));
         if (strcmp(MhvGetNameFromPath(pModAttacker->Name), "ntdll.dll") == 0)
         {
-            return STATUS_SUCCESS;
+            return STATUS_SUCCESS_DISABLE_INTERRUPTS;
         }
 
         if (strcmp(MhvGetNameFromPath(pModAttacker->Name), MhvGetNameFromPath(pModVictim->Name)) == 0)
         {
-            return STATUS_SUCCESS;
+            return STATUS_SUCCESS_DISABLE_INTERRUPTS;
         }
     }
 
@@ -263,7 +263,7 @@ MhvModHandleWrite(
 
         MemFreeContiguosMemory(evt);
 
-        return STATUS_SUCCESS;
+        return STATUS_SUCCESS_DISABLE_INTERRUPTS;
     }
 
     LOG("~~~~~~~~~~~~~~~~~~~~~~~~~~~~ALERT~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -287,7 +287,7 @@ MhvModHandleWrite(
 
     if (shouldAllow)
     {
-        return STATUS_SUCCESS;
+        return STATUS_SUCCESS_DISABLE_INTERRUPTS;
     }
 
     return STATUS_UNSUCCESSFUL;

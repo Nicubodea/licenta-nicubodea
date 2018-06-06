@@ -58,6 +58,8 @@ MhvProtectProcessRequest(
 
     PPROTECTION_INFO pGuestProt = MhvTranslateVa(Address, Cr3, NULL);
 
+    LOG("[INFO] Getting pProt!");
+
     *pProt = *pGuestProt;
 
     MhvProtectProcess(pProt);

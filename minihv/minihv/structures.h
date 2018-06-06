@@ -71,6 +71,9 @@ typedef struct _PROCESSOR
 
     QWORD           OldPTE;
     EPT_HOOK        LastHook;
+
+    BOOLEAN         LastSTIDisabled;
+    BOOLEAN         LastMOVSSDisabled;
     
 } PROCESSOR, *PPROCESOR;
 

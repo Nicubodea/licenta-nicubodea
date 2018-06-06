@@ -1,0 +1,11 @@
+[bits 64]
+global HyperCall
+
+HyperCall:
+push rbx
+
+mov rbx, 0xb0dea
+vmcall
+
+pop rbx
+ret

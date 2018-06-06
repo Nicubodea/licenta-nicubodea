@@ -5,6 +5,19 @@
 #include "winmod.h"
 #include "_wdk.h"
 
+typedef struct _PROTECTION_INFO 
+{
+    LIST_ENTRY Link;
+    BYTE* Name;
+    DWORD Protection;
+} PROTECTION_INFO, *PPROTECTION_INFO;
+
+typedef struct _MOD_PROTECTION_INFO
+{
+    BYTE* Name;
+    DWORD Protection;
+} MOD_PROTECTION_INFO, *PMOD_PROTECTION_INFO;
+
 typedef struct _MHVPROCESS
 {
     LIST_ENTRY Link;
@@ -16,7 +29,7 @@ typedef struct _MHVPROCESS
     QWORD NumberOfHooks;
     LIST_ENTRY Modules;
     QWORD NumberOfModules;
-    BOOLEAN Protected;
+    DWORD ProtectionInfo;
     QWORD Eprocess;
 } MHVPROCESS, *PMHVPROCESS;
 
@@ -86,6 +99,12 @@ MhvFindProcessByCr3(
 PMHVPROCESS
 MhvFindProcessByEprocess(
     QWORD Eprocess
+);
+
+NTSTATUS
+MhvProtectProcessRequest(
+    QWORD Address,
+    QWORD Cr3
 );
 
 #endif

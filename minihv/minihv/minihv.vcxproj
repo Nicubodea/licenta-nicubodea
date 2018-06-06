@@ -435,6 +435,7 @@
     <ClCompile Include="acpica\utxferror.c" />
     <ClCompile Include="acpica\utxfinit.c" />
     <ClCompile Include="acpica\utxfmutex.c" />
+    <ClCompile Include="alert.c" />
     <ClCompile Include="alloc.c" />
     <ClCompile Include="epthook.c" />
     <ClCompile Include="except.c" />
@@ -442,6 +443,7 @@
     <ClCompile Include="heap.c" />
     <ClCompile Include="init64.c" />
     <ClCompile Include="llist.c" />
+    <ClCompile Include="vmxcomm.c" />
     <ClCompile Include="vmxept.c" />
     <ClCompile Include="vmxhook.c" />
     <ClCompile Include="vmxmtf.c" />
@@ -498,6 +500,7 @@
     <ClInclude Include="acpica\acwin64.h" />
     <ClInclude Include="acpica\amlcode.h" />
     <ClInclude Include="acpica\amlresrc.h" />
+    <ClInclude Include="alert.h" />
     <ClInclude Include="alloc.h" />
     <ClInclude Include="epthook.h" />
     <ClInclude Include="except.h" />
@@ -509,6 +512,7 @@
     <ClInclude Include="stdio_n.h" />
     <ClInclude Include="structures.h" />
     <ClInclude Include="vmcsdef.h" />
+    <ClInclude Include="vmxcomm.h" />
     <ClInclude Include="vmxept.h" />
     <ClInclude Include="vmxhook.h" />
     <ClInclude Include="vmxmtf.h" />

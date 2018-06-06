@@ -4,6 +4,7 @@
 #include "_wdk.h"
 #include "minihv.h"
 #include "winpe.h"
+#include "alert.h"
 
 #define NAME_OFFSET_IN_EPROCESS 0x450
 #define PID_OFFSET_IN_EPROCESS 0x2e8
@@ -11,13 +12,59 @@
 #define PEB_OFFSET_IN_EPROCESS 0x3f8
 #define VADROOT_OFFSET_IN_EPROCESS 0x620
 
+/*PROTECTION_INFO gProtectedProcesses[] = {
+    {"firefox.exe",0x3}
+};*/
 
-char* gProtectedProcesses[] = {
-    "firefox.exe",
-    "chrome.exe"
-};
+LIST_ENTRY gProtectedProcesses;
+BOOLEAN bProtInitialized = FALSE;
 
 BOOLEAN protect = FALSE;
+
+VOID
+MhvProtectProcess(
+    PPROTECTION_INFO Protection
+)
+{
+    LIST_ENTRY* list = gProtectedProcesses.Flink;
+    DWORD oldFlags = 0;
+
+    while (list != &gProtectedProcesses)
+    {
+        PPROTECTION_INFO pProt = CONTAINING_RECORD(list, PROTECTION_INFO, Link);
+        list = list->Flink;
+
+        if (strcmp(Protection->Name, pProt->Name) == 0)
+        {
+            oldFlags = pProt->Protection;
+            RemoveEntryList(&pProt->Link);
+            MemFreeContiguosMemory(pProt);
+        }
+
+    }
+
+    LOG("[VMXCOMM] Requested to change protection from process %s from %x to %x", Protection->Name, oldFlags, Protection->Protection);
+
+    InsertTailList(&gProtectedProcesses, &Protection->Link);
+}
+
+NTSTATUS
+MhvProtectProcessRequest(
+    QWORD Address,
+    QWORD Cr3
+)
+{
+    PPROTECTION_INFO pProt = MemAllocContiguosMemory(sizeof(PROTECTION_INFO));
+
+    PPROTECTION_INFO pGuestProt = MhvTranslateVa(Address, Cr3, NULL);
+
+    *pProt = *pGuestProt;
+
+    MhvProtectProcess(pProt);
+
+    return STATUS_SUCCESS;
+}
+
 
 VOID
 MhvInsertProcessInList(
@@ -25,6 +72,18 @@ MhvInsertProcessInList(
 ) 
 {
     
+    if (!bProtInitialized)
+    {
+        InitializeListHead(&gProtectedProcesses);
+        bProtInitialized = TRUE;
+
+        PPROTECTION_INFO prot = MemAllocContiguosMemory(sizeof(PROTECTION_INFO));
+        memcpy_s(prot->Name, "firefox.exe", sizeof("firefox.exe"));
+        prot->Protection = 0x17;
+
+        MhvProtectProcess(prot);
+    }
+
     PMHVPROCESS newProcess = MemAllocContiguosMemory(sizeof(MHVPROCESS));
     QWORD nameOffset = Context->context._rcx + NAME_OFFSET_IN_EPROCESS;
     QWORD cr3 = 0;
@@ -54,28 +113,38 @@ MhvInsertProcessInList(
     newProcess->NumberOfModules = 0;
     newProcess->VadRoot = *vadRootPhys;
     newProcess->Eprocess = Context->context._rcx;
-    newProcess->Protected = FALSE;
+    newProcess->ProtectionInfo = 0;
 
-    for(DWORD i = 0; i<ARRAYSIZE(gProtectedProcesses); i++)
+    LIST_ENTRY* list = gProtectedProcesses.Flink;
+
+    while (list != &gProtectedProcesses)
     {
-        if (strcmp(newProcess->Name, gProtectedProcesses[i]) == 0)
+        PPROTECTION_INFO pProt = CONTAINING_RECORD(list, PROTECTION_INFO, Link);
+        list = list->Flink;
+
+        if(strcmp(newProcess->Name, pProt->Name) == 0)
         {
-            newProcess->Protected = TRUE;
+            newProcess->ProtectionInfo = pProt->Protection;
 
         }
+
     }
+
 
     InitializeListHead(&newProcess->Modules);
 
     InsertTailList(&pGuest.ProcessList, &newProcess->Link);
 
-    LOG("[WINPROC] Process %s, pid %d with cr3 %x just started! %s", newProcess->Name, newProcess->Pid, newProcess->Cr3, newProcess->Protected ? "PROTECTED" : "NOT PROTECTED");
+    LOG("[WINPROC] Process %s, pid %d with cr3 %x just started! %s", newProcess->Name, newProcess->Pid, newProcess->Cr3, newProcess->ProtectionInfo ? "PROTECTED" : "NOT PROTECTED");
 
-    if (newProcess->Protected)
+    if (newProcess->ProtectionInfo)
     {
         MhvIterateVadList(newProcess);
     }
+
     gNumberOfActiveProcesses++;
+
+    MhvCreateProcessCreationEvent(newProcess);
 
 }
 
@@ -107,11 +176,7 @@ MhvDeleteProcessFromList(
 
         RemoveEntryList(&pMod->Link);
 
-        LOG("[INFO] Module %s [%x %x] in Process %d is unloading", pMod->Name, pMod->Start, pMod->End, pMod->Process->Pid);
-
         MhvDeleteHookByOwner(pMod);
-
-        LOG("[INFO] Module %s unhooked succesfully!", pMod->Name);
 
         MemFreeContiguosMemory(pMod->Name);
         MemFreeContiguosMemory(pMod);
@@ -120,6 +185,8 @@ MhvDeleteProcessFromList(
     RemoveEntryList(&pProc->Link);
     
     LOG("[INFO] Process %s (pid = %d; cr3 = %x) terminated!", pProc->Name, pProc->Pid, pProc->Cr3);
+
+    MhvCreateProcessTerminationEvent(pProc);
 
     MemFreeContiguosMemory(pProc);
 

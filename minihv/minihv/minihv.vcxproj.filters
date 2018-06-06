@@ -584,6 +584,12 @@
     <ClCompile Include="llist.c">
       <Filter>Header Files\Allocator</Filter>
     </ClCompile>
+    <ClCompile Include="alert.c">
+      <Filter>Source Files\VMX\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="vmxcomm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="minihv.h">
@@ -768,6 +774,12 @@
     </ClInclude>
     <ClInclude Include="llist.h">
       <Filter>Header Files\Allocator</Filter>
+    </ClInclude>
+    <ClInclude Include="alert.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="vmxcomm.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -66,14 +66,14 @@ MhvHandleMTF(
             if (pHook->PostActionCallback != NULL)
             {
                 //LOG("[INFO] Calling POST callback!");
-                pHook->PostActionCallback(pProc, pHook, rip, cr3, *physLinearAddr);
+                pHook->PostActionCallback(pProc, pHook, rip, cr3, physLinearAddr);
 
             }
 
             if (pHook->LinkHook && (pHook->LinkHook->Flags & FLAG_SWAP) != 0 && (pHook->LinkHook->Flags & 0x10) == 0)
             {
                 //LOG("[CALLING SWAP CALLBACK]");
-                pHook->LinkHook->PostActionCallback(pProc, pHook->LinkHook, rip, cr3, *physLinearAddr);
+                pHook->LinkHook->PostActionCallback(pProc, pHook->LinkHook, rip, cr3, physLinearAddr);
             }
         }
 

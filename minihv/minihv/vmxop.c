@@ -9,7 +9,7 @@
 #include "guest.h"
 #include "except.h"
 #include "Zydis/Zydis.h"
-
+#include "vmxcomm.h"
 
 MTR gMtrrs[196];
 DWORD gNrMtrrs = 0;
@@ -1245,6 +1245,12 @@ void MhvHandleVmCall(DWORD procId, QWORD rip)
     
     NTSTATUS status;
     status = MhvVerifyIfHookAndNotify(rip);
+    if (status == STATUS_SUCCESS)
+    {
+        goto cleanup_and_exit;
+    }
+
+    status = MhvHandleInterfaceComm(&gProcessors[procId]);
     if (status == STATUS_SUCCESS)
     {
         goto cleanup_and_exit;

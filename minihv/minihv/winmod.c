@@ -8,6 +8,150 @@
 #include "alloc.h"
 #include "winpe.h"
 #include "Zydis/Zydis.h"
+#include "alert.h"
+
+VOID
+MhvFindFunctionByAddress(
+    PMHVMODULE Module,
+    QWORD Address
+)
+{
+
+    IMAGE_DOS_HEADER dos = { 0 };
+    IMAGE_NT_HEADERS64 nth = { 0 };
+    IMAGE_SECTION_HEADER sec = { 0 };
+    NTSTATUS status;
+
+    QWORD cr3 = Module->Process->Cr3;
+
+    status = MhvMemRead(Module->Start,
+        sizeof(IMAGE_DOS_HEADER),
+        cr3,
+        &dos);
+
+    if (!NT_SUCCESS(status))
+    {
+        LOG("[ERROR] MhvMemRead status: 0x%x", status);
+        return;
+    }
+
+    //LOG("[INFO] Signature is: %x, e_lfanew: %x", dos.e_magic, dos.e_lfanew)
+
+    QWORD ntHeaderGva = Module->Start + dos.e_lfanew;
+
+    status = MhvMemRead(ntHeaderGva, sizeof(IMAGE_NT_HEADERS64), cr3, &nth);
+    if (!NT_SUCCESS(status))
+    {
+        LOG("[ERROR] MhvMemRead status: 0x%x", status);
+        return;
+    }
+
+    QWORD sectionRva = Module->Start + dos.e_lfanew + sizeof(IMAGE_FILE_HEADER) + nth.FileHeader.SizeOfOptionalHeader + sizeof(nth.Signature);
+
+
+
+    IMAGE_EXPORT_DIRECTORY exports;
+
+    LOG("[INFO] %x %x", nth.OptionalHeader.DataDirectory[0].VirtualAddress, nth.OptionalHeader.DataDirectory[0].Size);
+    status = MhvMemRead(Module->Start + nth.OptionalHeader.DataDirectory[0].VirtualAddress, sizeof(IMAGE_EXPORT_DIRECTORY), cr3, &exports);
+    if (!NT_SUCCESS(status))
+    {
+        LOG("[ERROR] MhvMemRead status: 0x%x", status);
+        return;
+    }
+
+    QWORD rvaStart = 0, rvaEnd = 0;
+
+
+    for (DWORD i = 0; i < nth.FileHeader.NumberOfSections; i++)
+    {
+        status = MhvMemRead(sectionRva,
+            sizeof(IMAGE_SECTION_HEADER),
+            cr3,
+            &sec);
+
+        if (!NT_SUCCESS(status))
+        {
+            LOG("[ERROR] MhvMemRead status: 0x%x", status);
+            continue;
+        }
+
+        if (sec.VirtualAddress <= nth.OptionalHeader.DataDirectory[0].VirtualAddress && sec.VirtualAddress + sec.Misc.VirtualSize > nth.OptionalHeader.DataDirectory[0].VirtualAddress)
+        {
+            rvaStart = sec.VirtualAddress;
+            rvaEnd = sec.VirtualAddress + sec.Misc.VirtualSize;
+        }
+
+        sectionRva += sizeof(IMAGE_SECTION_HEADER);
+    }
+
+    LOG("[INFO] rvaStart is %x, rvaEnd is %x", rvaStart, rvaEnd);
+
+    DWORD rvas = exports.AddressOfFunctions;
+    DWORD ords = exports.AddressOfNameOrdinals;
+    DWORD names = exports.AddressOfNames;
+
+    BOOLEAN bFound = FALSE;
+
+    LOG("[INFO] rva table @ %x, ordinal @ %x, names @ %x, number of names %x", rvas, ords, names, exports.NumberOfNames);
+
+    for (DWORD i = 0; i < exports.NumberOfNames; i++)
+    {
+        WORD currentOrdinal;
+        DWORD currentRva;
+        DWORD currentNameRva;
+
+        LOG("[INFO] Reading ordinal from address %x", Module->Start + ords + i * sizeof(WORD));
+        status = MhvMemRead(Module->Start + ords + i * sizeof(WORD), sizeof(WORD), cr3, &currentOrdinal);
+        if (!NT_SUCCESS(status))
+        {
+            //LOG("[ERROR] MhvMemRead status: 0x%x", status);
+            continue;
+        }
+
+
+        LOG("[INFO] Reading rva from address %x", Module->Start + rvas + currentOrdinal * sizeof(DWORD));
+        status = MhvMemRead(Module->Start + rvas + currentOrdinal * sizeof(DWORD), sizeof(DWORD), cr3, &currentRva);
+        if (!NT_SUCCESS(status))
+        {
+            //LOG("[ERROR] MhvMemRead status: 0x%x", status);
+            continue;
+        }
+
+        if (currentRva + Module->Start <= Address && currentRva + Module->Start >= Address + 32)
+        {
+            
+            LOG("[INFO] Reading name RVA from address %x", Module->Start + names + i * sizeof(DWORD));
+            bFound = TRUE;
+            status = MhvMemRead(Module->Start + names + i * sizeof(DWORD), sizeof(DWORD), cr3, &currentNameRva);
+            if (!NT_SUCCESS(status))
+            {
+                LOG("[ERROR] MhvMemRead status: 0x%x", status);
+                continue;
+            }
+
+            LOG("[INFO] Name rva is %x, reading from %x", currentNameRva, Module->Start + currentNameRva);
+            BYTE FunctionName[20];
+
+            status = MhvMemRead(Module->Start + currentNameRva, 20, cr3, FunctionName);
+
+            if (!NT_SUCCESS(status))
+            {
+                LOG("[ERROR] MhvMemRead status: 0x%x", status);
+                continue;
+            }
+
+            LOG("[INFO] Function is %s", FunctionName);
+        }
+
+    }
+    
+    if (!bFound)
+    {
+        LOG("[INFO] Function was not found");
+    }
+    
+}
 
 PMHVMODULE
 MhvFindModuleByRip(
@@ -62,8 +206,11 @@ MhvModHandleWrite(
 {
     PEPT_HOOK pHook = Hook;
     QWORD address;
+    NTSTATUS status;
 
-    __vmx_vmread(VMX_GUEST_LINEAR_ADDRESS, &address);
+    //__vmx_vmread(VMX_GUEST_LINEAR_ADDRESS, &address);
+
+    address = pHook->GuestLinearAddress + (((QWORD)Context) & 0xFFF);
 
     PMHVPROCESS pProc = MhvFindProcessByCr3(Cr3);
     if (pProc == NULL)
@@ -102,7 +249,22 @@ MhvModHandleWrite(
         }
     }
 
-   
+    //MhvFindFunctionByAddress(pModVictim, address);
+
+    PEVENT evt = MhvCreateModuleAlert(pModAttacker, pModVictim, Rip, address);
+
+    status = MhvExceptAlert(evt);
+
+    if (NT_SUCCESS(status))
+    {
+        LOG("[INFO] Alert succesfully excepted!");
+
+        RemoveEntryList(&evt->Link);
+
+        MemFreeContiguosMemory(evt);
+
+        return STATUS_SUCCESS;
+    }
 
     LOG("~~~~~~~~~~~~~~~~~~~~~~~~~~~~ALERT~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     LOG("Process -> %s Pid %d Cr3 %x", pProc->Name, pProc->Pid, pProc->Cr3);
@@ -111,9 +273,24 @@ MhvModHandleWrite(
     LOG("[INFO] Hook @ %x physical: %x virtual: %x, offset: %x", pHook, pHook->GuestPhysicalAddress, pHook->GuestLinearAddress, pHook->Offset);
     LOG("[INFO] Dumping instructions from %x", Rip);
 
+    QWORD currentRip = Rip;
 
+    for (DWORD i = 0; i < evt->ModuleAlertEvent.NumberOfInstructions; i++)
+    {
+        LOG("[INFO] %x: %s : %s (%d)", currentRip, evt->ModuleAlertEvent.Instructions[i].Instruction, ZydisMnemonicGetString(evt->ModuleAlertEvent.Instructions[i].Mnemonic), evt->ModuleAlertEvent.Instructions[i].Mnemonic);
+        currentRip += evt->ModuleAlertEvent.Instructions[i].Length;
+    }
 
-    return STATUS_SUCCESS;
+    BOOLEAN shouldAllow = !!(pProc->ProtectionInfo & 0x10);
+
+    LOG("[INFO] Current process has %s protection, will %s the writing!", shouldAllow ? "ALLOW" : "NOT ALLOW", shouldAllow ? "not block" : "block");
+
+    if (shouldAllow)
+    {
+        return STATUS_SUCCESS;
+    }
+
+    return STATUS_UNSUCCESSFUL;
 }
 
 VOID
@@ -138,7 +315,7 @@ MhvHandleModuleUnload(
     }
 
     // we are not interested in unprotected processes
-    if (!pProc->Protected)
+    if (!pProc->ProtectionInfo)
     {
         return;
     }
@@ -168,6 +345,8 @@ MhvHandleModuleUnload(
     RemoveEntryList(&pModFound->Link);
     
     LOG("[INFO] Module %s [%x %x] in Process %d is unloading", pModFound->Name, pModFound->Start, pModFound->End, pModFound->Process->Pid);
+
+    MhvCreateModuleUnloadEvent(pModFound);
 
     MhvDeleteHookByOwner(pModFound);
 
@@ -268,7 +447,7 @@ MhvHookModule(
         sectionRva += sizeof(IMAGE_SECTION_HEADER);
     }
 
-
+    //MhvFindFunctionByAddress(Module, NULL);
 
 }
 
@@ -317,10 +496,10 @@ MhvModReadyToHook(
     return STATUS_SUCCESS;
 }
 
-char* gProtectedModules[] = {
-    "\\Windows\\System32\\ntdll.dll",
-    "\\Windows\\System32\\kernel32.dll",
-    "\\Windows\\System32\\KernelBase.dll"
+MOD_PROTECTION_INFO gProtectedModules[] = {
+    {"\\Windows\\System32\\ntdll.dll", 0x1},
+    {"\\Windows\\System32\\kernel32.dll", 0x2},
+    {"\\Windows\\System32\\KernelBase.dll", 0x4}
 };
 
 
@@ -330,16 +509,19 @@ MhvIsModuleProtected(
     PMHVMODULE Module
 )
 {
-    if (!Process->Protected)
+    if (!Process->ProtectionInfo)
     {
         return FALSE;
     }
 
     for (DWORD i = 0; i < ARRAYSIZE(gProtectedModules); i++)
     {
-        if (strcmp(Module->Name, gProtectedModules[i]) == 0)
+        if (strcmp(Module->Name, gProtectedModules[i].Name) == 0)
         {
-            return TRUE;
+            if ((Process->ProtectionInfo & gProtectedModules[i].Protection) != 0)
+            {
+                return TRUE;
+            }
         }
     }
 
@@ -395,6 +577,8 @@ MhvInsertModuleInListIfNotExistent(
         LOG("[Process %s] Module %s just loaded at [%x -> %x]", Process->Name, pMod->Name, pMod->Start, pMod->End);
 
         InsertTailList(&(Process->Modules), &(pMod->Link));
+
+        MhvCreateModuleLoadEvent(pMod);
 
         // at this point we don't care anymore for this module if it is not protected...
         if (!MhvIsModuleProtected(Process, pMod))
@@ -541,7 +725,7 @@ MhvNewModuleLoaded(
         return;
     }
 
-    if (!pProc->Protected)
+    if (!pProc->ProtectionInfo)
     {
         return;
     }

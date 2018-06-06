@@ -43,15 +43,12 @@ MhvHandleEptViolation(
     QWORD realAddress;
     __vmx_vmread(0x2400, &realAddress);
 
-    //LOG("[INFO] on full rights ept: %x -> %x -> %x -> %x -> %x", pGuest.Vcpu->FullRightsEptPointer, pml4[0], pdpe[PDP_INDEX(phys)], pde[PD_INDEX(phys)], pte);
-
+    
     LIST_ENTRY* list = pGuest.EptHooksList.Flink;
-
 
     if (realAddress != phys)
     {
         // Vmware mangles the GLA ......
-
         linearAddr = NULL;
         phys = realAddress;
 
@@ -65,8 +62,6 @@ MhvHandleEptViolation(
     QWORD* pt = ((PEPT_PDE_ENTRY)CLEAN_PHYS_ADDR((QWORD)pde[PD_INDEX(phys)]))->PhysicalAddress;
 
     QWORD pte = pt[PT_INDEX(phys)];
-
-    //LOG("[INFO] Ept violation from %x on %x (%x, real %x), current EPT entry for gpa: %x -> %x -> %x -> %x -> %x qualification: %x", rip, linearAddr, phys, realAddress, eptp, pml4[0], pdpe[PDP_INDEX(phys)], pde[PD_INDEX(phys)], pte, qualification);
 
     MemDumpAllocStats();
 
@@ -95,7 +90,7 @@ MhvHandleEptViolation(
             //LOG("[INFO] calling preCallback");
             //LOG("[INFO] Calling PRECALLBACK on Hook @ %x with GLA: %x physical %x offset %x size %x flags %x", pHook, pHook->GuestLinearAddress, pHook->GuestPhysicalAddress, pHook->Offset, pHook->Size, pHook->Flags);
 
-            NTSTATUS status = pHook->PreActionCallback(Processor, pHook, rip, cr3, NULL);
+            NTSTATUS status = pHook->PreActionCallback(Processor, pHook, rip, cr3, phys);
 
             //LOG("[INFO] Pre callback returned %x", status);
 
@@ -126,8 +121,8 @@ MhvHandleEptViolation(
         QWORD rflags = 0;
         proc->LastInterruptDisabled = FALSE;
         
-        /*
-        __vmx_vmread(VMX_GUEST_RFLAGS, &rflags);
+        
+        /*__vmx_vmread(VMX_GUEST_RFLAGS, &rflags);
 
         if ((rflags & (1 << 9)) != 0)
         {

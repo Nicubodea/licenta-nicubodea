@@ -57,12 +57,16 @@ typedef struct _EVENT_MODULE_ALERT {
     long long Pid;
     EVENT_INSTRUCTION Instructions[10];
     DWORD NumberOfInstructions;
-
+    DWORD Action;
+    BYTE FunctionName[32];
 } EVENT_MODULE_ALERT, *PEVENT_MODULE_ALERT;
+
+
 
 typedef struct _EVENT {
     LIST_ENTRY Link;
     EVENTTYPE Type;
+    DWORD Protection;
     union {
         EVENT_PROCESS_CREATE ProcessCreateEvent;
         EVENT_PROCESS_TERMINATE ProcessTerminateEvent;

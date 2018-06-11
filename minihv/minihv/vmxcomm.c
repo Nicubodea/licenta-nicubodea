@@ -29,6 +29,7 @@ MhvHandleInterfaceComm(
     mapping = MhvTranslateVa(Processor->context._rdx, cr3, NULL);
     if (mapping == 0)
     {
+        LOG("[INFO] Given RDX %x not present in memory!", Processor->context._rdx);
         return STATUS_UNSUCCESSFUL;
     }
 

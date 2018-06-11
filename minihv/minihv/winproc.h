@@ -81,12 +81,12 @@ MhvReiterateProcessModules(
 
 );
 
-VOID
+NTSTATUS
 MhvInsertProcessInList(
     PPROCESOR Context
 );
 
-VOID
+NTSTATUS
 MhvDeleteProcessFromList(
     PPROCESOR Context
 );

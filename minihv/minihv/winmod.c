@@ -287,13 +287,17 @@ MhvModHandleWrite(
 
     if (shouldAllow)
     {
+        evt->ModuleAlertEvent.Action = mhvActionAllowed;
+
         return STATUS_SUCCESS_DISABLE_INTERRUPTS;
     }
+
+    evt->ModuleAlertEvent.Action = mhvActionNotAllowed;
 
     return STATUS_UNSUCCESSFUL;
 }
 
-VOID
+NTSTATUS
 MhvHandleModuleUnload(
     PPROCESOR Context
 )
@@ -311,13 +315,13 @@ MhvHandleModuleUnload(
     if (pProc == NULL)
     {
         //LOG("[ERROR] No process with CR3 found!");
-        return;
+        return STATUS_SUCCESS;
     }
 
     // we are not interested in unprotected processes
     if (!pProc->ProtectionInfo)
     {
-        return;
+        return STATUS_SUCCESS;
     }
 
     LIST_ENTRY* list = pProc->Modules.Flink;
@@ -339,7 +343,7 @@ MhvHandleModuleUnload(
 
     if (pModFound == NULL)
     {
-        return;
+        return STATUS_SUCCESS;
     }
     
     RemoveEntryList(&pModFound->Link);
@@ -355,6 +359,7 @@ MhvHandleModuleUnload(
     MemFreeContiguosMemory(pModFound->Name);
     MemFreeContiguosMemory(pModFound);
 
+    return STATUS_SUCCESS;
 }
 
 VOID
@@ -529,7 +534,7 @@ MhvIsModuleProtected(
 
 }
 
-VOID
+NTSTATUS
 MhvInsertModuleInListIfNotExistent(
     PMHVPROCESS Process,
     QWORD Start,
@@ -572,6 +577,9 @@ MhvInsertModuleInListIfNotExistent(
         pMod->End = End;
         pMod->Start = Start;
         pMod->Process = Process;
+
+       
+
         InitializeListHead(&pMod->Hooks);
 
         LOG("[Process %s] Module %s just loaded at [%x -> %x]", Process->Name, pMod->Name, pMod->Start, pMod->End);
@@ -583,7 +591,7 @@ MhvInsertModuleInListIfNotExistent(
         // at this point we don't care anymore for this module if it is not protected...
         if (!MhvIsModuleProtected(Process, pMod))
         {
-            return;
+            return STATUS_SUCCESS;
         }
 
         PBYTE pSig = MhvTranslateVa(pMod->Start, Process->Cr3, NULL);
@@ -592,7 +600,7 @@ MhvInsertModuleInListIfNotExistent(
         {
             LOG("[INFO] (proc %s, %d) Module @%x %x %s [%x %x] is ready to be hooked, headers in memory!", Process->Name, Process->Pid, pMod, pMod->Name, pMod->Start, pMod->End);
             MhvHookModule(pMod);
-            return;
+            return STATUS_SUCCESS;
         }
 
         PEPT_HOOK pHook = MhvCreateEptHook(pGuest.Vcpu,
@@ -609,12 +617,14 @@ MhvInsertModuleInListIfNotExistent(
         // we got to set the hook Owner to this current module so that we know that 
         pHook->Owner = pMod;
     }
+
+    return STATUS_SUCCESS;
 }
 
 
 BYTE nameString[0x1000];
 
-VOID
+NTSTATUS
 MhvGetVadName(
     PMMVAD_SHORT64 Vad,
     PMHVPROCESS Process,
@@ -625,18 +635,44 @@ MhvGetVadName(
     PBYTE ctlArea, fileObject;
     WORD nameLength;
     QWORD nameGva;
+    NTSTATUS status;
 
-    MhvMemRead(Vad->Subsection, 8, Cr3, &ctlArea);
+    status = MhvMemRead(Vad->Subsection, 8, Cr3, &ctlArea);
+    if (!NT_SUCCESS(status))
+    {
+        LOG("[ERROR] MhvMemRead failed at addres %x", Vad->Subsection);
+        return STATUS_SUCCESS;
+    }
 
-    MhvMemRead(ctlArea + 0x40, 8, Cr3, &fileObject);
+    status = MhvMemRead(ctlArea + 0x40, 8, Cr3, &fileObject);
+    if (!NT_SUCCESS(status))
+    {
+        LOG("[ERROR] MhvMemRead failed at addres %x", ctlArea + 0x40);
+        return STATUS_SUCCESS;
+    }
 
     fileObject = ((QWORD) fileObject) & 0xFFFFFFFFFFFFFFF0;
 
-    MhvMemRead(fileObject + 0x58, 2, Cr3, &nameLength);
+    status = MhvMemRead(fileObject + 0x58, 2, Cr3, &nameLength);
+    if (!NT_SUCCESS(status))
+    {
+        LOG("[ERROR] MhvMemRead failed at addres %x", fileObject + 0x58);
+        return STATUS_SUCCESS;
+    }
 
     MhvMemRead(fileObject + 0x60, 8, Cr3, &nameGva);
+    if (!NT_SUCCESS(status))
+    {
+        LOG("[ERROR] MhvMemRead failed at addres %x", fileObject + 0x60);
+        return STATUS_SUCCESS;
+    }
 
-    MhvMemRead(nameGva, nameLength, Cr3, nameString);
+    status = MhvMemRead(nameGva, nameLength, Cr3, nameString);
+    if (!NT_SUCCESS(status))
+    {
+        LOG("[ERROR] MhvMemRead failed at addres %x", nameGva);
+        return STATUS_SUCCESS;
+    }
 
     QWORD s1 = Vad->StartingVpn;
     QWORD s2 = Vad->StartingVpnHigh;
@@ -647,7 +683,9 @@ MhvGetVadName(
 
     QWORD finish = (f1 | (f2 << 32)) << 12;
 
-    MhvInsertModuleInListIfNotExistent(Process, start, finish, nameString, nameLength);
+    //LOG("[INFO] start %x end %x namelength %x", start, finish, nameLength);
+
+    return MhvInsertModuleInListIfNotExistent(Process, start, finish, nameString, nameLength);
 
 }
 
@@ -672,12 +710,17 @@ MhvIterateVadsRecursively(
     {
         currentCr3 = cr3;
     }
-
-    MhvMemRead(Node, sizeof(MMVAD_SHORT64), currentCr3, &pVad);
-
-    if (pVad.Left != 0)
+    NTSTATUS status;
+    status = MhvMemRead(Node, sizeof(MMVAD_SHORT64), currentCr3, &pVad);
+    if (!NT_SUCCESS(status))
     {
-        MhvIterateVadsRecursively(pVad.Left, Process);
+        LOG("[ERROR] MhvMemRead failed on reading %x", Node);
+        return;
+    }
+
+    if (pVad.Right != 0)
+    {
+        MhvIterateVadsRecursively(pVad.Right, Process);
     }
 
     if (pVad.VadFlags.VadType == 2)
@@ -685,10 +728,12 @@ MhvIterateVadsRecursively(
         MhvGetVadName(&pVad, Process, currentCr3);
     }
 
-    if (pVad.Right != 0)
+    if (pVad.Left != 0)
     {
-        MhvIterateVadsRecursively(pVad.Right, Process);
+        MhvIterateVadsRecursively(pVad.Left, Process);
     }
+
+
 }
 
 VOID
@@ -700,11 +745,12 @@ MhvIterateVadList(
 }
 
 
-VOID
+NTSTATUS
 MhvNewModuleLoaded(
     PPROCESOR Context
 )
 {
+    NTSTATUS status;
     QWORD cr3;
     __vmx_vmread(VMX_GUEST_CR3, &cr3);
 
@@ -722,18 +768,25 @@ MhvNewModuleLoaded(
     if (NULL == pProc)
     {
         // probably process not yet loaded
-        return;
+        return STATUS_SUCCESS;
     }
 
     if (!pProc->ProtectionInfo)
     {
-        return;
+        return STATUS_SUCCESS;
     }
 
-    MhvMemRead(Context->context._rcx, sizeof(MMVAD_SHORT64), currentCr3, &pVad);
+    status = MhvMemRead(Context->context._rcx, sizeof(MMVAD_SHORT64), currentCr3, &pVad);
+    if (!NT_SUCCESS(status))
+    {
+        LOG("[ERROR] MhvMemRead failed on address %x", Context->context._rcx);
+        return STATUS_SUCCESS;
+    }
 
     if (pVad.VadFlags.VadType == 2)
     {
-        MhvGetVadName(&pVad, pProc, currentCr3);
-    }  
+        return MhvGetVadName(&pVad, pProc, currentCr3);
+    }
+    
+    return STATUS_SUCCESS;
 }

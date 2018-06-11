@@ -1243,6 +1243,7 @@ void MhvInitHook() {
 void MhvHandleVmCall(DWORD procId, QWORD rip)
 {
     
+    QWORD newrip = 0;
     NTSTATUS status;
     status = MhvVerifyIfHookAndNotify(rip);
     if (status == STATUS_SUCCESS)
@@ -1339,7 +1340,9 @@ void MhvHandleVmCall(DWORD procId, QWORD rip)
     __vmx_vmwrite(VMX_ENTRY_EXCEPTION_ERROR, 0);
     return;
 cleanup_and_exit:
-    __vmx_vmwrite(VMX_GUEST_RIP, rip + 3);
+    // rip could have been changed in callbacks, so get the new rip
+    __vmx_vmread(VMX_GUEST_RIP, &newrip);
+    __vmx_vmwrite(VMX_GUEST_RIP, newrip + 3);
     return;
 }
 

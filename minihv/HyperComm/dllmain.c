@@ -17,6 +17,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 		break;
 	}
 	return TRUE;
+
 }
 
 extern
@@ -35,9 +36,13 @@ HyperCommAddProtectionToProcess(
 {
     PPROTECTION_INFO pInfo = (PPROTECTION_INFO)VirtualAlloc(NULL, sizeof(PROTECTION_INFO), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
-    ProcessName[14] = 0;
-
+    //if (strlen(ProcessName) > 14)
+    //{
+        //ProcessName[14] = 0;
+    //}
     strcpy((char*)pInfo->Name, ProcessName);
+
+    pInfo->Name[14] = 0;
 
     pInfo->Protection = Mask;
 

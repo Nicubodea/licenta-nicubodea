@@ -7,6 +7,8 @@ LIST_ENTRY gExceptions;
 BOOLEAN bInitialized = FALSE;
 BOOLEAN bExceptInitialized = FALSE;
 
+#define min(a,b) (a>b)?(b):(a)
+
 PEVENT
 MhvCreateProcessCreationEvent(
     PMHVPROCESS Process
@@ -28,6 +30,8 @@ MhvCreateProcessCreationEvent(
     pEvent->ProcessCreateEvent.Eprocess = Process->Eprocess;
     memcpy_s(pEvent->ProcessCreateEvent.Name, Process->Name, 16);
     pEvent->ProcessCreateEvent.Pid = Process->Pid;
+
+    pEvent->Protection = Process->ProtectionInfo;
 
     MhvEnqueueEvent(pEvent);
     
@@ -55,6 +59,8 @@ MhvCreateProcessTerminationEvent(
     memcpy_s(pEvent->ProcessTerminateEvent.Name, Process->Name, 16);
     pEvent->ProcessTerminateEvent.Pid = Process->Pid;
 
+    pEvent->Protection = Process->ProtectionInfo;
+
     MhvEnqueueEvent(pEvent);
 
     return pEvent;
@@ -81,7 +87,9 @@ MhvCreateModuleLoadEvent(
 
     pEvent->ModuleLoadEvent.Module.Start = Module->Start;
     pEvent->ModuleLoadEvent.Module.End = Module->End;
-    memcpy_s(pEvent->ModuleLoadEvent.Module.Name, Module->Name, strlen(Module->Name));
+    memcpy_s(pEvent->ModuleLoadEvent.Module.Name, Module->Name, min(strlen(Module->Name),256));
+
+    pEvent->Protection = Module->Process->ProtectionInfo;
 
     MhvEnqueueEvent(pEvent);
 
@@ -110,6 +118,9 @@ MhvCreateModuleUnloadEvent(
     pEvent->ModuleUnloadEvent.Module.Start = Module->Start;
     pEvent->ModuleUnloadEvent.Module.End = Module->End;
     memcpy_s(pEvent->ModuleUnloadEvent.Module.Name, Module->Name, strlen(Module->Name));
+
+
+    pEvent->Protection = Module->Process->ProtectionInfo;
 
     MhvEnqueueEvent(pEvent);
 
@@ -173,7 +184,7 @@ MhvCreateModuleAlert(
     DWORD i;
     for (i = 0; i < 10; i++)
     {
-        if ((currentRip & (~0xFFF)) != (Rip & (~0xFFF)))
+        if (((currentRip + 16) & (~0xFFF)) != (Rip & (~0xFFF)))
         {
             break;
         }
@@ -218,6 +229,8 @@ MhvCreateModuleAlert(
     }
 
     pEvent->ModuleAlertEvent.NumberOfInstructions = i;
+
+    pEvent->Protection = Victim->Process->ProtectionInfo;
     
     MhvEnqueueEvent(pEvent);
 
@@ -381,5 +394,7 @@ MhvExceptNewAlertRequest(
     LOG("[INFO] Requested to add new exception on %s from %s to %s", pException->ProcessName, pException->AttackerName, pException->VictimName);
 
     InsertTailList(&gExceptions, &pException->Link);
+
+    return STATUS_SUCCESS;
 
 }

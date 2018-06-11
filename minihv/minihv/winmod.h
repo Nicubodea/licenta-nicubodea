@@ -52,7 +52,7 @@ typedef struct _MMVAD_SHORT64
 } MMVAD_SHORT64, *PMMVAD_SHORT64;
 
 
-VOID
+NTSTATUS
 MhvNewModuleLoaded(
     PPROCESOR Context
 );
@@ -62,7 +62,7 @@ MhvIterateVadList(
     struct _MHVPROCESS* Process
 );
 
-VOID
+NTSTATUS
 MhvHandleModuleUnload(
     PPROCESOR Context
 );

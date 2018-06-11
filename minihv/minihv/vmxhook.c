@@ -140,7 +140,7 @@ API_SIGNATURE gHookSignatures[NR_OF_SIGNATURES] = {
     
     {
         "PspProcessDelete",
-        0x63,
+        0x62,
         {
             0x48, 0x89, 0x5c, 0x24, 0x200,                   // mov     qword ptr [rsp+10h],rbx
             0x48, 0x89, 0x74, 0x24, 0x200,                   // mov     qword ptr [rsp+18h],rsi
@@ -245,7 +245,7 @@ MhvEstablishApiHook(
     writeAddr[0] = 0x0f;
     writeAddr[1] = 0x01;
     writeAddr[2] = 0xc1;
-    writeAddr[3] = 0x90;
+    writeAddr[3] = 0xc3;
     writeAddr[4] = 0x90;
 }
 
@@ -364,15 +364,32 @@ MhvVerifyIfHookAndNotify(
     DWORD i = 0;
     DWORD procId;
     PLIST_ENTRY list = pGuest.ApiHookList.Flink;
-
+    NTSTATUS status;
     while (list != &pGuest.ApiHookList)
     {
         PHOOK pHook = CONTAINING_RECORD(list, HOOK, Link);
         
         if (pHook->Rip == Rip)
         {
-            pHook->CalledCallback(&gProcessors[MhvGetProcessorId()]);
-            pHook->Callback(&gProcessors[MhvGetProcessorId()]);
+            
+            status = pHook->CalledCallback(&gProcessors[MhvGetProcessorId()]);
+
+            if (status == STATUS_SUCCESS)
+            {
+                pHook->Callback(&gProcessors[MhvGetProcessorId()]);
+
+                QWORD rip = 0;
+                __vmx_vmread(VMX_GUEST_RIP, &rip);
+                // hackest hack ever
+                rip++;
+                __vmx_vmwrite(VMX_GUEST_RIP, rip);
+
+             
+            }
+            else
+            {
+                pGuest.Vcpu->context._rax = STATUS_ACCESS_DENIED;
+            }
             return STATUS_SUCCESS;
         }
         list = list->Flink;

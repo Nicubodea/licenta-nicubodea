@@ -12,6 +12,11 @@ typedef enum _EVENTTYPE {
     mhvEventModuleAlert
 } EVENTTYPE;
 
+typedef enum _ALERT_ACTION {
+    mhvActionAllowed,
+    mhvActionNotAllowed
+} ALERT_ACTION;
+
 typedef struct _EVENT_PROCESS_CREATE {
     BYTE Name[16];
     QWORD Cr3;
@@ -59,12 +64,13 @@ typedef struct _EVENT_MODULE_ALERT {
     QWORD Pid;
     EVENT_INSTRUCTION Instructions[10];
     DWORD NumberOfInstructions;
-
+    ALERT_ACTION Action;
 } EVENT_MODULE_ALERT, *PEVENT_MODULE_ALERT;
 
 typedef struct _EVENT {
     LIST_ENTRY Link;
     EVENTTYPE Type;
+    DWORD     Protection;
     union {
         EVENT_PROCESS_CREATE ProcessCreateEvent;
         EVENT_PROCESS_TERMINATE ProcessTerminateEvent;

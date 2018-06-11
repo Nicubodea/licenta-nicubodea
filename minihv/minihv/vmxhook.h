@@ -18,7 +18,7 @@ MhvVerifyIfHookAndNotify(
     QWORD Rip
 );
 
-typedef VOID
+typedef NTSTATUS
 (*PEMU_Callback)(
     PPROCESOR Processor
     );

@@ -71,7 +71,7 @@ MhvProtectProcessRequest(
 }
 
 
-VOID
+NTSTATUS
 MhvInsertProcessInList(
     PPROCESOR Context
 ) 
@@ -129,12 +129,21 @@ MhvInsertProcessInList(
 
     }
 
+    if (strcmp(newProcess->Name, "introum_detour") == 0)
+    {
+        MemFreeContiguosMemory(newProcess);
+
+        return STATUS_UNSUCCESSFUL;
+    }
+
 
     InitializeListHead(&newProcess->Modules);
 
     InsertTailList(&pGuest.ProcessList, &newProcess->Link);
 
     LOG("[WINPROC] Process %s, pid %d with cr3 %x just started! %s", newProcess->Name, newProcess->Pid, newProcess->Cr3, newProcess->ProtectionInfo ? "PROTECTED" : "NOT PROTECTED");
+    
+    MhvCreateProcessCreationEvent(newProcess);
 
     if (newProcess->ProtectionInfo)
     {
@@ -143,12 +152,14 @@ MhvInsertProcessInList(
 
     gNumberOfActiveProcesses++;
 
-    MhvCreateProcessCreationEvent(newProcess);
+   
+
+    return STATUS_SUCCESS;
 
 }
 
 
-VOID
+NTSTATUS
 MhvDeleteProcessFromList(
     PPROCESOR Context
 )
@@ -162,7 +173,7 @@ MhvDeleteProcessFromList(
     if (pProc == NULL)
     {
         LOG("[ERROR] Process deleted but does not exist in our list...");
-        return;
+        return STATUS_SUCCESS;
     }
 
     LIST_ENTRY * list = pProc->Modules.Flink;
@@ -190,6 +201,8 @@ MhvDeleteProcessFromList(
     MemFreeContiguosMemory(pProc);
 
     gNumberOfActiveProcesses--;
+
+    return STATUS_SUCCESS;
 
 }
 

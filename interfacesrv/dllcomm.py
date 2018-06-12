@@ -249,6 +249,10 @@ class DllHandler:
     def add_protection_process(self, process_name, mask):
         self.dll.HyperCommAddProtectionToProcess(process_name, mask)
 
+    def inject_dll(self, pid):
+        param = c_int(pid)
+        self.dll.HyperCommInjectDLL(param)
+
     def add_alert_exception(self, evt):
         #print(evt)
         self.dll.HyperCommExceptAlert(byref(evt))

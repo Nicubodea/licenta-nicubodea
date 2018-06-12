@@ -2,6 +2,8 @@ from logichandler import *
 
 lh = LogicHandler()
 
+
+
 while True:
     x = input()
 

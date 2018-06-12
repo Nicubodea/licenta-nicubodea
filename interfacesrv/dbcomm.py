@@ -1,175 +1,172 @@
 import sqlite3
 import datetime
 import traceback
+import threading
+
 class DBHandler:
+
+    class _DBHandler:
+        def __init__(self):
+            conn = sqlite3.connect("mhvev.db")
+
+            self.glock = threading.Lock()
+
+            try:
+                conn.execute('''CREATE TABLE PROCESS_TIMELINE
+                                     (ID INTEGER PRIMARY KEY    AUTOINCREMENT,
+                                     PROCESSNAME        TEXT,
+                                     PROCESSID          INTEGER     NOT NULL,
+                                     COMPLETED          INTEGER     NOT NULL,
+                                     DATE_STARTED       TIMESTAMP,
+                                     DATE_COMPLETED     TIMESTAMP,
+                                     SESSION            INT,
+                                     STATE              INT
+                                     );''')
+            except Exception as e:
+                print(e)
+
+            try:
+                conn.execute('''CREATE TABLE ALERT_TIMELINE
+                                     (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
+                                     ALERT_ID       INTEGER,
+                                     EXCEPTED       INTEGER,
+                                     SESSION        INT,
+                                     TIMELINE_ID    INTEGER
+                                     );''')
+            except Exception as e:
+                print(e)
+
+            try:
+                conn.execute('''CREATE TABLE PROCESS_TIMELINE_EVENT
+                                     (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
+                                     ID_TIMELINE INTEGER NOT NULL,
+                                     EVENTTYPE INTEGER,
+                                     EVENT_ID INTEGER NOT NULL
+                                     );''')
+            except Exception as e:
+                print(e)
+
+            try:
+                conn.execute('''CREATE TABLE PROCESS_START_EVENT
+                                     (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
+                                    NAME    TEXT,
+                                    PID     INTEGER,
+                                    CR3     INTEGER,
+                                    EPROCESS INTEGER,
+                                    PROTECTION INTEGER,
+                                     DATE_EVENT TIMESTAMP
+                                     );''')
+            except Exception as e:
+                print(e)
+
+            try:
+                conn.execute('''CREATE TABLE PROCESS_TERMINATE_EVENT
+                                     (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
+                                    NAME    TEXT,
+                                    PID     INTEGER,
+                                    CR3     INTEGER,
+                                    EPROCESS INTEGER,
+                                    PROTECTION INTEGER,
+                                     DATE_EVENT TIMESTAMP
+                                     );''')
+            except Exception as e:
+                print(e)
+
+
+            try:
+                conn.execute('''CREATE TABLE MODULE_LOAD_EVENT
+                                     (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
+                                     NAME       TEXT,
+                                     START      INTEGER,
+                                     END        INTEGER,
+                                     PROCESSNAME TEXT,
+                                     PID         TEXT,
+                                     PROTECTED   INTEGER,
+                                     DATE_EVENT TIMESTAMP
+                                     );''')
+            except Exception as e:
+                print(e)
+
+            try:
+                conn.execute('''CREATE TABLE MODULE_UNLOAD_EVENT
+                                     (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
+                                     NAME       TEXT,
+                                     MODSTART      INTEGER,
+                                     MODEND        INTEGER,
+                                     PROCESSNAME TEXT,
+                                     PID         TEXT,
+                                     PROTECTED   INTEGER,
+                                     DATE_EVENT TIMESTAMP
+                                     );''')
+            except Exception as e:
+                print(e)
+
+
+            try:
+                conn.execute('''CREATE TABLE MODULE_ALERT_EVENT
+                                     (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
+                                      ATTACKERNAME TEXT,
+                                      ATTACKERSTART INTEGER,
+                                      ATTACKEREND INTEGER,
+                                      VICTIMNAME TEXT,
+                                      VICTIMSTART INTEGER,
+                                      VICTIMEND INTEGER,
+                                      PROCESSNAME TEXT,
+                                      PROCESSPID INTEGER,
+                                      RIP INTEGER,
+                                      ADDRESS INTEGER,
+                                      FUNCTIONNAME TEXT,
+                                      ACTION INTEGER,
+                                      PROTECTION INTEGEER,
+                                     DATE_EVENT TIMESTAMP
+                                     );''')
+            except Exception as e:
+                print(e)
+
+            try:
+                conn.execute('''CREATE TABLE MODULE_ALERT_INSTRUCTION
+                                     (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
+                                      MNEMONIC INTEGER,
+                                      INSTRUX  TEXT,
+                                      LENGTH   INTEGER,
+                                      ALERT_ID INTEGER
+                                     );''')
+            except Exception as e:
+                print(e)
+
+            try:
+                conn.execute('''CREATE TABLE PROTECTED_PROCESSES
+                                     (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
+                                        PROCESSNAME TEXT,
+                                        MASK        INTEGER
+                                     );''')
+            except Exception as e:
+                print(e)
+
+            try:
+                conn.execute('''CREATE TABLE EXCEPTIONS
+                                     (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
+                                        ALERT_ID INTEGER
+                                     );''')
+            except Exception as e:
+                print(e)
+
+            try:
+                conn.execute('''CREATE TABLE BLOCKED_DLLS
+                                     (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
+                                        DLL_NAME TEXT
+                                     );''')
+            except Exception as e:
+                print(e)
+
+            conn.close()
+
+    instance = None
     def __init__(self):
-        self.create_db_schema()
+        if DBHandler.instance is None:
+            DBHandler.instance = DBHandler._DBHandler()
 
-    def create_db_schema(self):
-        conn = sqlite3.connect("mhvev.db")
-
-        try:
-            conn.execute('''CREATE TABLE PROCESS_TIMELINE
-                                 (ID INTEGER PRIMARY KEY    AUTOINCREMENT,
-                                 PROCESSNAME        TEXT,
-                                 PROCESSID          INTEGER     NOT NULL,
-                                 COMPLETED          INTEGER     NOT NULL,
-                                 DATE_STARTED       TIMESTAMP,
-                                 DATE_COMPLETED     TIMESTAMP,
-                                 SESSION            INT,
-                                 STATE              INT
-                                 );''')
-        except Exception as e:
-            print(e)
-
-        try:
-            conn.execute('''CREATE TABLE ALERT_TIMELINE
-                                 (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
-                                 ALERT_ID       INTEGER,
-                                 EXCEPTED       INTEGER,
-                                 SESSION        INT
-                                 );''')
-        except Exception as e:
-            print(e)
-
-        try:
-            conn.execute('''CREATE TABLE PROCESS_TIMELINE_EVENT
-                                 (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
-                                 ID_TIMELINE INTEGER NOT NULL,
-                                 EVENTTYPE INTEGER,
-                                 EVENT_ID INTEGER NOT NULL
-                                 );''')
-        except Exception as e:
-            print(e)
-
-        try:
-            conn.execute('''CREATE TABLE ALERT_TIMELINE_EVENT
-                                 (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
-                                 ID_TIMELINE INTEGER NOT NULL,
-                                 EVENTTYPE INTEGER,
-                                 EVENT_ID INTEGER NOT NULL
-                                 );''')
-        except Exception as e:
-            print(e)
-
-        try:
-            conn.execute('''CREATE TABLE PROCESS_START_EVENT
-                                 (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
-                                NAME    TEXT,
-                                PID     INTEGER,
-                                CR3     INTEGER,
-                                EPROCESS INTEGER,
-                                PROTECTION INTEGER,
-                                 DATE_EVENT TIMESTAMP
-                                 );''')
-        except Exception as e:
-            print(e)
-
-        try:
-            conn.execute('''CREATE TABLE PROCESS_TERMINATE_EVENT
-                                 (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
-                                NAME    TEXT,
-                                PID     INTEGER,
-                                CR3     INTEGER,
-                                EPROCESS INTEGER,
-                                PROTECTION INTEGER,
-                                 DATE_EVENT TIMESTAMP
-                                 );''')
-        except Exception as e:
-            print(e)
-
-
-        try:
-            conn.execute('''CREATE TABLE MODULE_LOAD_EVENT
-                                 (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
-                                 NAME       TEXT,
-                                 START      INTEGER,
-                                 END        INTEGER,
-                                 PROCESSNAME TEXT,
-                                 PID         TEXT,
-                                 PROTECTED   INTEGER,
-                                 DATE_EVENT TIMESTAMP
-                                 );''')
-        except Exception as e:
-            print(e)
-
-        try:
-            conn.execute('''CREATE TABLE MODULE_UNLOAD_EVENT
-                                 (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
-                                 NAME       TEXT,
-                                 MODSTART      INTEGER,
-                                 MODEND        INTEGER,
-                                 PROCESSNAME TEXT,
-                                 PID         TEXT,
-                                 PROTECTED   INTEGER,
-                                 DATE_EVENT TIMESTAMP
-                                 );''')
-        except Exception as e:
-            print(e)
-
-
-        try:
-            conn.execute('''CREATE TABLE MODULE_ALERT_EVENT
-                                 (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
-                                  ATTACKERNAME TEXT,
-                                  ATTACKERSTART INTEGER,
-                                  ATTACKEREND INTEGER,
-                                  VICTIMNAME TEXT,
-                                  VICTIMSTART INTEGER,
-                                  VICTIMEND INTEGER,
-                                  PROCESSNAME TEXT,
-                                  PROCESSPID INTEGER,
-                                  RIP INTEGER,
-                                  ADDRESS INTEGER,
-                                  FUNCTIONNAME TEXT,
-                                  ACTION INTEGER,
-                                  PROTECTION INTEGEER,
-                                 DATE_EVENT TIMESTAMP
-                                 );''')
-        except Exception as e:
-            print(e)
-
-        try:
-            conn.execute('''CREATE TABLE MODULE_ALERT_INSTRUCTION
-                                 (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
-                                  MNEMONIC INTEGER,
-                                  INSTRUX  TEXT,
-                                  LENGTH   INTEGER,
-                                  ALERT_ID INTEGER
-                                 );''')
-        except Exception as e:
-            print(e)
-
-        try:
-            conn.execute('''CREATE TABLE PROTECTED_PROCESSES
-                                 (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
-                                    PROCESSNAME TEXT,
-                                    MASK        INTEGER
-                                 );''')
-        except Exception as e:
-            print(e)
-
-        try:
-            conn.execute('''CREATE TABLE EXCEPTIONS
-                                 (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
-                                    ALERT_ID INTEGER
-                                 );''')
-        except Exception as e:
-            print(e)
-
-        try:
-            conn.execute('''CREATE TABLE BLOCKED_DLLS
-                                 (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
-                                    DLL_NAME TEXT,
-                                    PROCESSNAME TEXT
-                                 );''')
-        except Exception as e:
-            print(e)
-
-        conn.close()
-
-
-    def _timeline_to_dict(self, id, processname, pid, completed, date_started, date_ended, session, evts):
+    def _timeline_to_dict(self, id, processname, pid, completed, date_started, date_ended, session, state, evts):
         return {
             "id": id,
             "process": processname,
@@ -178,7 +175,8 @@ class DBHandler:
             "date_started": date_started,
             "date_ended": date_ended,
             "session": session,
-            "events": evts
+            "events": evts,
+            "state": state
         }
 
     def _proc_create_event_to_dict(self, id, name, pid, cr3, eprocess, protection, event_date):
@@ -265,7 +263,7 @@ class DBHandler:
             "alert": alert,
             "excepted": excepted,
             "session": session,
-            "events": evts
+            "timeline_id": evts
         }
 
     ############################################################################
@@ -274,19 +272,25 @@ class DBHandler:
     ####################                                    ####################
     ############################################################################
     def create_new_timeline(self, processname, pid, session, state):
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
+        ans = None
         try:
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO PROCESS_TIMELINE(PROCESSNAME, PROCESSID, COMPLETED, DATE_STARTED, SESSION) VALUES (?,?,?,?,?,?)", (processname, pid, 0, datetime.datetime.now(), session, state))
+            cursor.execute("INSERT INTO PROCESS_TIMELINE(PROCESSNAME, PROCESSID, COMPLETED, DATE_STARTED, SESSION, STATE) VALUES (?,?,?,?,?,?)", (processname, pid, 0, datetime.datetime.now(), session, state))
             conn.commit()
-            return cursor.lastrowid
+            ans = cursor.lastrowid
         except:
             traceback.print_exc()
             conn.rollback()
 
         conn.close()
+        DBHandler.instance.glock.release()
+        return ans
 
-    def update_timeline_state(self, timeline_id, new_state):
+    def update_timeline_state(self, timeline_id, new_state, acquired=False):
+        if not acquired:
+            DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
 
         try:
@@ -300,11 +304,15 @@ class DBHandler:
             conn.rollback()
 
         conn.close()
+        if not acquired:
+            DBHandler.instance.glock.release()
 
-    def get_timeline(self, timeline_id):
+    def get_timeline(self, timeline_id, acquired=False):
         # will also put all of the events in the returned timeline
+        if not acquired:
+            DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
-
+        ans = None
         try:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM PROCESS_TIMELINE WHERE ID = ?", (timeline_id,))
@@ -339,15 +347,18 @@ class DBHandler:
                         instructions.append(self._instruction_to_dict(instrux[1], instrux[2], instrux[3]))
                     evts.append(self._mod_alert_event_to_dict(row_1[0], row_1[1], row_1[2], row_1[3], row_1[4], row_1[5], row_1[6], row_1[7], row_1[8], row_1[9], row_1[10], row_1[11], row_1[12], row_1[13], instructions))
 
-            return self._timeline_to_dict(row[0], row[1], row[2], row[3], row[4], row[5], row[6], evts)
+            ans = self._timeline_to_dict(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], evts)
         except:
             print(timeline_id)
             traceback.print_exc()
             conn.rollback()
 
         conn.close()
-
+        if not acquired:
+            DBHandler.instance.glock.release()
+        return ans
     def complete_timeline(self, timeline_id):
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
 
         try:
@@ -360,8 +371,10 @@ class DBHandler:
             conn.rollback()
 
         conn.close()
+        DBHandler.instance.glock.release()
 
     def complete_all_timelines(self):
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
 
         try:
@@ -375,26 +388,29 @@ class DBHandler:
             conn.rollback()
 
         conn.close()
+        DBHandler.instance.glock.release()
 
     def get_all_timelines_grouped_by_session(self):
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
-
+        ans = None
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM PROCESS_TIMELINE")
+            cursor.execute("SELECT * FROM PROCESS_TIMELINE ORDER BY ID DESC")
 
             timelines = []
 
             for row in cursor:
-                timelines.append(self._timeline_to_dict(row[0], row[1], row[2], row[3], row[4], row[5], row[6], None))
-            return timelines
+                timelines.append(self._timeline_to_dict(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], None))
+            ans = timelines
         except:
 
             traceback.print_exc()
             conn.rollback()
 
         conn.close()
-
+        DBHandler.instance.glock.release()
+        return ans
 
     ############################################################################
     ####################                                    ####################
@@ -406,20 +422,16 @@ class DBHandler:
         # get all events from timeline_id
         # for every event create a mirroring event in ALERT_EVENTS table
         # get alert
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
 
         try:
             cursor = conn.cursor()
 
-            alert = self.get_alert_by_alert_id(alert_id)
-            current_timeline_id = self.get_timeline_id_for_event(alert["pid"])
-            timeline = self.get_timeline(current_timeline_id)
+            alert = self.get_alert_by_alert_id(alert_id, True)
+            current_timeline_id = self.get_timeline_id_for_event(alert["pid"], True)
 
-            cursor.execute("INSERT INTO ALERT_TIMELINE(ALERT_ID, EXCEPTED, SESSION) VALUES (?, ?, ?)", (alert_id, 0, session))
-            alert_timeline_id = cursor.lastrowid
-
-            for event in timeline["events"]:
-                cursor.execute("INSERT INTO ALERT_TIMELINE_EVENT(ID_TIMELINE, EVENTTYPE, EVENT_ID) VALUES(?, ?, ?)", (alert_timeline_id, event["type"], event["id"]))
+            cursor.execute("INSERT INTO ALERT_TIMELINE(ALERT_ID, EXCEPTED, SESSION, TIMELINE_ID) VALUES (?, ?, ?, ?)", (alert_id, 0, session, current_timeline_id))
 
             conn.commit()
         except:
@@ -428,85 +440,59 @@ class DBHandler:
             conn.rollback()
 
         conn.close()
+        DBHandler.instance.glock.release()
 
     def get_alert_timeline(self, alert_timeline_id):
         # will also put all of the events in the returned timeline
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
-
+        ans = None
         try:
-            lastalert = None
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM ALERT_TIMELINE WHERE ID = ?", (alert_timeline_id,))
             row = cursor.fetchone()
-            cursor.execute("SELECT * FROM ALERT_TIMELINE_EVENT WHERE ID_TIMELINE = ?", (alert_timeline_id,))
-            cursor2 = conn.cursor()
-            cursor3 = conn.cursor()
-            evts = []
-            for current in cursor:
-                if int(current[2]) == 0:
-                    cursor2.execute("SELECT * FROM PROCESS_START_EVENT WHERE ID = ?", (current[3],))
-                    row_1 = cursor2.fetchone()
-                    evts.append(
-                        self._proc_create_event_to_dict(row_1[0], row_1[1], row_1[2], row_1[3], row_1[4], row_1[5],
-                                                        row_1[6]))
-                elif int(current[2]) == 1:
-                    cursor2.execute("SELECT * FROM PROCESS_TERMINATE_EVENT WHERE ID = ?", (current[3],))
-                    row_1 = cursor2.fetchone()
-                    evts.append(
-                        self._proc_terminate_event_to_dict(row_1[0], row_1[1], row_1[2], row_1[3], row_1[4], row_1[5],
-                                                           row_1[6]))
-                elif int(current[2]) == 2:
-                    cursor2.execute("SELECT * FROM MODULE_LOAD_EVENT WHERE ID = ?", (current[3],))
-                    row_1 = cursor2.fetchone()
-                    evts.append(self._mod_load_event_to_dict(row_1[0], row_1[1], row_1[2], row_1[3], row_1[4], row_1[5],
-                                                             row_1[6], row_1[7]))
-                elif int(current[2]) == 3:
-                    cursor2.execute("SELECT * FROM MODULE_UNLOAD_EVENT WHERE ID = ?", (current[3],))
-                    row_1 = cursor2.fetchone()
-                    evts.append(
-                        self._mod_unload_event_to_dict(row_1[0], row_1[1], row_1[2], row_1[3], row_1[4], row_1[5],
-                                                       row_1[6], row_1[7]))
-                elif int(current[2]) == 4:
-                    cursor2.execute("SELECT * FROM MODULE_ALERT_EVENT WHERE ID = ?", (current[3],))
-                    row_1 = cursor2.fetchone()
-                    instructions = []
-                    cursor3.execute("SELECT * FROM MODULE_ALERT_INSTRUCTION WHERE ALERT_ID = ?", (current[3],))
-                    for instrux in cursor3:
-                        instructions.append(self._instruction_to_dict(instrux[1], instrux[2], instrux[3]))
-                    lastalert = self._mod_alert_event_to_dict(row_1[0], row_1[1], row_1[2], row_1[3], row_1[4], row_1[5],
-                                                      row_1[6], row_1[7], row_1[8], row_1[9], row_1[10], row_1[11],
-                                                      row_1[12], row_1[13], instructions)
-                    evts.append(lastalert)
 
-            return self._alert_timeline_to_dict(row[0], lastalert, row[2], row[3], evts)
+            cursor.execute("SELECT * FROM MODULE_ALERT_EVENT WHERE ID = ?", (row[1],))
+            row_1 = cursor.fetchone()
+            instructions = []
+            cursor.execute("SELECT * FROM MODULE_ALERT_INSTRUCTION WHERE ALERT_ID = ?", (row[1],))
+            for instrux in cursor:
+                instructions.append(self._instruction_to_dict(instrux[1], instrux[2], instrux[3]))
+            lastalert = self._mod_alert_event_to_dict(row_1[0], row_1[1], row_1[2], row_1[3], row_1[4], row_1[5],
+                                              row_1[6], row_1[7], row_1[8], row_1[9], row_1[10], row_1[11],
+                                              row_1[12], row_1[13], instructions)
+
+            ans = self._alert_timeline_to_dict(row[0], lastalert, row[2], row[3], row[4])
         except:
 
             traceback.print_exc()
             conn.rollback()
 
         conn.close()
+        DBHandler.instance.glock.release()
+        return ans
 
     def get_all_alert_timelines_grouped_by_session(self):
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
-
+        ans = None
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM ALERT_TIMELINE")
+            cursor.execute("SELECT * FROM ALERT_TIMELINE ORDER BY ID DESC")
 
             timelines = []
-
-
             for row in cursor:
-                alert = self.get_alert_by_alert_id(row[1])
-                timelines.append(self._alert_timeline_to_dict(row[0], alert, row[2], row[3], None))
-            return timelines
+                alert = self.get_alert_by_alert_id(row[1], acquired=True)
+                timelines.append(self._alert_timeline_to_dict(row[0], alert, row[2], row[3], row[4]))
+            ans = timelines
         except:
 
             traceback.print_exc()
             conn.rollback()
 
         conn.close()
-
+        DBHandler.instance.glock.release()
+        return ans
     ############################################################################
     ####################                                    ####################
     ####################         UTILS                      ####################
@@ -514,28 +500,14 @@ class DBHandler:
     ############################################################################
 
     def get_current_session(self):
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
-
+        ans = 0
         try:
             cursor = conn.cursor()
             cursor.execute("SELECT MAX(SESSION) FROM PROCESS_TIMELINE")
 
-            return cursor.fetchone()[0]+1
-
-        except:
-
-            traceback.print_exc()
-            conn.rollback()
-            return 0
-
-    def get_timeline_id_for_event(self, pid):
-        conn = sqlite3.connect("mhvev.db")
-
-        try:
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM PROCESS_TIMELINE WHERE COMPLETED = ? AND PROCESSID = ?", (0, pid))
-
-            return cursor.fetchone()[0]
+            ans = cursor.fetchone()[0]+1
 
         except:
 
@@ -543,7 +515,29 @@ class DBHandler:
             conn.rollback()
 
         conn.close()
+        DBHandler.instance.glock.release()
+        return ans
 
+    def get_timeline_id_for_event(self, pid, acquired = False):
+        if not acquired:
+            DBHandler.instance.glock.acquire()
+        conn = sqlite3.connect("mhvev.db")
+        ans = None
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM PROCESS_TIMELINE WHERE COMPLETED = ? AND PROCESSID = ?", (0, pid))
+
+            ans = cursor.fetchone()[0]
+
+        except:
+
+            traceback.print_exc()
+            conn.rollback()
+
+        conn.close()
+        if not acquired:
+            DBHandler.instance.glock.release()
+        return ans
     ############################################################################
     ####################                                    ####################
     ####################         EVENTS                     ####################
@@ -566,7 +560,9 @@ class DBHandler:
         :param timeline_id:
         :return:
         """
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
+        ans = None
         try:
             cursor = conn.cursor()
             cursor.execute(
@@ -581,16 +577,19 @@ class DBHandler:
             )
 
             conn.commit()
-            return last_id
+            ans = last_id
         except:
 
             traceback.print_exc()
             conn.rollback()
 
         conn.close()
-
+        DBHandler.instance.glock.release()
+        return ans
     def create_terminate_process_event(self, name, pid, cr3, eprocess, protection, timeline_id):
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
+        ans = None
         try:
             cursor = conn.cursor()
             cursor.execute(
@@ -605,13 +604,15 @@ class DBHandler:
             )
 
             conn.commit()
-            return last_id
+            ans = last_id
         except:
 
             traceback.print_exc()
             conn.rollback()
 
         conn.close()
+        DBHandler.instance.glock.release()
+        return ans
 
     def create_module_load_event(self, name, start, end, procname, pid, protected, timeline_id):
         """
@@ -631,7 +632,9 @@ class DBHandler:
         :param timeline_id:
         :return:
         """
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
+        ans = None
         try:
             cursor = conn.cursor()
             cursor.execute(
@@ -646,16 +649,20 @@ class DBHandler:
             )
 
             conn.commit()
-            return last_id
+            ans = last_id
         except:
 
             traceback.print_exc()
             conn.rollback()
 
         conn.close()
+        DBHandler.instance.glock.release()
+        return ans
 
     def create_module_unload_event(self, name, start, end, procname, pid, protected, timeline_id):
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
+        ans = None
         try:
             cursor = conn.cursor()
             cursor.execute(
@@ -670,13 +677,15 @@ class DBHandler:
             )
 
             conn.commit()
-            return last_id
+            ans = last_id
         except:
 
             traceback.print_exc()
             conn.rollback()
 
         conn.close()
+        DBHandler.instance.glock.release()
+        return ans
 
     def create_module_alert_event(self, attackername, attackerstart, attackerend, victimname, victimstart, victimend, processname, pid, rip, address, functionname, action ,protection, timeline_id):
         """
@@ -709,7 +718,9 @@ class DBHandler:
         :param timeline_id:
         :return:
         """
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
+        ans = None
         try:
             cursor = conn.cursor()
             cursor.execute(
@@ -723,23 +734,27 @@ class DBHandler:
                 (timeline_id, 4, last_id)
             )
 
-            if action == 1:
-                self.update_timeline_state(timeline_id, 2)
-            else:
-                self.update_timeline_state(timeline_id, 3)
-
             conn.commit()
-            return last_id
+            if action == 1:
+                self.update_timeline_state(timeline_id, 2, True)
+            else:
+                self.update_timeline_state(timeline_id, 3, True)
+
+            ans = last_id
         except:
 
             traceback.print_exc()
             conn.rollback()
 
         conn.close()
+        DBHandler.instance.glock.release()
+        return ans
 
-    def get_alert_by_alert_id(self, alert_id):
+    def get_alert_by_alert_id(self, alert_id, acquired = False):
+        if not acquired:
+            DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
-
+        ans = None
         try:
             cursor = conn.cursor()
             cursor2 = conn.cursor()
@@ -749,7 +764,7 @@ class DBHandler:
             cursor2.execute("SELECT * FROM MODULE_ALERT_INSTRUCTION WHERE ALERT_ID = ?", (alert_id,))
             for instrux in cursor2:
                 instructions.append(self._instruction_to_dict(instrux[1], instrux[2], instrux[3]))
-            return self._mod_alert_event_to_dict(row_1[0], row_1[1], row_1[2], row_1[3], row_1[4], row_1[5], row_1[6],
+            ans = self._mod_alert_event_to_dict(row_1[0], row_1[1], row_1[2], row_1[3], row_1[4], row_1[5], row_1[6],
                                                       row_1[7], row_1[8], row_1[9], row_1[10], row_1[11], row_1[12],
                                                       row_1[13], instructions)
         except:
@@ -759,7 +774,9 @@ class DBHandler:
 
 
         conn.close()
-
+        if not acquired:
+            DBHandler.instance.glock.release()
+        return ans
     def create_instruction(self, mnemonic, instrux, length, event_id):
         """
         MNEMONIC INTEGER,
@@ -772,7 +789,8 @@ class DBHandler:
         :param event_id:
         :return:
         """
-
+        DBHandler.instance.glock.acquire()
+        ans = None
         conn = sqlite3.connect("mhvev.db")
         try:
             cursor = conn.cursor()
@@ -781,14 +799,15 @@ class DBHandler:
                 (mnemonic, instrux, length, event_id))
 
             conn.commit()
-            return cursor.lastrowid
+            ans = cursor.lastrowid
         except:
 
             traceback.print_exc()
             conn.rollback()
 
         conn.close()
-
+        DBHandler.instance.glock.release()
+        return ans
     ############################################################################
     ####################                                    ####################
     ####################         PROTECTED PROCESSES        ####################
@@ -796,6 +815,7 @@ class DBHandler:
     ############################################################################
 
     def create_protected_process(self, processname, mask):
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
         try:
             cursor = conn.cursor()
@@ -808,8 +828,10 @@ class DBHandler:
             traceback.print_exc()
             conn.rollback()
         conn.close()
+        DBHandler.instance.glock.release()
 
     def remove_protected_process(self, processname):
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
         try:
             cursor = conn.cursor()
@@ -822,28 +844,31 @@ class DBHandler:
             traceback.print_exc()
             conn.rollback()
         conn.close()
+        DBHandler.instance.glock.release()
 
     def get_all_protected_processes(self):
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
-
+        ans = []
         try:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM PROTECTED_PROCESSES")
-            ans = []
             for row in cursor:
                 ans.append({
                   "processname": row[1],
                   "mask": row[2]
                 })
-            return ans
+
         except:
 
             traceback.print_exc()
             conn.rollback()
 
         conn.close()
-
+        DBHandler.instance.glock.release()
+        return ans
     def change_protected_process(self, processname, newmask):
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
         try:
             cursor = conn.cursor()
@@ -856,6 +881,7 @@ class DBHandler:
             traceback.print_exc()
             conn.rollback()
         conn.close()
+        DBHandler.instance.glock.release()
 
     ############################################################################
     ####################                                    ####################
@@ -865,7 +891,7 @@ class DBHandler:
 
     def create_exception(self, alert_id):
         # also mark all timelines with alert_id as excepted
-
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
         try:
             cursor = conn.cursor()
@@ -880,9 +906,11 @@ class DBHandler:
             traceback.print_exc()
             conn.rollback()
         conn.close()
+        DBHandler.instance.glock.release()
 
 
     def remove_exception(self, exception_id):
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
         try:
             cursor = conn.cursor()
@@ -895,41 +923,84 @@ class DBHandler:
             traceback.print_exc()
             conn.rollback()
         conn.close()
+        DBHandler.instance.glock.release()
 
     def get_all_exceptions(self):
+        DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
-
+        ans = []
         try:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM EXCEPTIONS")
-            ans = []
+
             for row in cursor:
                 ans.append({
                     "id": row[0],
-                    "alert": self.get_alert_by_alert_id(row[1])
+                    "alert": self.get_alert_by_alert_id(row[1], acquired=True)
                 })
-            return ans
+
         except:
 
             traceback.print_exc()
             conn.rollback()
 
         conn.close()
-
+        DBHandler.instance.glock.release()
+        return ans
     ############################################################################
     ####################                                    ####################
     ####################         BLOCKED DLLS               ####################
     ####################                                    ####################
     ############################################################################
 
-    def create_blocked_dll(self, process_name, dll_name):
-        pass
+    def create_blocked_dll(self, dll_name):
+        DBHandler.instance.glock.acquire()
+        conn = sqlite3.connect("mhvev.db")
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO BLOCKED_DLLS(DLL_NAME) VALUES (?)",
+                (dll_name,))
+
+            conn.commit()
+        except:
+            traceback.print_exc()
+            conn.rollback()
+        conn.close()
+        DBHandler.instance.glock.release()
 
     def removed_blocked_dll(self, removed_dll_name):
-        pass
+        DBHandler.instance.glock.acquire()
+        conn = sqlite3.connect("mhvev.db")
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "DELETE FROM BLOCKED_DLLS WHERE DLL_NAME = ?",
+                (removed_dll_name,))
+
+            conn.commit()
+        except:
+            traceback.print_exc()
+            conn.rollback()
+        conn.close()
+        DBHandler.instance.glock.release()
 
     def get_all_blocked_dlls(self):
-        pass
+        DBHandler.instance.glock.acquire()
+        conn = sqlite3.connect("mhvev.db")
+        ans = []
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT * FROM BLOCKED_DLLS")
 
+            for row in cursor:
+                ans.append({"dll_name": row[1]})
+        except:
+            traceback.print_exc()
+            conn.rollback()
+        conn.close()
+        DBHandler.instance.glock.release()
+        return ans
 
 

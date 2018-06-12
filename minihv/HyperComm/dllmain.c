@@ -104,3 +104,13 @@ HyperCommExceptAlert(
 
     return HyperCall(mhvCommunicationAddAlert, pException);
 }
+
+__declspec(dllexport)
+LONG
+HyperCommInjectDLL(
+    DWORD Pid
+)
+{
+
+    return 0;
+}

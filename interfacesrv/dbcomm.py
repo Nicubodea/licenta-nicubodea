@@ -214,6 +214,7 @@ class DBHandler:
             "process_name": procname,
             "pid": pid,
             "protected": protected,
+            "event_date": date_event,
             "type": 2
         }
 
@@ -226,11 +227,12 @@ class DBHandler:
             "process_name": procname,
             "pid": pid,
             "protected": protected,
+            "event_date": date_event,
             "type": 3
         }
 
 
-    def _mod_alert_event_to_dict(self, id, attackername, attackerstart, attackerend, victiname, victimstart, victimend, processname, pid, rip, address, functionname, action, protection, instructions):
+    def _mod_alert_event_to_dict(self, id, attackername, attackerstart, attackerend, victiname, victimstart, victimend, processname, pid, rip, address, functionname, action, protection, event_date, instructions):
         return {
             "id": id,
             "attacker_name": attackername,
@@ -247,6 +249,7 @@ class DBHandler:
             "action": action,
             "protection": protection,
             "instructions": instructions,
+            "event_date": event_date,
             "type": 4
         }
 
@@ -345,7 +348,7 @@ class DBHandler:
                     cursor3.execute("SELECT * FROM MODULE_ALERT_INSTRUCTION WHERE ALERT_ID = ?", (current[3],))
                     for instrux in cursor3:
                         instructions.append(self._instruction_to_dict(instrux[1], instrux[2], instrux[3]))
-                    evts.append(self._mod_alert_event_to_dict(row_1[0], row_1[1], row_1[2], row_1[3], row_1[4], row_1[5], row_1[6], row_1[7], row_1[8], row_1[9], row_1[10], row_1[11], row_1[12], row_1[13], instructions))
+                    evts.append(self._mod_alert_event_to_dict(row_1[0], row_1[1], row_1[2], row_1[3], row_1[4], row_1[5], row_1[6], row_1[7], row_1[8], row_1[9], row_1[10], row_1[11], row_1[12], row_1[13], row_1[14], instructions))
 
             ans = self._timeline_to_dict(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], evts)
         except:
@@ -766,7 +769,7 @@ class DBHandler:
                 instructions.append(self._instruction_to_dict(instrux[1], instrux[2], instrux[3]))
             ans = self._mod_alert_event_to_dict(row_1[0], row_1[1], row_1[2], row_1[3], row_1[4], row_1[5], row_1[6],
                                                       row_1[7], row_1[8], row_1[9], row_1[10], row_1[11], row_1[12],
-                                                      row_1[13], instructions)
+                                                      row_1[13], row_1[14], instructions)
         except:
 
             traceback.print_exc()
@@ -874,7 +877,7 @@ class DBHandler:
             cursor = conn.cursor()
             cursor.execute(
                 "UPDATE PROTECTED_PROCESSES SET MASK = ? WHERE PROCESSNAME = ?",
-                (processname, newmask))
+                (newmask, processname))
 
             conn.commit()
         except:

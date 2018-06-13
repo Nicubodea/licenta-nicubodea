@@ -14,6 +14,8 @@ class HttpServ(BaseHTTPRequestHandler):
     def not_found(self):
         self.send_response(404)
         self.send_header("Content-type", "text/html")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
         self.wfile.write(b"404 - not found!")
 
@@ -33,6 +35,8 @@ class HttpServ(BaseHTTPRequestHandler):
     def send_error_with_reason(self, reason):
         self.send_response(400)
         self.send_header("Content-type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
         message = self.get_response_message("Error", "reason", reason)
         self.wfile.write(json.dumps(message).encode('utf-8'))
@@ -42,6 +46,8 @@ class HttpServ(BaseHTTPRequestHandler):
     def send_success_with_key(self, key, key_text):
         self.send_response(200)
         self.send_header("Content-type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
         message = self.get_response_message("Success", key, key_text)
         self.wfile.write(json.dumps(message).encode('utf-8'))
@@ -135,7 +141,7 @@ class HttpServ(BaseHTTPRequestHandler):
         try:
             procname = postvars[b"process"][0].decode('utf-8')
 
-            self.logic_handler.remove_prcoess(procname)
+            self.logic_handler.remove_process(procname)
 
             self.send_success_with_key("answer", "")
         except Exception as e:

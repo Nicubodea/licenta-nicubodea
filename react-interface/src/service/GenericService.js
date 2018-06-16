@@ -8,6 +8,9 @@ import {Instruction} from "../model/instruction";
 import {ModuleAlertEvent} from "../model/module_alert_event";
 import {AlertTimeline} from "../model/alert_timeline";
 import {ProtectedProcess} from "../model/protected_process";
+import {Exception} from "../model/exception";
+import {BlockedDll} from "../model/blocked_dll";
+import {DllBlockEvent} from "../model/dll_block_event";
 
 export class GenericService extends Component {
 
@@ -61,6 +64,10 @@ export class GenericService extends Component {
             instructions, result['event_date'], result['type']);
     }
 
+    get_dll_block_event(result) {
+        return new DllBlockEvent(result['id'], result['dll_name'], result['process_name'], result['pid'], result['action'], result['protection'], result['event_date'], result['type']);
+    }
+
     get_one_event(result) {
         if(result["type"] == 0)
         {
@@ -81,6 +88,10 @@ export class GenericService extends Component {
         else if(result["type"] == 4)
         {
             return this.get_alert_event(result);
+        }
+        else if(result["type"] == 5)
+        {
+            return this.get_dll_block_event(result);
         }
     }
 
@@ -267,6 +278,98 @@ export class GenericService extends Component {
             return result.json();
         }).then(result => {
             return result;
+        })
+    }
+
+    remove_exception(exc_id, alert_id) {
+        return fetch(this.server + "/remove_exception", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: "exception_id="+exc_id+"&alert_id="+alert_id
+        }).then(result => {
+            return result.json();
+        }).then(result => {
+            return result;
+        })
+    }
+
+    get_excs(result) {
+        let excs = [];
+        for(let i = 0; i<result.length; i++)
+        {
+            excs.push(new Exception(result[i]['id'], this.get_alert_event(result[i]['alert'])));
+        }
+        return excs;
+    }
+
+    get_exceptions() {
+        return fetch(this.server + "/get_exceptions", {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        }).then(result => {
+            return result.json();
+        }).then(result => {
+            return this.get_excs(result["answer"]);
+        })
+    }
+
+    get_dlls(result) {
+        let dlls = [];
+        for(let i = 0; i<result.length; i++)
+        {
+            dlls.push(new BlockedDll(result[i]['dll_name']));
+        }
+        return dlls;
+    }
+
+    add_blocked_dll(name) {
+        return fetch(this.server + "/new_blocked_dll", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: "dll_name="+name
+        }).then(result => {
+            return result.json();
+        }).then(result => {
+            return result;
+        })
+    }
+
+    remove_blocked_dll(name) {
+        return fetch(this.server + "/remove_blocked_dll", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: "dll_name="+name
+        }).then(result => {
+            return result.json();
+        }).then(result => {
+            return result;
+        })
+    }
+
+
+    get_all_blocked_dlls() {
+        return fetch(this.server + "/get_blocked_dlls", {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        }).then(result => {
+            return result.json();
+        }).then(result => {
+            return this.get_dlls(result["answer"]);
         })
     }
 

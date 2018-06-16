@@ -124,6 +124,19 @@ class DBHandler:
                 print(e)
 
             try:
+                conn.execute('''CREATE TABLE DLL_BLOCK_EVENT
+                                     (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
+                                      DLLNAME TEXT,
+                                      PROCESSNAME TEXT,
+                                      PID INTEGER,
+                                      ACTION INTEGER,
+                                      PROTECTION INTEGEER,
+                                     DATE_EVENT TIMESTAMP
+                                     );''')
+            except Exception as e:
+                print(e)
+
+            try:
                 conn.execute('''CREATE TABLE MODULE_ALERT_INSTRUCTION
                                      (ID INTEGER PRIMARY KEY     AUTOINCREMENT,
                                       MNEMONIC INTEGER,
@@ -260,6 +273,18 @@ class DBHandler:
             "length": length
         }
 
+    def _dll_block_to_dict(self, id, dll_name, process_name, pid, action, protection, event_date):
+        return {
+            "id": id,
+            "dll_name": dll_name,
+            "process_name": process_name,
+            "pid": pid,
+            "action": action,
+            "protection": protection,
+            "event_date": event_date,
+            "type": 5
+        }
+
     def _alert_timeline_to_dict(self, id, alert, excepted, session, evts):
         return {
             "id": id,
@@ -349,7 +374,11 @@ class DBHandler:
                     for instrux in cursor3:
                         instructions.append(self._instruction_to_dict(instrux[1], instrux[2], instrux[3]))
                     evts.append(self._mod_alert_event_to_dict(row_1[0], row_1[1], row_1[2], row_1[3], row_1[4], row_1[5], row_1[6], row_1[7], row_1[8], row_1[9], row_1[10], row_1[11], row_1[12], row_1[13], row_1[14], instructions))
-
+                elif int(current[2]) == 5:
+                    cursor2.execute("SELECT * FROM DLL_BLOCK_EVENT WHERE ID = ?", (current[3],))
+                    row_1 = cursor2.fetchone()
+                    evts.append(self._dll_block_to_dict(row_1[0], row_1[1], row_1[2], row_1[3], row_1[4], row_1[5], row_1[6]))
+                    print(self._dll_block_to_dict(row_1[0], row_1[1], row_1[2], row_1[3], row_1[4], row_1[5], row_1[6]))
             ans = self._timeline_to_dict(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], evts)
         except:
             print(timeline_id)
@@ -753,6 +782,32 @@ class DBHandler:
         DBHandler.instance.glock.release()
         return ans
 
+    def create_dll_block_event(self, dll_name, process_name, pid, action, protection, timeline_id):
+        DBHandler.instance.glock.acquire()
+        conn = sqlite3.connect("mhvev.db")
+        ans = None
+        try:
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO DLL_BLOCK_EVENT(DLLNAME, PROCESSNAME, PID, ACTION, PROTECTION, DATE_EVENT) VALUES(?, ?, ?, ?, ?, ?)",
+                           (dll_name, process_name, pid, action, protection, datetime.datetime.now()))
+            last_id = cursor.lastrowid
+            cursor.execute("INSERT INTO PROCESS_TIMELINE_EVENT (ID_TIMELINE, EVENTTYPE, EVENT_ID) VALUES (?, ?, ?)",
+                           (timeline_id, 5, last_id))
+
+            conn.commit()
+            if action == 1:
+                self.update_timeline_state(timeline_id, 2, True)
+            else:
+                self.update_timeline_state(timeline_id, 3, True)
+            ans = last_id
+        except:
+            traceback.print_exc()
+            conn.rollback()
+
+        conn.close()
+        DBHandler.instance.glock.release()
+        return ans
+
     def get_alert_by_alert_id(self, alert_id, acquired = False):
         if not acquired:
             DBHandler.instance.glock.acquire()
@@ -912,7 +967,7 @@ class DBHandler:
         DBHandler.instance.glock.release()
 
 
-    def remove_exception(self, exception_id):
+    def remove_exception(self, exception_id, alert_id):
         DBHandler.instance.glock.acquire()
         conn = sqlite3.connect("mhvev.db")
         try:
@@ -921,6 +976,7 @@ class DBHandler:
                 "DELETE FROM EXCEPTIONS WHERE ID = ?",
                 (exception_id,))
 
+            cursor.execute("UPDATE ALERT_TIMELINE SET EXCEPTED = ? WHERE ALERT_ID = ?", (0, alert_id))
             conn.commit()
         except:
             traceback.print_exc()

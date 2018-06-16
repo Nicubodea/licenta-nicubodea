@@ -102,6 +102,23 @@ _Emu6(PPROCESOR Processor) {
     __vmx_vmwrite(VMX_GUEST_RSP, rsp);
 }
 
+VOID
+_Emu7(PPROCESOR Processor) {
+
+    QWORD rsp;
+    __vmx_vmread(VMX_GUEST_RSP, &rsp);
+
+    Processor->context._rax = rsp;
+    rsp += 8;
+
+    QWORD cr3 = 0;
+    __vmx_vmread(VMX_GUEST_CR3, &cr3);
+    PQWORD writeAddr = MhvTranslateVa(rsp, cr3, NULL);
+    writeAddr[0] = Processor->context._rbx;
+
+}
+
+
 API_SIGNATURE gHookSignatures[NR_OF_SIGNATURES] = {
     {
         "PspInsertProcess",
@@ -135,41 +152,44 @@ API_SIGNATURE gHookSignatures[NR_OF_SIGNATURES] = {
             0x48, 0x85, 0xc0,                               // test    rax,rax
         },
         _Emu1,
-        MhvInsertProcessInList
+        MhvInsertProcessInList,
+        5
     },
     
     {
-        "PspProcessDelete",
+        "MmCleanProcessAddressSpace",
         0x62,
         {
-            0x48, 0x89, 0x5c, 0x24, 0x200,                   // mov     qword ptr [rsp+10h],rbx
-            0x48, 0x89, 0x74, 0x24, 0x200,                   // mov     qword ptr [rsp+18h],rsi
-            0x55,                                           // push    rbp
-            0x57,                                           // push    rdi
-            0x41, 0x55,                                     // push    r13
+            0x48, 0x8b, 0xc4,                               // mov     rax,rsp
+            0x48, 0x89, 0x58, 0x200,                         // mov     qword ptr [rax+8],rbx
+            0x48, 0x89, 0x68, 0x200,                         // mov     qword ptr [rax+10h],rbp
+            0x48, 0x89, 0x70, 0x200,                         // mov     qword ptr [rax+18h],rsi
+            0x48, 0x89, 0x78, 0x200,                         // mov     qword ptr [rax+20h],rdi
+            0x41, 0x54,                                     // push    r12
             0x41, 0x56,                                     // push    r14
             0x41, 0x57,                                     // push    r15
-            0x48, 0x8b, 0xec,                               // mov     rbp,rsp
-            0x48, 0x83, 0xec, 0x200,                         // sub     rsp,70h
-            0x48, 0x8b, 0x05, 0x200, 0x200, 0x200, 0x200,       // mov     rax,qword ptr [nt!_security_cookie (fffff802`da8da108)]
-            0x48, 0x33, 0xc4,                               // xor     rax,rsp
-            0x48, 0x89, 0x45, 0x200,                         // mov     qword ptr [rbp-8],rax
-            0x0f, 0xba, 0xb1, 0x200, 0x200, 0x00, 0x00, 0x200, // btr     dword ptr [rcx+304h],1Ah
-            0x48, 0x8d, 0x99, 0x200, 0x200, 0x00, 0x00,       // lea     rbx,[rcx+2F0h]
-            0x65, 0x48, 0x8b, 0x34, 0x25, 0x200, 0x200, 0x00, 0x00, // mov   rsi,qword ptr gs:[188h]
-            0x45, 0x33, 0xff,                               // xor     r15d,r15d
+            0x48, 0x83, 0xec, 0x200,                         // sub     rsp,50h
             0x48, 0x8b, 0xf9,                               // mov     rdi,rcx
-            0x4c, 0x39, 0x3b,                               // cmp     qword ptr [rbx],r15
-            0x74, 0x200,                                     // je      nt!PspProcessDelete+0x7b (fffff802`daa36cd3)
-            0x48, 0x8b, 0xce,                               // mov     rcx,rsi
-            0xe8, 0x200, 0x200, 0x200, 0x200,                   // call    nt!PspLockProcessListExclusive (fffff802`da6bdb0c)
-            0x48, 0x8b, 0x0b,                               // mov     rcx,qword ptr [rbx]
-            0x48, 0x8b, 0x43, 0x200,                         // mov     rax,qword ptr [rbx+8]
-            0x48, 0x39, 0x59, 0x200,                         // cmp     qword ptr [rcx+8],rbx
-            0x0f, 0x85, 0x200, 0x200, 0x200, 0x00,             // jne     nt! ?? ::NNGAKEGL::`string'+0x27d68 (fffff802`dab8bf38)
+            0x48, 0x8d, 0xb1, 0x200, 0x200, 0x00, 0x00,       // lea     rsi,[rcx+500h]
+            0x8b, 0x89, 0x200, 0x200, 0x00, 0x00,             // mov     ecx,dword ptr [rcx+304h]
+            0x8b, 0xd1,                                     // mov     edx,ecx
+            0x83, 0xe2, 0x200,                               // and     edx,20h
+            0x0f, 0x85, 0x200, 0x200, 0x200, 0x00,             // jne     nt! ?? ::NNGAKEGL::`string'+0x1f06a (fffff802`965ae2ba)
+            0x85, 0xd2,                                     // test    edx,edx
+            0x0f, 0x85, 0x200, 0x200, 0x200, 0x00,             // jne     nt! ?? ::NNGAKEGL::`string'+0x1f169 (fffff802`965ae3b9)
+            0x8b, 0xc1,                                     // mov     eax,ecx
+            0xc1, 0xe8, 0x0a,                               // shr     eax,0Ah
+            0x83, 0xe0, 0x03,                               // and     eax,3
+            0x83, 0xf8, 0x01,                               // cmp     eax,1
+            0x0f, 0x86, 0x200, 0x200, 0x200, 0x00,             // jbe     nt! ?? ::NNGAKEGL::`string'+0x1f169 (fffff802`965ae3b9)
+            0x83, 0xf8, 0x02,                               // cmp     eax,2
+            0x0f, 0x84, 0x200, 0x200, 0x200, 0x00,             // je      nt! ?? ::NNGAKEGL::`string'+0x1f07f (fffff802`965ae2cf)
+            0x45, 0x33, 0xc0,                               // xor     r8d,r8d
+            0x48, 0x8d, 0x4c, 0x24, 0x200,                   // lea     rcx,[rsp+30h]
         },
-        _Emu3,
-        MhvDeleteProcessFromList
+        _Emu7,
+        MhvDeleteProcessFromList,
+        7
     },
     {
         "MiGetWsAndInsertVad",
@@ -197,7 +217,8 @@ API_SIGNATURE gHookSignatures[NR_OF_SIGNATURES] = {
             0x0f, 0x85, 0x200, 0x200, 0x200, 0x200,             // jne     nt! ?? ::FNODOBFM::`string'+0x1b188 (fffff800`8d7fd348)
         },
         _Emu5,
-        MhvNewModuleLoaded
+        MhvNewModuleLoaded,
+        5
     },
 
     {
@@ -227,14 +248,16 @@ API_SIGNATURE gHookSignatures[NR_OF_SIGNATURES] = {
             0x48, 0x8b, 0x80, 0x200, 0x00, 0x00, 0x00,       // mov     rax,qword ptr [rax+0B8h]
         },
         _Emu6,
-        MhvHandleModuleUnload
+        MhvHandleModuleUnload,
+        5
     },
 
 };
 
 VOID
 MhvEstablishApiHook(
-    QWORD Rip
+    QWORD Rip,
+    QWORD Length
 ) 
 {
     QWORD cr3 = 0;
@@ -246,7 +269,12 @@ MhvEstablishApiHook(
     writeAddr[1] = 0x01;
     writeAddr[2] = 0xc1;
     writeAddr[3] = 0xc3;
-    writeAddr[4] = 0x90;
+    //writeAddr[4] = 0x90;
+    // fill with nops
+    for (DWORD i = 4; i < Length; i++)
+    {
+        writeAddr[i] = 0x90;
+    }
 }
 
 QWORD
@@ -296,6 +324,11 @@ MhvInsertNewHook(
 {
     
     PHOOK pNewHook = MemAllocContiguosMemory(sizeof(HOOK));
+    if (NULL == pNewHook)
+    {
+        LOG("[INFO] Null pointer is coming to you");
+    }
+    memset_s(pNewHook, 0, sizeof(HOOK));
     memcpys(gHookSignatures[ApiIndex].Name, pNewHook->Name, 30);
     pNewHook->Rip = Rip;
     pNewHook->Callback = gHookSignatures[ApiIndex].EmuCallback;
@@ -343,7 +376,7 @@ MhvHookFunctionsInMemory(
             if (function != 0)
             {
                 MhvInsertNewHook(j, function);
-                MhvEstablishApiHook(function);
+                MhvEstablishApiHook(function, gHookSignatures[j].HandlerLength);
                 LOG("[INFO] Found function %s at %x!", gHookSignatures[j].Name, function);
             }
         }

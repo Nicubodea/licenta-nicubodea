@@ -16,7 +16,7 @@ class EventDetails extends Component {
                 <tr>
                     <td colspan="3">
                     {
-                        this.props.event.name
+                        JSON.stringify(this.props.event)
                     }
                     </td>
                 </tr>
@@ -98,6 +98,21 @@ class EventRow extends Component {
                 event_class = "table-danger";
             }
         }
+        if(this.props.event.type == 5)
+        {
+            event_type = "DLL block";
+            event_description = "Library " + this.props.event.dll_name + " is on the blocked dll list and tried to load"
+            if(this.props.event.action == 1)
+            {
+                event_description += ". The action was blocked";
+                event_class = "table-warning";
+            }
+            else
+            {
+                event_description += ". The action was NOT blocked";
+                event_class = "table-danger";
+            }
+        }
 
         return (
             <tbody>
@@ -148,6 +163,7 @@ export class ShowEventsPage extends Component {
         if(this.state.timeline && this.state.timeline.completed)
         {
             completion_text = "completed, completion date " + this.state.timeline.date_ended;
+            console.log(this.state.timeline.events);
         }
         else
         {

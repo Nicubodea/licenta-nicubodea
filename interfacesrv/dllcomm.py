@@ -39,6 +39,11 @@ class EvtModuleAlert(Structure):
                 ("Action", c_uint),
                 ("FunctionName", c_byte*32)]
 
+class EvtBlockedDll(Structure):
+    _fields_ = [("ProcessName", c_byte*16),
+                ("Pid", c_longlong),
+                ("DllName", c_byte*256),
+                ("Action", c_uint)]
 
 class EvtListEntry(Structure):
     _fields_ = [("Flink", c_longlong), ("Blink", c_longlong)]
@@ -49,7 +54,8 @@ class EvtUnion(Union):
                 ("ProcessTerminateEvent", EvtProcessTerminate),
                 ("ModuleLoadEvent", EvtModuleLoad),
                 ("ModuleUnloadEvent", EvtModuleUnload),
-                ("ModuleAlertEvent", EvtModuleAlert)]
+                ("ModuleAlertEvent", EvtModuleAlert),
+                ("DllBlockEvent", EvtBlockedDll)]
 
 
 class Evt(Structure):
@@ -122,6 +128,14 @@ class ModuleAlertEvent:
         self.func_name = func_name
         self.protection = protection
 
+class BlockedDllEvent:
+    def __init__(self, dll_name, process_name, pid, action, protection):
+        self.event_type = "Blocked Dll"
+        self.dll_name = dll_name
+        self.process_name = process_name
+        self.pid = pid
+        self.action = action
+        self.protection = protection
 
 
 class Marshaller:
@@ -167,6 +181,14 @@ class Marshaller:
 
         return ModuleAlertEvent(attacker, victim, evt.Rip, evt.Address, self.from_list_to_str(evt.ProcessName), evt.Pid, instructions, evt.Action, self.from_list_to_str(evt.FunctionName), prot)
 
+    def _from_evt_block_dll(self, evt, prot):
+        procname = self.from_list_to_str(evt.ProcessName)
+        pid = evt.Pid
+        dllname = self.from_list_to_str(evt.DllName)
+        action = evt.Action
+
+        return BlockedDllEvent(dllname, procname, pid, action, prot)
+
     def from_evt_to_py(self, evt):
         if evt.EventType == 0:
             return self._from_evt_proc_start(evt.union.ProcessCreateEvent, evt.Protection)
@@ -178,6 +200,8 @@ class Marshaller:
             return self._from_evt_mod_unload(evt.union.ModuleUnloadEvent, evt.Protection)
         elif evt.EventType == 4:
             return self._from_evt_mod_alert(evt.union.ModuleAlertEvent, evt.Protection)
+        elif evt.EventType == 5:
+            return self._from_evt_block_dll(evt.union.DllBlockEvent, evt.Protection)
 
     def from_py_to_evt(self, py):
         if py.event_type != "Module Alert":
@@ -249,9 +273,19 @@ class DllHandler:
     def add_protection_process(self, process_name, mask):
         self.dll.HyperCommAddProtectionToProcess(process_name, mask)
 
-    def inject_dll(self, pid):
-        param = c_int(pid)
+    def delayed_injection(self, pid):
+        param = c_uint(pid)
         self.dll.HyperCommInjectDLL(param)
+
+    def inject_dll(self, pid):
+        t = threading.Thread(target=self.delayed_injection, args=(pid,))
+        t.start()
+
+    def add_blocked_dll(self, dll):
+        self.dll.HyperCommAddProtectedDll(dll)
+
+    def remove_blocked_dll(self, dll):
+        self.dll.HyperCommRemoveProtectedDll(dll)
 
     def add_alert_exception(self, evt):
         #print(evt)

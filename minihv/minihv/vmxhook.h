@@ -29,6 +29,7 @@ typedef struct _API_SIGNATURE {
     WORD Signature[0x64];
     PEMU_Callback EmuCallback;
     PEMU_Callback ExecCallback;
+    DWORD HandlerLength;
 } API_SIGNATURE, *PAPI_SIGNATURE;
 
 

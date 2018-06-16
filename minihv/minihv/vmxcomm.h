@@ -1,6 +1,7 @@
 #pragma once
 #include "minihv.h"
 #include "structures.h"
+#include "winproc.h"
 
 NTSTATUS
 MhvHandleInterfaceComm(
@@ -10,5 +11,13 @@ MhvHandleInterfaceComm(
 typedef enum _COMM_TYPE {
     mhvCommunicationAddProtection,
     mhvCommunicationGetEvent,
-    mhvCommunicationAddAlert
+    mhvCommunicationAddAlert,
+    mhvCommunicationAddBlockedDll,
+    mhvCommunicationRemoveBlockedDll
 } COMM_TYPE;
+
+BOOLEAN
+MhvIsModuleBlocked(
+    PCHAR DllName,
+    PMHVPROCESS Process
+);

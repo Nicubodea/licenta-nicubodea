@@ -21,6 +21,10 @@ MhvCreateProcessCreationEvent(
     }
 
     PEVENT pEvent = MemAllocContiguosMemory(sizeof(EVENT));
+    if (NULL == pEvent)
+    {
+        LOG("[INFO] Null pointer is coming to you");
+    }
     
     memset_s(pEvent, 0, sizeof(EVENT));
 
@@ -38,6 +42,7 @@ MhvCreateProcessCreationEvent(
     return pEvent;
 }
 
+
 PEVENT
 MhvCreateProcessTerminationEvent(
     PMHVPROCESS Process
@@ -50,6 +55,10 @@ MhvCreateProcessTerminationEvent(
     }
 
     PEVENT pEvent = MemAllocContiguosMemory(sizeof(EVENT));
+    if (NULL == pEvent)
+    {
+        LOG("[INFO] Null pointer is coming to you");
+    }
     memset_s(pEvent, 0, sizeof(EVENT));
 
     pEvent->Type = mhvEventProcessTerminate;
@@ -78,6 +87,10 @@ MhvCreateModuleLoadEvent(
     }
 
     PEVENT pEvent = MemAllocContiguosMemory(sizeof(EVENT));
+    if (NULL == pEvent)
+    {
+        LOG("[INFO] Null pointer is coming to you");
+    }
     memset_s(pEvent, 0, sizeof(EVENT));
 
     pEvent->Type = mhvEventModuleLoad;
@@ -108,6 +121,10 @@ MhvCreateModuleUnloadEvent(
     }
 
     PEVENT pEvent = MemAllocContiguosMemory(sizeof(EVENT));
+    if (NULL == pEvent)
+    {
+        LOG("[INFO] Null pointer is coming to you");
+    }
     memset_s(pEvent, 0, sizeof(EVENT));
 
     pEvent->Type = mhvEventModuleUnload;
@@ -142,6 +159,10 @@ MhvCreateModuleAlert(
     }
 
     PEVENT pEvent = MemAllocContiguosMemory(sizeof(EVENT));
+    if (NULL == pEvent)
+    {
+        LOG("[INFO] Null pointer is coming to you");
+    }
     memset_s(pEvent, 0, sizeof(EVENT));
 
     pEvent->Type = mhvEventModuleAlert;
@@ -237,6 +258,42 @@ MhvCreateModuleAlert(
     return pEvent;
 }
 
+PEVENT
+MhvCreateDllBlockEvent(
+    PMHVPROCESS Process,
+    PBYTE       DllName
+)
+{
+    if (!bInitialized)
+    {
+        InitializeListHead(&gEventList);
+        bInitialized = TRUE;
+    }
+
+    PEVENT pEvent = MemAllocContiguosMemory(sizeof(EVENT));
+    if (NULL == pEvent)
+    {
+        LOG("[INFO] Null pointer is coming to you");
+    }
+    memset_s(pEvent, 0, sizeof(EVENT));
+
+    pEvent->Type = mhvEventDllBlock;
+
+    pEvent->Protection = Process->ProtectionInfo;
+
+    memcpy_s(pEvent->DllBlockEvent.DllName, DllName, 256);
+
+    pEvent->DllBlockEvent.Pid = Process->Pid;
+
+    memcpy_s(pEvent->DllBlockEvent.ProcessName, Process->Name, 16);
+
+    MhvEnqueueEvent(pEvent);
+
+    return pEvent;
+
+}
+
+
 VOID
 MhvEnqueueEvent(
     PEVENT Event
@@ -259,6 +316,7 @@ MhvGetFirstEvent(
     PEVENT pEvent = CONTAINING_RECORD(gEventList.Flink, EVENT, Link);
     
     PEVENT pGuestBuffer = MhvTranslateVa(Address, Cr3, NULL);
+
 
     *pGuestBuffer = *pEvent;
 
@@ -323,6 +381,10 @@ MhvTestDummyException(
 )
 {
     PALERT_EXCEPTION pException = MemAllocContiguosMemory(sizeof(ALERT_EXCEPTION));
+    if (NULL == pException)
+    {
+        LOG("[INFO] Null pointer is coming to you");
+    }
 
     memcpy_s(pException->AttackerName, "\\Program Files\\Mozilla Firefox\\mozglue.dll", sizeof("\\Program Files\\Mozilla Firefox\\mozglue.dll"));
     memcpy_s(pException->VictimName, "\\Windows\\System32\\ntdll.dll", sizeof("\\Windows\\System32\\ntdll.dll"));
@@ -386,6 +448,11 @@ MhvExceptNewAlertRequest(
     }
 
     PALERT_EXCEPTION pException = MemAllocContiguosMemory(sizeof(ALERT_EXCEPTION));
+    if (NULL == pException)
+    {
+        LOG("[INFO] Null pointer is coming to you");
+    }
+    memset_s(pException, 0, sizeof(ALERT_EXCEPTION));
 
     PALERT_EXCEPTION pGuestException = MhvTranslateVa(Address, Cr3, NULL);
 
@@ -398,3 +465,4 @@ MhvExceptNewAlertRequest(
     return STATUS_SUCCESS;
 
 }
+

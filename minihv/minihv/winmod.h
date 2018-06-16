@@ -66,4 +66,9 @@ NTSTATUS
 MhvHandleModuleUnload(
     PPROCESOR Context
 );
+
+PCHAR
+MhvGetNameFromPath(
+    PCHAR Path
+);
 #endif

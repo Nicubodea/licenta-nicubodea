@@ -58,6 +58,12 @@ MhvProtectProcessRequest(
 )
 {
     PPROTECTION_INFO pProt = MemAllocContiguosMemory(sizeof(PROTECTION_INFO));
+    if (NULL == pProt)
+    {
+        LOG("[INFO] Null pointer is coming to you");
+    }
+
+    memset_s(pProt, 0, sizeof(PROTECTION_INFO));
 
     PPROTECTION_INFO pGuestProt = MhvTranslateVa(Address, Cr3, NULL);
 
@@ -84,6 +90,12 @@ MhvInsertProcessInList(
     }
 
     PMHVPROCESS newProcess = MemAllocContiguosMemory(sizeof(MHVPROCESS));
+    if (NULL == newProcess)
+    {
+        LOG("[INFO] Null pointer is coming to you");
+    }
+    memset_s(newProcess, 0, sizeof(MHVPROCESS));
+
     QWORD nameOffset = Context->context._rcx + NAME_OFFSET_IN_EPROCESS;
     QWORD cr3 = 0;
 
@@ -141,7 +153,7 @@ MhvInsertProcessInList(
 
     InsertTailList(&pGuest.ProcessList, &newProcess->Link);
 
-    LOG("[WINPROC] Process %s, pid %d with cr3 %x just started! %s", newProcess->Name, newProcess->Pid, newProcess->Cr3, newProcess->ProtectionInfo ? "PROTECTED" : "NOT PROTECTED");
+    LOG("[WINPROC] Process %s, pid %d with cr3 %x eproc %x just started! %s", newProcess->Name, newProcess->Pid, newProcess->Cr3, newProcess->Eprocess, newProcess->ProtectionInfo ? "PROTECTED" : "NOT PROTECTED");
     
     MhvCreateProcessCreationEvent(newProcess);
 
@@ -194,7 +206,7 @@ MhvDeleteProcessFromList(
     
     RemoveEntryList(&pProc->Link);
     
-    LOG("[INFO] Process %s (pid = %d; cr3 = %x) terminated!", pProc->Name, pProc->Pid, pProc->Cr3);
+    LOG("[INFO] Process %s (pid = %d; cr3 = %x, eproc %x) terminated!", pProc->Name, pProc->Pid, pProc->Cr3, pProc->Eprocess);
 
     MhvCreateProcessTerminationEvent(pProc);
 

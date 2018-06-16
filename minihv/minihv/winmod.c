@@ -9,6 +9,7 @@
 #include "winpe.h"
 #include "Zydis/Zydis.h"
 #include "alert.h"
+#include "vmxcomm.h"
 
 VOID
 MhvFindFunctionByAddress(
@@ -182,7 +183,7 @@ MhvGetNameFromPath(
 {
     PCHAR init = Path;
     DWORD i = 0;
-    DWORD last;
+    DWORD last = 0;
     while (Path[i] != 0)
     {
         if (Path[i] == '\\')
@@ -191,7 +192,10 @@ MhvGetNameFromPath(
         }
         i++;
     }
-
+    if (last == 0)
+    {
+        last--;
+    }
     return &init[last+1];
 }
 
@@ -508,6 +512,39 @@ MOD_PROTECTION_INFO gProtectedModules[] = {
 };
 
 
+NTSTATUS
+MhvModBlockDll(
+    PVOID Procesor,
+    PVOID Hook,
+    QWORD Rip,
+    QWORD Cr3,
+    PVOID Context
+)
+{
+    PEPT_HOOK pHook = Hook;
+    PBYTE p = MhvTranslateVa(pHook->GuestLinearAddress, Cr3, NULL);
+    PMHVMODULE pMod = pHook->Owner;
+    PMHVPROCESS pProc = pMod->Process;
+    PEVENT pEvent = MhvCreateDllBlockEvent(pProc, pMod->Name);
+
+    LOG("[INFO] Blocked module load %s detected in process %s (%d)", pMod->Name, pProc->Name, pProc->Pid);
+    if ((pProc->ProtectionInfo & 0x10) == 0)
+    {
+        p[0] = 'B';
+        p[1] = 'L';
+        pEvent->DllBlockEvent.Action = mhvActionNotAllowed;
+        LOG("[INFO] Will block!");
+    }
+    else
+    {
+        LOG("[INFO] Will allow!");
+        pEvent->DllBlockEvent.Action = mhvActionAllowed;
+    }
+
+    MhvDeleteHookHierarchy(pHook);
+    return STATUS_SUCCESS;
+}
+
 BOOLEAN 
 MhvIsModuleProtected(
     PMHVPROCESS Process,
@@ -533,6 +570,8 @@ MhvIsModuleProtected(
     return FALSE;
 
 }
+
+
 
 NTSTATUS
 MhvInsertModuleInListIfNotExistent(
@@ -562,7 +601,17 @@ MhvInsertModuleInListIfNotExistent(
     if (!found)
     {
         PBYTE name = MemAllocContiguosMemory(NameLength / 2 + 2);
+        if (NULL == name)
+        {
+            LOG("[INFO] Null pointer is coming to you");
+        }
+        memset_s(name, 0, NameLength / 2 + 1);
         PMHVMODULE pMod = MemAllocContiguosMemory(sizeof(MHVMODULE));
+        if (NULL == pMod)
+        {
+            LOG("[INFO] Null pointer is coming to you");
+        }
+        memset_s(pMod, 0, sizeof(MHVMODULE));
 
         int j = 0;
         for (DWORD i = 0; i < NameLength; i += 2)
@@ -578,7 +627,27 @@ MhvInsertModuleInListIfNotExistent(
         pMod->Start = Start;
         pMod->Process = Process;
 
-       
+        if (MhvIsModuleBlocked(pMod->Name, Process))       
+        {
+            LOG("[INFO] Module %s is blocked, will hook...", pMod->Name);
+
+            PEPT_HOOK pHook = MhvCreateEptHook(pGuest.Vcpu,
+                MhvTranslateVa(pMod->Start, Process->Cr3, NULL),
+                EPT_WRITE_RIGHT,
+                Process->Cr3,
+                pMod->Start,
+                NULL,
+                MhvModBlockDll,
+                PAGE_SIZE,
+                TRUE
+            );
+            pHook->Owner = pMod;
+
+            if ((Process->ProtectionInfo & 0x10) == 0)
+            {
+                return STATUS_SUCCESS;
+            }
+        }
 
         InitializeListHead(&pMod->Hooks);
 
@@ -602,7 +671,11 @@ MhvInsertModuleInListIfNotExistent(
             MhvHookModule(pMod);
             return STATUS_SUCCESS;
         }
-
+        else if (pSig != NULL)
+        {
+            LOG("[INFO] module %s is mapped but signature does not match!", pMod->Name);
+            return STATUS_SUCCESS;
+        }
         PEPT_HOOK pHook = MhvCreateEptHook(pGuest.Vcpu,
             MhvTranslateVa(pMod->Start, Process->Cr3, NULL),
             EPT_WRITE_RIGHT,

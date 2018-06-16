@@ -65,7 +65,9 @@ class LogicHandler:
             self.dh.add_protection_process(bytes(proc['processname'], 'utf-8'), proc['mask'])
 
     def init_blocked_dlls(self):
-        pass
+        dlls = self.db.get_all_blocked_dlls()
+        for dll in dlls:
+            self.dh.add_blocked_dll(bytes(dll['dll_name'], 'utf-8'))
 
     def get_protection_for_module(self, name, protection):
         try:
@@ -80,6 +82,7 @@ class LogicHandler:
             return False
 
     def inject_dll_in_process(self, pid):
+        print("injecting with pid", pid)
         self.dh.inject_dll(pid)
 
     def new_event(self, evt, obj):
@@ -99,8 +102,7 @@ class LogicHandler:
             print("module loaded", evt.module.name)
             protected = self.get_protection_for_module(evt.module.name, evt.protection)
             self.db.create_module_load_event(evt.module.name, evt.module.start, evt.module.end, evt.processname, evt.pid, protected, self.db.get_timeline_id_for_event(evt.pid))
-            if (evt.protection & 0x20) != 0 and evt.module.name == "\\Windows\\System32\\KernelBase.dll":
-                self.inject_dll_in_process(evt.pid)
+
 
         elif evt.event_type == "Module Unload":
             print("module unloaded")
@@ -114,6 +116,10 @@ class LogicHandler:
                 self.db.create_instruction(instrux.mnemonic, instrux.instruction, instrux.length, id)
 
             self.db.create_new_alert_timeline(id, self.session)
+
+        elif evt.event_type == "Blocked Dll":
+            print("blocked dll")
+            self.db.create_dll_block_event(evt.dll_name, evt.process_name, evt.pid, evt.action, evt.protection, self.db.get_timeline_id_for_event(evt.pid))
 
 
     def add_new_process(self, proc, mask):
@@ -139,8 +145,8 @@ class LogicHandler:
         m = Marshaller()
         self.dh.add_alert_exception(m.from_py_to_evt(self.marshall_alert(alert)))
 
-    def remove_exception(self, exception_id):
-        self.db.remove_exception(exception_id)
+    def remove_exception(self, exception_id, alert_id):
+        self.db.remove_exception(exception_id, alert_id)
 
     def add_blocked_dll(self, dll_name):
         for dll in self.db.get_all_blocked_dlls():
@@ -148,9 +154,11 @@ class LogicHandler:
                 raise Exception("DLL is already in list!")
 
         self.db.create_blocked_dll(dll_name)
+        self.dh.add_blocked_dll(bytes(dll_name, 'utf-8'))
 
     def remove_blocked_dll(self, dll_name):
         self.db.removed_blocked_dll(dll_name)
+        self.dh.remove_blocked_dll(bytes(dll_name, 'utf-8'))
 
     def print_timelines(self):
         print(self.db.get_all_timelines_grouped_by_session())

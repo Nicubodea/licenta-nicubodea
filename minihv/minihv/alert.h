@@ -9,7 +9,8 @@ typedef enum _EVENTTYPE {
     mhvEventProcessTerminate,
     mhvEventModuleLoad,
     mhvEventModuleUnload,
-    mhvEventModuleAlert
+    mhvEventModuleAlert,
+    mhvEventDllBlock
 } EVENTTYPE;
 
 typedef enum _ALERT_ACTION {
@@ -67,6 +68,13 @@ typedef struct _EVENT_MODULE_ALERT {
     ALERT_ACTION Action;
 } EVENT_MODULE_ALERT, *PEVENT_MODULE_ALERT;
 
+typedef struct _EVENT_DLL_BLOCKED {
+    BYTE ProcessName[16];
+    QWORD Pid;
+    BYTE DllName[256];
+    ALERT_ACTION Action;
+} EVENT_DLL_BLOCKED, *PEVENT_DLL_BLOCKED;
+
 typedef struct _EVENT {
     LIST_ENTRY Link;
     EVENTTYPE Type;
@@ -77,6 +85,7 @@ typedef struct _EVENT {
         EVENT_MODULE_LOAD ModuleLoadEvent;
         EVENT_MODULE_UNLOAD ModuleUnloadEvent;
         EVENT_MODULE_ALERT ModuleAlertEvent;
+        EVENT_DLL_BLOCKED DllBlockEvent;
     };
 } EVENT, *PEVENT;
 
@@ -146,4 +155,10 @@ NTSTATUS
 MhvExceptNewAlertRequest(
     QWORD Address,
     QWORD Cr3
+);
+
+PEVENT
+MhvCreateDllBlockEvent(
+    PMHVPROCESS Process,
+    PBYTE       DllName
 );

@@ -5,6 +5,7 @@
 #include "vmxop.h"
 #include "epthook.h"
 #include "alloc.h"
+#include "winmod.h"
 
 
 #define PML4_INDEX(Va) (((Va) & 0x0000ff8000000000) >> 39)
@@ -58,6 +59,7 @@ MhvDeleteHookByOwner(
         
         if (pHook->Owner == Owner)
         {
+            //LOG("[INFO] Deleting hook on %x from module %s", pHook->GuestLinearAddress, ((PMHVMODULE)pHook->Owner)->Name);
             //LOG("[INFO] Deleting hook on %x gva %x offset %x flags %x", pHook->GuestPhysicalAddress, pHook->GuestLinearAddress, pHook->Offset, pHook->Flags);
             MhvDeleteHookHierarchy(pHook);
         }
@@ -225,15 +227,20 @@ MhvCreateEptHook(
     pHookPml->ParentHook = NULL;
 
     pHookPdpte->ParentHook = pHookPml;
-
+    
     pde = pdpte == 0 ? 0 : CLEAN_PHYS_ADDR(pdpte[PDP_INDEX(Gla)]);
-
+  
     PEPT_HOOK pHookPde = MhvEptMakeHook(Procesor, pde + PD_INDEX(Gla), EPT_WRITE_RIGHT, NULL, NULL, MhvSwapBeforeCallback, MhvSwapCallback, pde == 0 ? FLAG_NOT_ACTIVE | FLAG_PDE_HOOK : FLAG_PDE_HOOK, 8);
 
     pHookPdpte->LinkHook = pHookPde;
     pHookPde->ParentHook = pHookPdpte;
 
     phys = pde == 0 ? 0 : CLEAN_PHYS_ADDR(pde[PD_INDEX(Gla)]);
+
+    if ((pde[PD_INDEX(Gla)] & 1) == 0)
+    {
+        phys = 0;
+    }
 
     PEPT_HOOK pHookPt = MhvEptMakeHook(Procesor, phys + PT_INDEX(Gla), EPT_WRITE_RIGHT, NULL, NULL, MhvSwapBeforeCallback, MhvSwapCallback, phys == 0? FLAG_NOT_ACTIVE | FLAG_PT_HOOK : FLAG_PT_HOOK, 8);
 
@@ -242,7 +249,12 @@ MhvCreateEptHook(
 
     realPhys = phys == 0 ? 0 : CLEAN_PHYS_ADDR(phys[PT_INDEX(Gla)]);
 
-    PEPT_HOOK pRealHook = MhvEptMakeHook(Procesor, realPhys + (PhysPage & 0xFFF), AccessHooked, Cr3, Gla, PreCallback, PostCallback, CLEAN_PHYS_ADDR(PhysPage) == 0 ? FLAG_NOT_ACTIVE | FLAG_NORMAL_HOOK : FLAG_NORMAL_HOOK, Size);
+    if (((phys[PT_INDEX(Gla)]) & 1) == 0)
+    {
+        realPhys = 0;
+    }
+
+    PEPT_HOOK pRealHook = MhvEptMakeHook(Procesor, realPhys + (PhysPage & 0xFFF), AccessHooked, Cr3, Gla, PreCallback, PostCallback, realPhys == 0 ? FLAG_NOT_ACTIVE | FLAG_NORMAL_HOOK : FLAG_NORMAL_HOOK, Size);
 
     if (IsSwapIn)
     {
@@ -288,6 +300,11 @@ MhvEptMakeHook(
     //LOG("[INFO] Creating Hook on GLA %x GPA %x ept: %x -> %x -> %x -> %x, Flags: %x, size: %x", GLA, PhysPage, eptPointer->PdpeArray[PML4_INDEX(PhysPage)], pml4Entry->PdeArray[PDP_INDEX(PhysPage)], pdpeEntry->PteArray[PD_INDEX(PhysPage)], pdeEntry->PhysicalAddress[PT_INDEX(PhysPage)], Flags, Size);
 
     PEPT_HOOK newEptHook = MemAllocContiguosMemory(sizeof(EPT_HOOK));
+    if (newEptHook == NULL)
+    {
+        LOG("[INFO] Null pointer is coming to you");
+    }
+    memset_s(newEptHook, 0, sizeof(EPT_HOOK));
     QWORD cr3 = 0;
     
 

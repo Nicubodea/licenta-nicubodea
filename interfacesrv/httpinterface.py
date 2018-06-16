@@ -171,9 +171,10 @@ class HttpServ(BaseHTTPRequestHandler):
 
     def post_remove_exception(self, postvars):
         try:
-            alert_id = int(postvars[b"exception_id"][0].decode('utf-8'))
+            exc_id = int(postvars[b"exception_id"][0].decode('utf-8'))
+            alert_id = int(postvars[b"alert_id"][0].decode('utf-8'))
 
-            self.logic_handler.remove_exception(alert_id)
+            self.logic_handler.remove_exception(exc_id, alert_id)
 
             self.send_success_with_key("answer", "")
         except Exception as e:

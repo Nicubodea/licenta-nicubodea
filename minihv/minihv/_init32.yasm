@@ -370,40 +370,8 @@ idt_64:
 	dw 0x100
 	dd KERNEL_BASE + 0xA000 + 0x500
 align 0x100, db 0x0
-; IDT
+; IDT - kernel_base + 0xA500
 ; INT 0 - Divide by 0
-	dw 0xA800
-	dw CODE64_SEL
-	db 0
-	db 0xEE
-	dw 0x0200
-	dd 0
-	dd 0
-; INT 1 -
-	dw 0xA840
-	dw CODE64_SEL
-	db 0
-	db 0xEE
-	dw 0x0200
-	dd 0
-	dd 0
-; INT 2 - NMI
-	dw 0xA880
-	dw CODE64_SEL
-	db 0
-	db 0xEE
-	dw 0x0200
-	dd 0
-	dd 0
-; INT 3 -
-	dw 0xA8C0
-	dw CODE64_SEL
-	db 0
-	db 0xEE
-	dw 0x0200
-	dd 0
-	dd 0
-; INT 4 - 
 	dw 0xA900
 	dw CODE64_SEL
 	db 0
@@ -411,7 +379,7 @@ align 0x100, db 0x0
 	dw 0x0200
 	dd 0
 	dd 0
-; INT 5 - 
+; INT 1 -
 	dw 0xA940
 	dw CODE64_SEL
 	db 0
@@ -419,7 +387,7 @@ align 0x100, db 0x0
 	dw 0x0200
 	dd 0
 	dd 0
-; INT 6 - 
+; INT 2 - NMI
 	dw 0xA980
 	dw CODE64_SEL
 	db 0
@@ -427,7 +395,7 @@ align 0x100, db 0x0
 	dw 0x0200
 	dd 0
 	dd 0
-; INT 7 - 
+; INT 3 -
 	dw 0xA9C0
 	dw CODE64_SEL
 	db 0
@@ -435,7 +403,7 @@ align 0x100, db 0x0
 	dw 0x0200
 	dd 0
 	dd 0
-; INT 8 - 
+; INT 4 - 
 	dw 0xAA00
 	dw CODE64_SEL
 	db 0
@@ -443,7 +411,7 @@ align 0x100, db 0x0
 	dw 0x0200
 	dd 0
 	dd 0
-; INT 9 - 
+; INT 5 - 
 	dw 0xAA40
 	dw CODE64_SEL
 	db 0
@@ -451,7 +419,7 @@ align 0x100, db 0x0
 	dw 0x0200
 	dd 0
 	dd 0
-; INT A - 
+; INT 6 - 
 	dw 0xAA80
 	dw CODE64_SEL
 	db 0
@@ -459,7 +427,7 @@ align 0x100, db 0x0
 	dw 0x0200
 	dd 0
 	dd 0
-; INT B - 
+; INT 7 - 
 	dw 0xAAC0
 	dw CODE64_SEL
 	db 0
@@ -467,7 +435,7 @@ align 0x100, db 0x0
 	dw 0x0200
 	dd 0
 	dd 0
-; INT C - 
+; INT 8 - 
 	dw 0xAB00
 	dw CODE64_SEL
 	db 0
@@ -475,7 +443,7 @@ align 0x100, db 0x0
 	dw 0x0200
 	dd 0
 	dd 0
-; INT D - 
+; INT 9 - 
 	dw 0xAB40
 	dw CODE64_SEL
 	db 0
@@ -483,7 +451,7 @@ align 0x100, db 0x0
 	dw 0x0200
 	dd 0
 	dd 0
-; INT E - 
+; INT A - 
 	dw 0xAB80
 	dw CODE64_SEL
 	db 0
@@ -491,8 +459,40 @@ align 0x100, db 0x0
 	dw 0x0200
 	dd 0
 	dd 0
-; INT F - 
+; INT B - 
 	dw 0xABC0
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT C - 
+	dw 0xAC00
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT D - 
+	dw 0xAC40
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT E - 
+	dw 0xAC80
+	dw CODE64_SEL
+	db 0
+	db 0xEE
+	dw 0x0200
+	dd 0
+	dd 0
+; INT F - 
+	dw 0xACC0
 	dw CODE64_SEL
 	db 0
 	db 0xEE

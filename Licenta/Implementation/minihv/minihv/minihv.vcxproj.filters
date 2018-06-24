@@ -1,0 +1,785 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Build Files">
+      <UniqueIdentifier>{332d8e63-cbd6-4203-bcfa-65b39d1e1a07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{54a34d77-e987-4c3f-af9c-e084a43d2043}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Boot">
+      <UniqueIdentifier>{8de36755-dfae-4817-b3d4-f380cc77de37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Init">
+      <UniqueIdentifier>{6b6a8e06-48a0-49d5-b3b1-7801462bc9f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\stdio">
+      <UniqueIdentifier>{51f74ce8-b576-4349-8c37-f43a9545664f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ACPICA">
+      <UniqueIdentifier>{f4d9fdea-3059-400e-98b7-46ebe7e6910f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WDK Support">
+      <UniqueIdentifier>{afbad7a7-33ec-4ced-bd50-95ec420cedd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VMX">
+      <UniqueIdentifier>{7159775f-04b1-4f87-81ff-b7107d146d78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VMX\Windows">
+      <UniqueIdentifier>{365e22fe-eead-4c49-84e0-fe82f19a8590}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Windows">
+      <UniqueIdentifier>{080b492a-ef78-4eae-b488-91af4a4120c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VMX\Hooks">
+      <UniqueIdentifier>{caf59560-746f-4f77-bb03-c586898ff515}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Hooks">
+      <UniqueIdentifier>{c86f0d7e-aea4-4384-8f29-6fbe4c2dcc9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Allocator">
+      <UniqueIdentifier>{cb0448e5-9427-4a31-a62d-17108bce822f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\cfgdirs.cmd">
+      <Filter>Build Files</Filter>
+    </None>
+    <None Include="..\failmsg.cmd">
+      <Filter>Build Files</Filter>
+    </None>
+    <None Include="..\upload_to_pxe.cmd">
+      <Filter>Build Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <YASM Include="_init32.yasm">
+      <Filter>Source Files\Boot</Filter>
+    </YASM>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="_logger.c">
+      <Filter>Source Files\stdio</Filter>
+    </ClCompile>
+    <ClCompile Include="_memcpy.c">
+      <Filter>Source Files\stdio</Filter>
+    </ClCompile>
+    <ClCompile Include="_sprintf.c">
+      <Filter>Source Files\stdio</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\rsirq.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\rslist.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\rsmemory.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\rsmisc.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\rsserial.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\rsutils.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\rsxface.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\tbdata.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\tbfadt.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\tbfind.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\tbinstal.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\tbprint.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\tbutils.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\tbxface.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\tbxfload.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\tbxfroot.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utaddress.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utalloc.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utbuffer.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utcache.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utclib.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utcopy.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utdebug.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utdecode.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utdelete.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\uterror.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\uteval.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utexcep.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utfileio.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utglobal.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\uthex.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utids.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utinit.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utlock.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utmath.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utmisc.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utmutex.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utobject.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utosi.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utownerid.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utpredef.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utprint.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utresrc.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utstate.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utstring.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\uttrack.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utuuid.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utxface.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utxferror.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utxfinit.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\utxfmutex.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\dsargs.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\dscontrol.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\dsfield.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\dsinit.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\dsmethod.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\dsmthdat.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\dsobject.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\dsopcode.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\dsutils.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\dswexec.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\dswload.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\dswload2.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\dswscope.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\dswstate.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\evevent.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\evglock.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\evgpe.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\evgpeblk.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\evgpeinit.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\evgpeutil.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\evhandler.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\evmisc.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\evregion.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\evrgnini.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\evsci.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\evxface.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\evxfevnt.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\evxfgpe.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\evxfregn.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exconfig.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exconvrt.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\excreate.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exdebug.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exdump.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exfield.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exfldio.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exmisc.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exmutex.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exnames.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exoparg1.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exoparg2.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exoparg3.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exoparg6.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exprep.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exregion.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exresnte.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exresolv.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exresop.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exstore.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exstoren.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exstorob.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exsystem.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\exutils.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\hwacpi.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\hwesleep.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\hwgpe.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\hwpci.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\hwregs.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\hwsleep.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\hwtimer.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\hwvalid.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\hwxface.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\hwxfsleep.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsaccess.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsalloc.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsarguments.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsconvert.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsdump.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsdumpdv.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nseval.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsinit.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsload.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsnames.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsobject.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsparse.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nspredef.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsprepkg.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsrepair.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsrepair2.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nssearch.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsutils.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nswalk.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsxfeval.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsxfname.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\nsxfobj.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\psargs.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\psloop.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\psobject.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\psopcode.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\psopinfo.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\psparse.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\psscope.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\pstree.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\psutils.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\pswalk.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\psxface.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\rsaddr.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\rscalc.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\rscreate.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\rsdump.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\rsdumpinfo.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\rsinfo.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica\rsio.c">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClCompile>
+    <ClCompile Include="_wdk_dll_sync.c">
+      <Filter>WDK Support</Filter>
+    </ClCompile>
+    <ClCompile Include="_wdk_dll_async.c">
+      <Filter>WDK Support</Filter>
+    </ClCompile>
+    <ClCompile Include="acpica.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="_wdk_dumpmemory.c">
+      <Filter>WDK Support</Filter>
+    </ClCompile>
+    <ClCompile Include="vmxop.c">
+      <Filter>Source Files\VMX</Filter>
+    </ClCompile>
+    <ClCompile Include="init64.c">
+      <Filter>Source Files\Init</Filter>
+    </ClCompile>
+    <ClCompile Include="winproc.c">
+      <Filter>Source Files\VMX\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="vmxhook.c">
+      <Filter>Source Files\VMX\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="vmxept.c">
+      <Filter>Source Files\VMX\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="epthook.c">
+      <Filter>Source Files\VMX\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="vmxmtf.c">
+      <Filter>Source Files\VMX</Filter>
+    </ClCompile>
+    <ClCompile Include="winmod.c">
+      <Filter>Source Files\VMX\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="guest.c">
+      <Filter>Source Files\VMX</Filter>
+    </ClCompile>
+    <ClCompile Include="except.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="alloc.c">
+      <Filter>Header Files\Allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="heap.c">
+      <Filter>Header Files\Allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="llist.c">
+      <Filter>Header Files\Allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="alert.c">
+      <Filter>Source Files\VMX\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="vmxcomm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="minihv.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdio_n.h">
+      <Filter>Source Files\stdio</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acapps.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acbuffer.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acclib.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\accommon.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acconfig.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acdebug.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acdisasm.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acdispat.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acenv.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acevents.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acexcep.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acglobal.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\achware.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acintel.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acinterp.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\aclocal.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acmacros.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acnames.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acnamesp.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acobject.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acopcode.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acoutput.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acparser.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acpi.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acpiosxf.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acpixf.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acpredef.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acresrc.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acrestyp.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acstruct.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\actables.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\actbl.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\actbl1.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\actbl2.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\actbl3.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\actypes.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acutils.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acuuid.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\acwin64.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\amlcode.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="acpica\amlresrc.h">
+      <Filter>Source Files\ACPICA</Filter>
+    </ClInclude>
+    <ClInclude Include="_wdk.h">
+      <Filter>WDK Support</Filter>
+    </ClInclude>
+    <ClInclude Include="ntstatus.h">
+      <Filter>WDK Support</Filter>
+    </ClInclude>
+    <ClInclude Include="vmcsdef.h">
+      <Filter>Source Files\VMX</Filter>
+    </ClInclude>
+    <ClInclude Include="structures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="winproc.h">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="vmxop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vmxept.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="vmxhook.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="winpe.h">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="epthook.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="vmxmtf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="winmod.h">
+      <Filter>Header Files\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="alloc.h">
+      <Filter>Header Files\Allocator</Filter>
+    </ClInclude>
+    <ClInclude Include="guest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="except.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="heap.h">
+      <Filter>Header Files\Allocator</Filter>
+    </ClInclude>
+    <ClInclude Include="llist.h">
+      <Filter>Header Files\Allocator</Filter>
+    </ClInclude>
+    <ClInclude Include="alert.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="vmxcomm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
